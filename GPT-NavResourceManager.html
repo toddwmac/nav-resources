@@ -150,6 +150,11 @@
       color: var(--text);
       border: 1px solid var(--border);
     }
+    .btn-muted.starred {
+      background: var(--warning);
+      border-color: var(--warning);
+      color: white;
+    }
 
     .file-button input {
       display: none;
@@ -391,7 +396,7 @@
     </section>
 
     <section class="stats" aria-live="polite">
-      <div><strong id="countShown">0</strong> shown of <strong id="countTotal">0</strong> resources</div>
+      <div><strong id="countShown">0</strong> shown of <strong id="countTotal">0</strong> resources · <strong id="countStarred">0</strong> starred</div>
       <div>Rig height profile: <strong id="rigHeight">12 ft 0 in</strong></div>
       <div>Last verified: <strong id="lastVerified">Unknown</strong></div>
     </section>
@@ -535,7 +540,8 @@
           priority: "High",
           tags: ["BLM", "public land", "georeferenced PDF"],
           summary: "Central BLM map page with public-land maps, georeferenced PDFs, and map products.",
-          notes: "Import the full JSON file supplied with this answer for the complete database."
+          notes: "Import the full JSON file supplied with this answer for the complete database.",
+          starred: false
         },
         {
           id: "usfs-mvum",
@@ -551,7 +557,8 @@
           priority: "High",
           tags: ["USFS", "MVUM", "legal route", "motor vehicle"],
           summary: "Official USFS maps showing roads, trails, and areas designated for public motor-vehicle use.",
-          notes: "Use as legal authority for motorized travel on National Forest System lands."
+          notes: "Use as legal authority for motorized travel on National Forest System lands.",
+          starred: false
         },
         {
           id: "rv-life-trip-wizard",
@@ -567,7 +574,8 @@
           priority: "High",
           tags: ["RV routing", "height", "campgrounds", "trip planner"],
           summary: "RV trip planning platform with RV-aware routing and campground planning features.",
-          notes: "Enter your measured 12-foot height and verify against posted signs."
+          notes: "Enter your measured 12-foot height and verify against posted signs.",
+          starred: false
         }
       ]
     };
@@ -593,6 +601,7 @@
         priorityFilter: document.getElementById("priorityFilter"),
         countShown: document.getElementById("countShown"),
         countTotal: document.getElementById("countTotal"),
+        countStarred: document.getElementById("countStarred"),
         rigHeight: document.getElementById("rigHeight"),
         lastVerified: document.getElementById("lastVerified"),
         addBtn: document.getElementById("addBtn"),
@@ -846,7 +855,8 @@
         priority: ["High", "Medium", "Low"].includes(r.priority) ? r.priority : "Medium",
         tags: toArray(r.tags),
         summary: String(r.summary || "").trim(),
-        notes: String(r.notes || "").trim()
+        notes: String(r.notes || "").trim(),
+        starred: Boolean(r.starred)
       };
     }
 
@@ -1075,6 +1085,10 @@
 
         return matchesSearch && matchesCategory && matchesState && matchesPriority;
       }).sort((a, b) => {
+        // Starred items first
+        if (a.starred && !b.starred) return -1;
+        if (!a.starred && b.starred) return 1;
+        // Then by priority, then by name
         const rank = { High: 1, Medium: 2, Low: 3 };
         return (rank[a.priority] || 99) - (rank[b.priority] || 99) || a.title.localeCompare(b.title);
       });
@@ -1083,6 +1097,7 @@
     function renderStats() {
       els.countShown.textContent = filtered.length;
       els.countTotal.textContent = db.resources.length;
+      els.countStarred.textContent = (db.resources || []).filter(r => r.starred).length;
       const rp = db.rigProfile || {};
       els.rigHeight.textContent = `${rp.heightFeet ?? 12} ft ${rp.heightInches ?? 0} in`;
       els.lastVerified.textContent = db.lastVerified || "Unknown";
@@ -1125,6 +1140,7 @@
           </div>
 
           <div class="card-actions">
+            <button class="btn-muted ${r.starred ? 'starred' : ''}" data-action="star" data-id="${escapeAttribute(r.id)}">${r.starred ? '⭐' : '☆'} Star</button>
             <button class="btn-muted" data-action="edit" data-id="${escapeAttribute(r.id)}">Edit</button>
             <button class="btn-danger" data-action="delete" data-id="${escapeAttribute(r.id)}">Delete</button>
           </div>
@@ -1134,6 +1150,7 @@
           const btn = event.target.closest("button[data-action]");
           if (!btn) return;
           const id = btn.dataset.id;
+          if (btn.dataset.action === "star") toggleStar(id);
           if (btn.dataset.action === "edit") openModal(id);
           if (btn.dataset.action === "delete") deleteResource(id);
         });
@@ -1204,6 +1221,15 @@
         summary: form.summary.value,
         notes: form.notes.value
       });
+    }
+
+    function toggleStar(id) {
+      const r = db.resources.find(item => item.id === id);
+      if (!r) return;
+      r.starred = !r.starred;
+      db.lastEdited = new Date().toISOString();
+      saveDb();
+      refresh();
     }
 
     function deleteResource(id) {

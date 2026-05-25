@@ -63,6 +63,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .btn-secondary:hover{background:#2f3244}
 .btn-danger{background:rgba(239,68,68,.15);color:var(--red)}
 .btn-danger:hover{background:rgba(239,68,68,.25)}
+.btn-secondary.starred{background:rgba(251,191,36,.2);border-color:var(--amber);color:var(--amber)}
 .btn-sm{padding:5px 10px;font-size:12px;border-radius:8px}
 .grid-container{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px;max-width:1600px;margin:0 auto;width:100%}
 @media(max-width:1200px){.grid-container{grid-template-columns:repeat(2,1fr)}}
@@ -142,6 +143,7 @@ footer{margin-top:auto;text-align:center;padding:24px;font-size:12px;color:var(-
     <div data-id="14" class="stat-pill"><i data-id="15" data-lucide="wifi-off" class="w-4 h-4" style="color:var(--green)"></i> Offline Capable: <span data-id="16" class="stat-num" id="stat-offline-m3z9">0</span></div>
     <div data-id="17" class="stat-pill"><i data-id="18" data-lucide="circle-dollar-sign" class="w-4 h-4" style="color:var(--amber)"></i> Free / Freemium: <span data-id="19" class="stat-num" id="stat-free-q2v8">0</span></div>
     <div data-id="20" class="stat-pill"><i data-id="21" data-lucide="map-pin" class="w-4 h-4" style="color:var(--red)"></i> Western US Focus: <span data-id="22" class="stat-num" id="stat-western-j5k4">0</span></div>
+    <div data-id="23" class="stat-pill"><i data-id="24" data-lucide="star" class="w-4 h-4" style="color:var(--warning)"></i> Starred: <span data-id="25" class="stat-num" id="stat-starred-x1k5">0</span></div>
   </div>
 </header>
 
@@ -315,6 +317,14 @@ let expandedCard = null;
 let deleteConfirmId = null;
 let changes = loadChanges();
 
+// Ensure all resources have starred property
+function ensureStarredProperty() {
+  resources.forEach(r => {
+    if (r.starred === undefined) r.starred = false;
+  });
+}
+ensureStarredProperty();
+
 const CHANGES_KEY = 'copilotNavResourceChanges';
 
 // Extract unique categories from resources
@@ -385,6 +395,16 @@ function trackEdit(originalResource, updatedResource) {
   changes.edited.push({ ...updatedResource, originalId: originalResource.id });
   saveChanges();
   showToast('Edit tracked');
+}
+
+function toggleStar(id) {
+  const r = resources.find(res => res.id === id);
+  if (r) {
+    r.starred = !r.starred;
+    saveState();
+    renderCards();
+    showToast(r.starred ? 'Starred' : 'Unstarred', 'info');
+  }
 }
 
 function trackDelete(resource) {
@@ -580,11 +600,20 @@ function getFiltered(){
     return true;
   });
 
-  if(sort==='name-asc') list.sort((a,b)=>a.name.localeCompare(b.name));
-  else if(sort==='name-desc') list.sort((a,b)=>b.name.localeCompare(a.name));
-  else if(sort==='category') list.sort((a,b)=>a.category.localeCompare(b.category));
-  else if(sort==='cost') list.sort((a,b)=>a.cost_tier.localeCompare(b.cost_tier));
-  else if(sort==='offline') list.sort((a,b)=>(b.offline?1:0)-(a.offline?1:0));
+  // Always sort starred first, then apply selected sort
+  list.sort((a,b) => {
+    // Starred items first
+    if (a.starred && !b.starred) return -1;
+    if (!a.starred && b.starred) return 1;
+
+    // Then apply selected sort
+    if(sort==='name-asc') return a.name.localeCompare(b.name);
+    if(sort==='name-desc') return b.name.localeCompare(a.name);
+    if(sort==='category') return a.category.localeCompare(b.category);
+    if(sort==='cost') return a.cost_tier.localeCompare(b.cost_tier);
+    if(sort==='offline') return (b.offline?1:0)-(a.offline?1:0);
+    return 0;
+  });
 
   return list;
 }
@@ -595,6 +624,7 @@ function updateStats(){
   document.getElementById('stat-offline-m3z9').textContent = resources.filter(r=>r.offline).length;
   document.getElementById('stat-free-q2v8').textContent = resources.filter(r=>r.cost_tier==='Free'||r.cost_tier==='Freemium'||r.cost_tier==='Free / Low-Cost').length;
   document.getElementById('stat-western-j5k4').textContent = resources.filter(r=>r.western_us_focus).length;
+  document.getElementById('stat-starred-x1k5').textContent = resources.filter(r=>r.starred).length;
   document.getElementById('subtitle-count-82ka').textContent = resources.length;
 }
 
@@ -666,6 +696,7 @@ function renderCards(){
       ${detailHtml}
       <div class="card-actions">
         ${r.url?`<a href="${escHtml(r.url)}" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="text-decoration:none"><i data-lucide="external-link" class="w-3 h-3"></i> Visit</a>`:''}
+        <button class="btn btn-secondary btn-sm ${r.starred?'starred':''}" data-star="${r.id}"><i data-lucide="star" class="w-3 h-3"></i> ${r.starred?'⭐':'☆'} Star</button>
         <button class="btn btn-secondary btn-sm" data-edit="${r.id}"><i data-lucide="pencil" class="w-3 h-3"></i> Edit</button>
         <button class="btn btn-danger btn-sm" data-delete="${r.id}"><i data-lucide="trash-2" class="w-3 h-3"></i> Delete</button>
       </div>
@@ -699,6 +730,10 @@ function bindCardEvents(){
   // Edit
   document.querySelectorAll('[data-edit]').forEach(btn=>{
     btn.addEventListener('click', ()=> openEditModal(btn.dataset.edit));
+  });
+  // Star
+  document.querySelectorAll('[data-star]').forEach(btn=>{
+    btn.addEventListener('click', ()=> toggleStar(btn.dataset.star));
   });
   // Delete
   document.querySelectorAll('[data-delete]').forEach(btn=>{

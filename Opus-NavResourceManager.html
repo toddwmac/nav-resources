@@ -136,6 +136,11 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
         }
         .btn-danger:hover { background: var(--danger-hover); }
         .btn-sm { padding: 4px 10px; font-size: 0.78rem; }
+        .btn-starred {
+            background: var(--warning);
+            border-color: var(--warning);
+            color: white;
+        }
         .btn-icon {
             width: 36px; height: 36px;
             padding: 0; display: flex;
@@ -805,6 +810,13 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
     const STORAGE_KEY = 'rvResources';
     const CHANGES_KEY = 'opusNavResourceChanges';
 
+    // Ensure all resources have starred property
+    function ensureStarredProperty() {
+        resources.forEach(r => {
+            if (r.starred === undefined) r.starred = false;
+        });
+    }
+
     // ── Init ──────────────────────────────────────────────────
     async function init() {
         // Try master file first
@@ -822,6 +834,7 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
         }
 
         resources = loadedResources;
+        ensureStarredProperty();
 
         const theme = localStorage.getItem('theme');
         if (theme === 'dark') {
@@ -1051,11 +1064,13 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
         const shown = filtered.length;
         const critCount = filtered.filter(r => r.priority === 'critical').length;
         const offCount = filtered.filter(r => r.offlineCapable).length;
+        const starredCount = filtered.filter(r => r.starred).length;
 
         stats.innerHTML = `
             <span class="stat-item">📊 <span class="stat-count">${shown}</span> of ${total} resources</span>
             <span class="stat-item">🔴 <span class="stat-count">${critCount}</span> critical</span>
             <span class="stat-item">📡 <span class="stat-count">${offCount}</span> offline-capable</span>
+            <span class="stat-item">⭐ <span class="stat-count">${starredCount}</span> starred</span>
         `;
 
         if (!filtered.length) {
@@ -1068,7 +1083,13 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
         }
 
         const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-        filtered.sort((a, b) => (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9));
+        filtered.sort((a, b) => {
+            // Starred items first
+            if (a.starred && !b.starred) return -1;
+            if (!a.starred && b.starred) return 1;
+            // Then by priority
+            return (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9);
+        });
 
         grid.innerHTML = filtered.map(r => {
             const platforms = (r.platforms || []).join(' · ');
@@ -1098,6 +1119,7 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
                 ${features ? `<details class="card-features"><summary>Features (${(r.features||[]).length})</summary><div class="feature-list">${features}</div></details>` : ''}
                 ${r.notes ? `<div class="card-notes">💡 ${r.notes}</div>` : ''}
                 <div class="card-actions">
+                    <button class="btn btn-sm ${r.starred ? 'btn-starred' : ''}" onclick="toggleStar('${r.id}')">${r.starred ? '⭐' : '☆'} Star</button>
                     <button class="btn btn-sm" onclick="editResource('${r.id}')">✏️ Edit</button>
                     <button class="btn btn-sm btn-danger" onclick="deleteResource('${r.id}')">🗑️</button>
                 </div>
@@ -1176,6 +1198,16 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
         populateFilters();
         renderResources();
         closeModal();
+    }
+
+    function toggleStar(id) {
+        const r = resources.find(x => x.id === id);
+        if (r) {
+            r.starred = !r.starred;
+            save();
+            renderResources();
+            toast(r.starred ? '⭐ Starred' : '☆ Unstarred');
+        }
     }
 
     function deleteResource(id) {

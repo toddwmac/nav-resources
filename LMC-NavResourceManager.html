@@ -171,6 +171,11 @@
         .btn-secondary:hover {
             background: var(--border);
         }
+        .btn-starred {
+            background: var(--warning, #f59e0b) !important;
+            border-color: var(--warning, #f59e0b) !important;
+            color: white !important;
+        }
 
         .btn-sm {
             padding: 6px 12px;
@@ -703,6 +708,10 @@
             <span class="stat-label">Offline Capable</span>
             <span class="stat-value" id="offlineCount">0</span>
         </div>
+        <div class="stat-item">
+            <span class="stat-label">Starred</span>
+            <span class="stat-value" id="starredResources">0</span>
+        </div>
     </div>
 
     <div class="toolbar">
@@ -880,6 +889,15 @@
         const STORAGE_KEY = 'overlandDB';
         const CHANGES_KEY = 'lmcNavResourceChanges';
 
+        // Ensure all resources have starred property
+        function ensureStarredProperty() {
+            db.categories.forEach(cat => {
+                cat.resources.forEach(res => {
+                    if (res.starred === undefined) res.starred = false;
+                });
+            });
+        }
+
         // Initialize: try to load from master, fall back to default/localStorage
         (async function initializeDB() {
             const masterData = await loadFromMasterResources();
@@ -909,6 +927,7 @@
                 updateDataSource('local-edits');
             }
 
+            ensureStarredProperty();
             populateCategoryFilter();
             renderApp();
             updateChangesBadge();
@@ -996,7 +1015,14 @@
 
                 const grid = section.querySelector('.grid');
 
-                cat.resources.forEach(res => {
+                // Sort starred items first within each category
+                const sortedResources = [...cat.resources].sort((a, b) => {
+                    if (a.starred && !b.starred) return -1;
+                    if (!a.starred && b.starred) return 1;
+                    return 0;
+                });
+
+                sortedResources.forEach(res => {
                     const card = document.createElement('div');
                     card.className = 'card';
                     const changeStatus = getChangeStatus(res.id);
@@ -1014,6 +1040,7 @@
                             <div class="tags">${res.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
                             <div class="card-actions">
                                 <a href="${res.url}" target="_blank" class="btn btn-primary btn-sm">Visit</a>
+                                <button class="btn btn-secondary btn-sm ${res.starred ? 'btn-starred' : ''}" onclick="toggleStar('${cat.id}', '${res.id}')">${res.starred ? '⭐' : '☆'} Star</button>
                                 <button class="btn btn-secondary btn-sm" onclick="openEditModal('${cat.id}', '${res.id}')">Edit</button>
                                 <button class="btn btn-secondary btn-sm" onclick="deleteResource('${cat.id}', '${res.id}')">Delete</button>
                             </div>
@@ -1031,8 +1058,10 @@
         // Update stats
         function updateStats() {
             const totalResources = db.categories.reduce((sum, cat) => sum + cat.resources.length, 0);
+            const starredResources = db.categories.reduce((sum, cat) => sum + cat.resources.filter(r => r.starred).length, 0);
             document.getElementById('totalResources').textContent = totalResources;
             document.getElementById('totalCategories').textContent = db.categories.length;
+            document.getElementById('starredResources').textContent = starredResources;
 
             // Count offline capable (based on tags)
             let offlineCount = 0;
@@ -1123,6 +1152,17 @@
             closeModal();
             renderApp();
             showToast('success', 'Resource saved successfully');
+        }
+
+        function toggleStar(catId, resId) {
+            const category = db.categories.find(c => c.id === catId);
+            const resource = category.resources.find(r => r.id === resId);
+            if (resource) {
+                resource.starred = !resource.starred;
+                saveData();
+                renderApp();
+                showToast('success', resource.starred ? '⭐ Starred' : '☆ Unstarred');
+            }
         }
 
         function deleteResource(catId, resId) {
