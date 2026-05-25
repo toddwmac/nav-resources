@@ -929,12 +929,39 @@
     <section class="hero">
         <div class="hero-icon">🏕️</div>
         <h1>Nav Resource Managers</h1>
-        <p>Interactive applications for managing navigation resources, camping tools, and mapping apps for 12-foot motorhome and adventure motorcycle travel through the American West.</p>
+        <p>A showcase of AI-generated navigation resource management applications. Each app loads from a unified master database of 95+ resources, with local editing capabilities stored in your browser. Includes a mobile-optimized app with change tracking for master data updates.</p>
         <div class="hero-badges">
-            <span class="badge">⚠️ 12ft Height Aware</span>
-            <span class="badge">🏍️ Adventure Bike Ready</span>
-            <span class="badge">📴 Offline Capable</span>
-            <span class="badge">🌲 Public Lands Focus</span>
+            <span class="badge">📊 95+ Resources</span>
+            <span class="badge">🔄 Auto-Loading Master Data</span>
+            <span class="badge">💾 Local Edit Storage</span>
+            <span class="badge">🤖 Multiple AI Models</span>
+            <span class="badge">📱 Mobile Optimized</span>
+            <span class="badge">🔄 Change Tracking</span>
+        </div>
+    </section>
+
+    <!-- Info Banner -->
+    <section class="section">
+        <div class="about-card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%); border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent);">💡 Understanding the Data Flow</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 12px;">
+                <div>
+                    <strong style="color: var(--text-primary);">🔄 Master Data Loading</strong>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">Each app loads from <code>master-resources.json</code> on first launch, ensuring all 95+ resources are available immediately.</p>
+                </div>
+                <div>
+                    <strong style="color: var(--text-primary);">💾 Local Edit Storage</strong>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">Any changes you make are saved to your browser's localStorage. Your edits persist across sessions but don't modify the master file.</p>
+                </div>
+                <div>
+                    <strong style="color: var(--text-primary);">🤖 AI Model Comparison</strong>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">Explore how different AI models (Claude, Copilot, GPT) solve the same requirements with unique code patterns and UI approaches.</p>
+                </div>
+                <div>
+                    <strong style="color: var(--text-primary);">📱 Mobile & Change Tracking</strong>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">The mobile app tracks all your changes (added, edited, deleted) and lets you export them. Exported changes can be merged into the master database to update all apps consistently.</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -949,20 +976,37 @@
                 </h2>
             </div>
             <div class="about-card">
-                <h3>What You'll Find Here</h3>
-                <p>This directory contains a comprehensive database of navigation resources compiled specifically for Western US overland travel. Whether you're piloting a 12-foot motorhome or riding adventure bikes through BDR routes, these tools help you navigate safely, legally, and confidently.</p>
-                <h3>Vehicle Profile</h3>
+                <h3>🎯 Purpose: AI Model Showcase</h3>
+                <p>This collection demonstrates how different AI models (Claude, Copilot, GPT) approach the same application requirements. Each Nav Resource Manager provides full CRUD functionality but showcases unique design patterns, code organization, and UI/UX choices made by different AI systems.</p>
+                <p><strong>New:</strong> A mobile-optimized app with change tracking lets you export edits for merging into the master database, enabling consistent updates across all apps.</p>
+
+                <h3>📊 Master Database System</h3>
+                <p><strong>Initial Load:</strong> All applications automatically load from <code>master-resources.json</code> containing 95+ curated navigation resources on startup.</p>
+                <p><strong>Local Editing:</strong> Any changes you make (add, edit, delete) are saved to your browser's localStorage and persist across sessions. These edits are <em>local only</em> and don't modify the master file.</p>
+                <p><strong>Change Tracking (Mobile):</strong> The mobile app tracks all changes and can export them as JSON. Exported changes can be merged into the master database to update all apps consistently.</p>
+                <p><strong>Data Flow:</strong> Master File → App Initialization → Local Storage (your edits) → Display</p>
+
+                <h3>🚐 Vehicle Profile</h3>
                 <p><strong>Primary Rig:</strong> 12-foot height motorhome + adventure motorcycle carry<br>
                 <strong>Region:</strong> Western United States (AZ, CA, CO, ID, MT, NV, NM, OR, UT, WA, WY)<br>
                 <strong>Key Constraint:</strong> Low clearance avoidance is critical</p>
-                <h3>Resource Categories</h3>
-                <ul>
-                    <li><strong>RV Navigation:</strong> Low-clearance databases, truck routing, dedicated GPS hardware</li>
-                    <li><strong>Adventure Motorcycle:</strong> BDR routes, off-road mapping, GPX track management</li>
-                    <li><strong>GeoPDF & Agency Maps:</strong> USFS MVUMs, BLM land boundaries, official forest service maps</li>
-                    <li><strong>Camping & Boondocking:</strong> Dispersed camping finders, federal campground reservations</li>
-                    <li><strong>Print Atlases:</strong> Essential backup navigation for when electronics fail</li>
-                </ul>
+
+                <h3>📂 Resource Categories (13)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 12px;">
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">Height & Clearance Navigation</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">RV & Motorhome Navigation</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">Overlanding & Trail Navigation</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">Adventure Motorcycle</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">Geo-Located PDF Maps</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">Federal Mapping & Public Lands</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">Camping & Boondocking</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">State DOT Road Conditions</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">State OHV & Trail Maps</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">Print Maps & Atlases</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">Trip Planning & Scouting</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">Safety & Communication</div>
+                    <div style="padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 0.85rem;">Weather & Conditions</div>
+                </div>
             </div>
         </section>
 
@@ -976,24 +1020,24 @@
             </div>
             <div class="system-grid">
                 <div class="system-card">
-                    <div class="icon">📄</div>
-                    <h4>JSON Data Files</h4>
-                    <p>Structured resource databases with metadata including URLs, categories, cost tiers, offline capability, and priority levels. Import these into the HTML apps or use them as reference.</p>
+                    <div class="icon">📊</div>
+                    <h4>Master Database</h4>
+                    <p><strong>master-resources.json</strong> contains 95+ resources with unified schema v2.0.0. All apps fetch this file on launch for consistent initial data across the collection.</p>
                 </div>
                 <div class="system-card">
-                    <div class="icon">🖥️</div>
-                    <h4>Interactive HTML Apps</h4>
-                    <p>Single-file web applications with full CRUD operations. Filter, sort, search, and manage resources. Each app uses localStorage for persistence.</p>
+                    <div class="icon">💾</div>
+                    <h4>Local Storage</h4>
+                    <p>Your edits (add, modify, delete) are saved to browser localStorage automatically. Changes persist across sessions but remain local to your browser only.</p>
                 </div>
                 <div class="system-card">
-                    <div class="icon">💬</div>
-                    <h4>User Feedback System</h4>
-                    <p>Add your own commentary, notes, and experiences to each resource. All feedback is stored locally and can be exported for backup or sharing.</p>
+                    <div class="icon">🔄</div>
+                    <h4>Data Flow</h4>
+                    <p>On each app launch: ① Fetch master file → ② Merge with any existing localStorage edits → ③ Display unified view. Export anytime to backup your changes.</p>
                 </div>
                 <div class="system-card">
-                    <div class="icon">🌙</div>
-                    <h4>Theme System</h4>
-                    <p>Switch between light and dark modes. Your preference is saved automatically. The interface adapts seamlessly for day and night use.</p>
+                    <div class="icon">🤖</div>
+                    <h4>AI Model Showcase</h4>
+                    <p>Each app demonstrates unique design patterns from different AI models. Compare code structure, UI/UX choices, and feature implementation across Claude, Copilot, and GPT.</p>
                 </div>
             </div>
         </section>
@@ -1003,7 +1047,7 @@
             <div class="section-header">
                 <h2 class="section-title">
                     <span class="icon">📂</span>
-                    Nav Resource Managers
+                    Applications (5)
                 </h2>
                 <button class="btn btn-secondary btn-sm" id="expandAllBtn">
                     <span>📖</span> Expand All
@@ -1017,7 +1061,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>Nav Resource Managers — Interactive navigation resource management for overland travel through the American West</p>
+        <p>Nav Resource Managers — An AI Model Showcase | Master Database with Local Editing | Each app represents a different AI model's approach to the same requirements</p>
         <div class="footer-links">
             <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
         </div>
@@ -1107,45 +1151,56 @@
                 id: 'gpt-nav-resource-manager',
                 filename: 'GPT-NavResourceManager.html',
                 type: 'html',
-                icon: '🖥️',
+                icon: '🟢',
                 title: 'GPT Nav Resource Manager',
-                size: '35 KB',
+                size: '37 KB',
                 generator: 'GPT-4',
-                description: 'Light mode web app with gradient header, card-based layout, import/export functionality, and localStorage persistence.',
-                tags: ['HTML', 'GPT-4', 'Interactive']
+                description: 'Clean gradient design with focus on simplicity. Features card-based layout, search/filter capabilities, and import/export. Demonstrates GPT-4\'s approach to organized, readable code structure.',
+                tags: ['GPT-4', 'Gradient UI', 'Clean Code']
             },
             {
                 id: 'copilot-nav-resource-manager',
                 filename: 'Copilot-NavResourceManager.html',
                 type: 'html',
-                icon: '🖥️',
+                icon: '🔷',
                 title: 'Copilot Nav Resource Manager',
-                size: '68 KB',
+                size: '72 KB',
                 generator: 'GitHub Copilot',
-                description: 'Dark mode default with Tailwind CSS, Lucide icons, expandable detail panels, and modern card-based UI.',
-                tags: ['HTML', 'Copilot', 'Dark Mode']
+                description: 'Dark-first design using Tailwind CSS with Lucide icons. Features expandable detail panels, comprehensive filtering, priority badges, and modal editing. Showcases Copilot\'s modern full-stack aesthetic.',
+                tags: ['Copilot', 'Tailwind CSS', 'Dark Mode', 'Feature Rich']
             },
             {
                 id: 'opus-nav-resource-manager',
                 filename: 'Opus-NavResourceManager.html',
                 type: 'html',
-                icon: '🖥️',
+                icon: '🟠',
                 title: 'Opus Nav Resource Manager',
-                size: '70 KB',
+                size: '73 KB',
                 generator: 'Claude Opus',
-                description: 'Feature-rich app with theme toggle, priority badges, modal editing, comprehensive filtering, and advanced sorting options.',
-                tags: ['HTML', 'Opus', 'Full Featured']
+                description: 'Feature-rich implementation with theme toggle, advanced sorting, modal editing, and export functionality. Demonstrates comprehensive feature coverage and polished UX patterns from Anthropic\'s flagship model.',
+                tags: ['Claude Opus', 'Full Featured', 'Theme Toggle']
             },
             {
                 id: 'lmc-nav-resource-manager',
                 filename: 'LMC-NavResourceManager.html',
                 type: 'html',
-                icon: '🖥️',
+                icon: '🟣',
                 title: 'LMC Nav Resource Manager',
-                size: '17 KB',
+                size: '20 KB',
                 generator: 'Claude',
-                description: 'Lightweight overland navigation resource manager with category organization, dark mode toggle, and clean card-based interface.',
-                tags: ['HTML', 'Lightweight', 'Dark Mode']
+                description: 'Lightweight and elegant design with Inter typography, clean card layout, and smooth animations. Features category-based organization, real-time search, data source indicators, and responsive grid. Showcases minimal but polished UI approach.',
+                tags: ['Claude', 'Lightweight', 'Modern UI', 'Responsive']
+            },
+            {
+                id: 'mobile-nav-resource-manager',
+                filename: 'Mobile-NavResourceManager.html',
+                type: 'html',
+                icon: '📱',
+                title: 'Mobile Nav Resource Manager',
+                size: '28 KB',
+                generator: 'Claude',
+                description: 'Mobile-first design optimized for phones with touch-friendly UI. Features bottom navigation, FAB for quick adds, swipeable filters, and change tracking. Export/import changes to merge into master data. Perfect for on-the-go resource management.',
+                tags: ['Mobile First', 'Change Tracking', 'Export/Import', 'Touch Optimized']
             }
         ];
 

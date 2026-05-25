@@ -4,186 +4,769 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LMC Nav Resource Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f4f7f6;
-            --text-color: #333;
-            --card-bg: #fff;
-            --primary-color: #2c3e50;
-            --secondary-color: #18bc9c;
-            --danger-color: #e74c3c;
-            --border-color: #ddd;
-            --tag-bg: #e2e8f0;
-            --tag-text: #475569;
+            --bg-primary: #fafafa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0f0f0;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --border: #e0e0e0;
+            --border-light: #f0f0f0;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --accent-light: #eef2ff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
         }
 
-        body.dark-mode {
-            --bg-color: #1a1a2e;
-            --text-color: #e6e6ea;
-            --card-bg: #16213e;
-            --primary-color: #0f3460;
-            --secondary-color: #e94560;
-            --danger-color: #c0392b;
-            --border-color: #2a2a4a;
-            --tag-bg: #0f3460;
-            --tag-text: #e6e6ea;
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #e6e6e6;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --border: #2a2a2a;
+            --border-light: #333333;
+            --accent: #818cf8;
+            --accent-hover: #6366f1;
+            --accent-light: #1e1b4b;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s;
-            padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+            min-height: 100vh;
         }
 
-        header {
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--border-color);
+            justify-content: space-between;
+            gap: 16px;
         }
 
-        .controls button, .controls label.button {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            margin-left: 10px;
-            border-radius: 5px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-logo {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-title span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .data-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: var(--accent-light);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .data-status.master {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .data-status.local {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.875rem;
             cursor: pointer;
-            font-size: 14px;
-            transition: opacity 0.2s;
-            display: inline-block;
+            border: none;
+            transition: all 0.2s;
+            font-family: inherit;
         }
 
-        .controls button:hover, .controls label.button:hover { opacity: 0.8; }
-        
-        .controls input[type="file"] { display: none; }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
 
-        .category-block { margin-bottom: 40px; }
-        .category-title { margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; color: var(--secondary-color); }
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
 
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Toolbar */
+        .toolbar {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 280px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            width: 18px;
+            height: 18px;
+        }
+
+        select {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px 40px;
+        }
+
+        /* Category Section */
+        .category-section {
+            margin-bottom: 48px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .category-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent-light);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .category-count {
+            margin-left: auto;
+            padding: 4px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Grid */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 20px;
         }
 
+        /* Card */
         .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
+        }
+
+        .card-body {
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
             display: flex;
-            flex-direction: column;
-            transition: background-color 0.3s, border-color 0.3s;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
         }
 
-        .card h3 { margin-bottom: 10px; }
-        .card a { color: var(--secondary-color); text-decoration: none; font-weight: bold; word-break: break-all; margin-bottom: 10px; display: block; }
-        .card p { flex-grow: 1; margin-bottom: 15px; font-size: 14px; line-height: 1.5; }
-        
-        .tags { margin-bottom: 15px; }
+        .card-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .card-title h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .card-url {
+            font-size: 0.75rem;
+            color: var(--accent);
+            word-break: break-all;
+        }
+
+        .card-url a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .card-url a:hover {
+            text-decoration: underline;
+        }
+
+        .card-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
         .tag {
-            background-color: var(--tag-bg);
-            color: var(--tag-text);
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-right: 5px;
-            display: inline-block;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
 
-        .card-actions { display: flex; justify-content: flex-end; gap: 10px; }
-        .btn-edit { background-color: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        .btn-delete { background-color: var(--danger-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+        }
 
-        /* Modal Styles */
+        .card-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* Modal */
         .modal {
             display: none;
-            position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            justify-content: center; align-items: center;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-        .modal-content {
-            background-color: var(--card-bg);
-            padding: 30px; border-radius: 8px; width: 400px; max-width: 90%;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-        }
-        .modal-content h2 { margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%; padding: 8px; border: 1px solid var(--border-color);
-            border-radius: 4px; background-color: var(--bg-color); color: var(--text-color);
-        }
-        .form-actions { display: flex; justify-content: space-between; margin-top: 20px; }
-        .btn-save { background-color: var(--secondary-color); color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 48%;}
-        .btn-cancel { background-color: #7f8c8d; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 48%;}
 
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--border);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            max-height: calc(90vh - 140px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            min-width: 300px;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        .toast-message {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-inner {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-controls {
+                justify-content: space-between;
+            }
+
+            .stats-bar {
+                gap: 16px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-
-    <header>
-        <h1>LMC Nav Resource Manager</h1>
-        <div class="controls">
-            <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
-            <button onclick="openModal()">Add Resource</button>
-            <button onclick="exportJSON()">Export JSON</button>
-            <label class="button">
-                Import JSON
-                <input type="file" id="importFile" accept=".json" onchange="importJSON(event)">
-            </label>
+    <header class="header">
+        <div class="header-inner">
+            <div class="header-left">
+                <div class="header-logo">🗺️</div>
+                <div class="header-title">
+                    <h1>LMC Nav Resource Manager</h1>
+                    <span>Claude Edition</span>
+                </div>
+                <div class="data-status" id="dataSource">
+                    <span id="statusIndicator">●</span>
+                    <span id="statusText">Loading...</span>
+                </div>
+            </div>
+            <div class="header-controls">
+                <button class="btn btn-secondary btn-sm" onclick="toggleTheme()" title="Toggle theme">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9 9 0 0012 21a9 9 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="openModal()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Add Resource
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="exportJSON()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Export
+                </button>
+                <label class="btn btn-secondary btn-sm">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                    </svg>
+                    Import
+                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+                </label>
+                <button class="btn btn-secondary btn-sm" onclick="exportChanges()" style="position: relative;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                    </svg>
+                    Export Changes
+                    <span id="changesBadge" style="position: absolute; top: -4px; right: -4px; background: #3b82f6; color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none;">0</span>
+                </button>
+                <label class="btn btn-secondary btn-sm">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                    </svg>
+                    Import Changes
+                    <input type="file" accept=".json" style="display:none" onchange="importChangesFromFile(event)">
+                </label>
+                <button class="btn btn-secondary btn-sm" onclick="clearChanges()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Clear Changes
+                </button>
+            </div>
         </div>
     </header>
 
-    <main id="app-container"></main>
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-label">Total Resources</span>
+            <span class="stat-value" id="totalResources">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Categories</span>
+            <span class="stat-value" id="totalCategories">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Offline Capable</span>
+            <span class="stat-value" id="offlineCount">0</span>
+        </div>
+    </div>
 
-    <!-- Modal for Add/Edit -->
+    <div class="toolbar">
+        <div class="search-box">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search resources by name, description, or tags...">
+        </div>
+        <select id="categoryFilter">
+            <option value="">All Categories</option>
+        </select>
+        <select id="offlineFilter">
+            <option value="">All Resources</option>
+            <option value="true">Offline Capable</option>
+            <option value="false">Online Only</option>
+        </select>
+    </div>
+
+    <main class="main" id="appContainer"></main>
+
+    <!-- Modal -->
     <div id="resourceModal" class="modal">
         <div class="modal-content">
-            <h2 id="modalTitle">Add New Resource</h2>
-            <input type="hidden" id="editId">
-            <input type="hidden" id="editCatId">
-            
-            <div class="form-group">
-                <label>Category</label>
-                <select id="resCategory">
-                    <option value="rv_navigation">RV Navigation</option>
-                    <option value="adv_motorcycle">Adventure Motorcycle</option>
-                    <option value="geopdf_mvum">GeoPDF & Agency Maps</option>
-                    <option value="camping_boondocking">Camping & Boondocking</option>
-                </select>
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Resource</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
             </div>
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" id="resName" required>
+            <div class="modal-body">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="resCategory">
+                        <option value="rv_navigation">RV & Large Vehicle Navigation</option>
+                        <option value="adv_motorcycle">Adventure Motorcycle Navigation</option>
+                        <option value="geopdf_mvum">Geospatial PDF & Agency Maps</option>
+                        <option value="camping_boondocking">Dispersed Camping</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="resName" required>
+                </div>
+                <div class="form-group">
+                    <label>URL</label>
+                    <input type="url" id="resUrl" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="resDesc" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tags (comma separated)</label>
+                    <input type="text" id="resTags" placeholder="e.g. Offline, Topo, RV">
+                </div>
             </div>
-            <div class="form-group">
-                <label>URL</label>
-                <input type="url" id="resUrl" required>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="resDesc" rows="3" required></textarea>
-            </div>
-            <div class="form-group">
-                <label>Tags (comma separated)</label>
-                <input type="text" id="resTags" placeholder="e.g. Offline, Topo, RV">
-            </div>
-            <div class="form-actions">
-                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn-save" onclick="saveResource()">Save Resource</button>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveResource()">Save Resource</button>
             </div>
         </div>
     </div>
+
+    <div class="toast-container" id="toastContainer"></div>
 
     <script>
         // Category mapping from master schema to this app's format
@@ -208,6 +791,13 @@
             "adv_motorcycle": "Adventure Motorcycle Navigation",
             "geopdf_mvum": "Geospatial PDF & Agency Maps",
             "camping_boondocking": "Dispersed Camping"
+        };
+
+        const CATEGORY_ICONS = {
+            "RV & Large Vehicle Navigation": "🚐",
+            "Adventure Motorcycle Navigation": "🏍️",
+            "Geospatial PDF & Agency Maps": "🗺️",
+            "Dispersed Camping": "🏕️"
         };
 
         // Load from master-resources.json and convert to app format
@@ -249,7 +839,7 @@
             }
         }
 
-        // Initial Default Database matching the research
+        // Initial Default Database
         const defaultData = {
             "categories": [
                 {
@@ -282,88 +872,227 @@
             ]
         };
 
-        let db = defaultData; // Start with default, then try to load from master
+        let db = defaultData;
+        let loadedFromMaster = false;
+        let hasLocalEdits = false;
+        let changes = loadChanges();
+
+        const STORAGE_KEY = 'overlandDB';
+        const CHANGES_KEY = 'lmcNavResourceChanges';
 
         // Initialize: try to load from master, fall back to default/localStorage
         (async function initializeDB() {
             const masterData = await loadFromMasterResources();
             if (masterData) {
                 db = masterData;
+                loadedFromMaster = true;
                 const totalCount = masterData.categories.reduce((sum, cat) => sum + cat.resources.length, 0);
                 console.log('Loaded ' + totalCount + ' resources from master-resources.json');
+                updateDataSource('master');
             } else {
                 const localData = localStorage.getItem('overlandDB');
                 if (localData) {
                     db = JSON.parse(localData);
+                    hasLocalEdits = true;
                     console.log('Loaded from localStorage');
+                    updateDataSource('local');
                 } else {
                     console.log('Using default data');
+                    updateDataSource('default');
                 }
             }
+
+            // Check if there are local edits on top of master data
+            const editFlag = localStorage.getItem('overlandDB_edits');
+            if (loadedFromMaster && editFlag) {
+                hasLocalEdits = true;
+                updateDataSource('local-edits');
+            }
+
+            populateCategoryFilter();
             renderApp();
+            updateChangesBadge();
         })();
+
+        // Update data source indicator
+        function updateDataSource(source) {
+            const indicator = document.getElementById('statusIndicator');
+            const text = document.getElementById('statusText');
+            const statusDiv = document.getElementById('dataSource');
+
+            statusDiv.className = 'data-status';
+
+            if (source === 'master') {
+                indicator.textContent = '●';
+                text.textContent = 'Master Data Loaded';
+                statusDiv.classList.add('master');
+            } else if (source === 'local') {
+                indicator.textContent = '●';
+                text.textContent = 'Local Data (Edits Saved)';
+                statusDiv.classList.add('local');
+            } else if (source === 'local-edits') {
+                indicator.textContent = '●';
+                text.textContent = 'Master + Local Edits';
+                statusDiv.classList.add('local');
+            } else {
+                indicator.textContent = '●';
+                text.textContent = 'Default Data';
+            }
+        }
 
         // Render Database
         function renderApp() {
-            const container = document.getElementById('app-container');
+            const container = document.getElementById('appContainer');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const offlineFilter = document.getElementById('offlineFilter').value;
+
+            let filteredCategories = db.categories;
+
+            // Apply search filter
+            if (searchTerm) {
+                filteredCategories = filteredCategories.map(cat => ({
+                    ...cat,
+                    resources: cat.resources.filter(res => {
+                        const searchFields = [res.name, res.description, res.tags.join(' ')].join(' ').toLowerCase();
+                        return searchFields.includes(searchTerm);
+                    })
+                })).filter(cat => cat.resources.length > 0);
+            }
+
+            // Apply category filter
+            if (categoryFilter) {
+                filteredCategories = filteredCategories.filter(cat => cat.id === categoryFilter);
+            }
+
             container.innerHTML = '';
 
-            db.categories.forEach(cat => {
-                const catDiv = document.createElement('div');
-                catDiv.className = 'category-block';
-                
-                const title = document.createElement('h2');
-                title.className = 'category-title';
-                title.innerText = cat.name;
-                catDiv.appendChild(title);
+            if (filteredCategories.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <h3>No resources found</h3>
+                        <p>Try adjusting your search or filters</p>
+                    </div>
+                `;
+                updateStats();
+                return;
+            }
 
-                const grid = document.createElement('div');
-                grid.className = 'grid';
+            filteredCategories.forEach(cat => {
+                const section = document.createElement('div');
+                section.className = 'category-section';
+
+                section.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-icon">${CATEGORY_ICONS[cat.name] || '📁'}</div>
+                        <div class="category-title">${cat.name}</div>
+                        <div class="category-count">${cat.resources.length} resources</div>
+                    </div>
+                    <div class="grid"></div>
+                `;
+
+                const grid = section.querySelector('.grid');
 
                 cat.resources.forEach(res => {
                     const card = document.createElement('div');
                     card.className = 'card';
-                    
-                    const tagsHTML = res.tags ? res.tags.map(tag => `<span class="tag">${tag.trim()}</span>`).join('') : '';
-
+                    const changeStatus = getChangeStatus(res.id);
+                    const changeBadge = changeStatus ? `<span class="tag" style="background:${changeStatus === 'added' ? '#22c55e' : '#f59e0b'}; color:white;">${changeStatus.toUpperCase()}</span>` : '';
                     card.innerHTML = `
-                        <h3>${res.name}</h3>
-                        <a href="${res.url}" target="_blank">${res.url}</a>
-                        <p>${res.description}</p>
-                        <div class="tags">${tagsHTML}</div>
-                        <div class="card-actions">
-                            <button class="btn-edit" onclick="editResource('${cat.id}', '${res.id}')">Edit</button>
-                            <button class="btn-delete" onclick="deleteResource('${cat.id}', '${res.id}')">Delete</button>
+                        <div class="card-body">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h3>${res.name}</h3>
+                                    ${changeBadge}
+                                    <div class="card-url"><a href="${res.url}" target="_blank">${res.url}</a></div>
+                                </div>
+                            </div>
+                            <p class="card-description">${res.description}</p>
+                            <div class="tags">${res.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+                            <div class="card-actions">
+                                <a href="${res.url}" target="_blank" class="btn btn-primary btn-sm">Visit</a>
+                                <button class="btn btn-secondary btn-sm" onclick="openEditModal('${cat.id}', '${res.id}')">Edit</button>
+                                <button class="btn btn-secondary btn-sm" onclick="deleteResource('${cat.id}', '${res.id}')">Delete</button>
+                            </div>
                         </div>
                     `;
                     grid.appendChild(card);
                 });
 
-                catDiv.appendChild(grid);
-                container.appendChild(catDiv);
+                container.appendChild(section);
+            });
+
+            updateStats();
+        }
+
+        // Update stats
+        function updateStats() {
+            const totalResources = db.categories.reduce((sum, cat) => sum + cat.resources.length, 0);
+            document.getElementById('totalResources').textContent = totalResources;
+            document.getElementById('totalCategories').textContent = db.categories.length;
+
+            // Count offline capable (based on tags)
+            let offlineCount = 0;
+            db.categories.forEach(cat => {
+                cat.resources.forEach(res => {
+                    if (res.tags.some(tag => tag.toLowerCase().includes('offline'))) {
+                        offlineCount++;
+                    }
+                });
+            });
+            document.getElementById('offlineCount').textContent = offlineCount;
+        }
+
+        // Populate category filter dropdown
+        function populateCategoryFilter() {
+            const select = document.getElementById('categoryFilter');
+            const modalSelect = document.getElementById('resCategory');
+
+            select.innerHTML = '<option value="">All Categories</option>';
+
+            db.categories.forEach(cat => {
+                select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
             });
         }
 
-        // Add & Edit Logic
+        // Modal functions
         function openModal() {
-            document.getElementById('modalTitle').innerText = 'Add New Resource';
+            document.getElementById('modalTitle').textContent = 'Add Resource';
             document.getElementById('editId').value = '';
             document.getElementById('resName').value = '';
             document.getElementById('resUrl').value = '';
             document.getElementById('resDesc').value = '';
             document.getElementById('resTags').value = '';
-            document.getElementById('resourceModal').style.display = 'flex';
+            document.getElementById('resourceModal').classList.add('active');
         }
 
         function closeModal() {
-            document.getElementById('resourceModal').style.display = 'none';
+            document.getElementById('resourceModal').classList.remove('active');
+        }
+
+        function openEditModal(catId, resId) {
+            const category = db.categories.find(c => c.id === catId);
+            const res = category.resources.find(r => r.id === resId);
+
+            document.getElementById('modalTitle').textContent = 'Edit Resource';
+            document.getElementById('editId').value = res.id;
+            document.getElementById('resCategory').value = catId;
+            document.getElementById('resName').value = res.name;
+            document.getElementById('resUrl').value = res.url;
+            document.getElementById('resDesc').value = res.description;
+            document.getElementById('resTags').value = res.tags.join(', ');
+
+            document.getElementById('resourceModal').classList.add('active');
         }
 
         function saveResource() {
             const catId = document.getElementById('resCategory').value;
             const id = document.getElementById('editId').value || 'res_' + Date.now();
-            const oldCatId = document.getElementById('editCatId').value;
-            
+            const oldCatId = document.getElementById('editCategory')?.value || catId;
+
             const newRes = {
                 id: id,
                 name: document.getElementById('resName').value,
@@ -382,54 +1111,211 @@
             const existingIndex = category.resources.findIndex(r => r.id === id);
 
             if (existingIndex > -1) {
-                category.resources[existingIndex] = newRes; // Update
+                const originalResource = category.resources[existingIndex];
+                category.resources[existingIndex] = newRes;
+                trackEdit(originalResource, newRes);
             } else {
-                category.resources.push(newRes); // Add
+                category.resources.push(newRes);
+                trackAdd(newRes);
             }
 
             saveData();
             closeModal();
             renderApp();
-        }
-
-        function editResource(catId, resId) {
-            const category = db.categories.find(c => c.id === catId);
-            const res = category.resources.find(r => r.id === resId);
-
-            document.getElementById('modalTitle').innerText = 'Edit Resource';
-            document.getElementById('resCategory').value = catId;
-            document.getElementById('editCatId').value = catId;
-            document.getElementById('editId').value = res.id;
-            document.getElementById('resName').value = res.name;
-            document.getElementById('resUrl').value = res.url;
-            document.getElementById('resDesc').value = res.description;
-            document.getElementById('resTags').value = res.tags ? res.tags.join(', ') : '';
-            
-            document.getElementById('resourceModal').style.display = 'flex';
+            showToast('success', 'Resource saved successfully');
         }
 
         function deleteResource(catId, resId) {
-            if(confirm('Are you sure you want to delete this resource?')) {
+            if (confirm('Are you sure you want to delete this resource?')) {
                 const category = db.categories.find(c => c.id === catId);
+                const resource = category.resources.find(r => r.id === resId);
+                if (resource) trackDelete(resource);
                 category.resources = category.resources.filter(r => r.id !== resId);
                 saveData();
                 renderApp();
+                showToast('success', 'Resource deleted');
             }
         }
 
         function saveData() {
-            localStorage.setItem('overlandDB', JSON.stringify(db));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+            localStorage.setItem('overlandDB_edits', 'true');
+            hasLocalEdits = true;
+            updateDataSource('local-edits');
         }
 
-        // Export/Import JSON
+        // ── Change Tracking ───────────────────────────────────────
+        function loadChanges() {
+            try {
+                const stored = localStorage.getItem(CHANGES_KEY);
+                return stored ? JSON.parse(stored) : { added: [], edited: [], deleted: [] };
+            } catch {
+                return { added: [], edited: [], deleted: [] };
+            }
+        }
+
+        function saveChanges() {
+            localStorage.setItem(CHANGES_KEY, JSON.stringify(changes));
+            updateChangesBadge();
+        }
+
+        function trackAdd(resource) {
+            if (!changes.added.some(a => a.id === resource.id)) {
+                changes.added.push(resource);
+                saveChanges();
+                showToast('info', 'Resource added to changes');
+            }
+        }
+
+        function trackEdit(originalResource, updatedResource) {
+            const addedIndex = changes.added.findIndex(a => a.id === originalResource.id);
+            if (addedIndex !== -1) {
+                changes.added[addedIndex] = updatedResource;
+                saveChanges();
+                return;
+            }
+
+            const editedIndex = changes.edited.findIndex(e => e.originalId === originalResource.id);
+            if (editedIndex !== -1) {
+                changes.edited[editedIndex] = { ...updatedResource, originalId: originalResource.id };
+                saveChanges();
+                return;
+            }
+
+            changes.edited.push({ ...updatedResource, originalId: originalResource.id });
+            saveChanges();
+            showToast('info', 'Edit tracked');
+        }
+
+        function trackDelete(resource) {
+            const addedIndex = changes.added.findIndex(a => a.id === resource.id);
+            if (addedIndex !== -1) {
+                changes.added.splice(addedIndex, 1);
+                saveChanges();
+                return;
+            }
+
+            const editedIndex = changes.edited.findIndex(e => e.originalId === resource.id);
+            if (editedIndex !== -1) {
+                changes.edited.splice(editedIndex, 1);
+            }
+
+            if (!changes.deleted.includes(resource.id)) {
+                changes.deleted.push(resource.id);
+                saveChanges();
+                showToast('info', 'Deletion tracked');
+            }
+        }
+
+        function getChangeStatus(resourceId) {
+            if (changes.added.some(a => a.id === resourceId)) return 'added';
+            if (changes.edited.some(e => e.originalId === resourceId)) return 'edited';
+            return null;
+        }
+
+        function exportChanges() {
+            if (changes.added.length === 0 && changes.edited.length === 0 && changes.deleted.length === 0) {
+                showToast('info', 'No changes to export');
+                return;
+            }
+
+            const exportData = {
+                version: '1.0.0',
+                exportDate: new Date().toISOString(),
+                appName: 'LMC Nav Resource Manager',
+                changes: {
+                    added: changes.added,
+                    edited: changes.edited,
+                    deleted: changes.deleted
+                }
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `lmc-nav-changes-${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showToast('success', 'Changes exported!');
+        }
+
+        function importChanges(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.changes || typeof data.changes !== 'object') {
+                        throw new Error('Invalid format');
+                    }
+
+                    if (data.changes.added) {
+                        data.changes.added.forEach(resource => {
+                            if (!changes.added.some(a => a.id === resource.id)) {
+                                changes.added.push(resource);
+                            }
+                        });
+                    }
+
+                    if (data.changes.edited) {
+                        data.changes.edited.forEach(edit => {
+                            if (!changes.edited.some(e => e.originalId === edit.originalId)) {
+                                changes.edited.push(edit);
+                            }
+                        });
+                    }
+
+                    if (data.changes.deleted) {
+                        data.changes.deleted.forEach(id => {
+                            if (!changes.deleted.includes(id)) {
+                                changes.deleted.push(id);
+                            }
+                        });
+                    }
+
+                    saveChanges();
+                    showToast('success', 'Changes imported successfully!');
+                } catch (error) {
+                    showToast('error', 'Failed to import changes');
+                    console.error('Import error:', error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function importChangesFromFile(event) {
+            const file = event.target.files[0];
+            if (file) importChanges(file);
+            event.target.value = '';
+        }
+
+        function clearChanges() {
+            if (!confirm('Are you sure you want to clear all tracked changes?')) return;
+            changes = { added: [], edited: [], deleted: [] };
+            saveChanges();
+            renderApp();
+            showToast('info', 'All changes cleared');
+        }
+
+        function updateChangesBadge() {
+            const total = changes.added.length + changes.edited.length + changes.deleted.length;
+            const badge = document.getElementById('changesBadge');
+            if (badge) {
+                badge.textContent = total > 0 ? total : '';
+                badge.style.display = total > 0 ? 'inline-flex' : 'none';
+            }
+        }
+
+        // Export/Import
         function exportJSON() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "overland_resources.json");
+            downloadAnchorNode.setAttribute("download", "lmc-nav-resources.json");
             document.body.appendChild(downloadAnchorNode);
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
+            showToast('success', 'Database exported');
         }
 
         function importJSON(event) {
@@ -440,37 +1326,69 @@
             reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    // Validate that the imported data has the expected structure
                     if (importedData.categories && Array.isArray(importedData.categories)) {
                         db = importedData;
                         saveData();
+                        populateCategoryFilter();
                         renderApp();
-                        alert('Database imported successfully!');
+                        showToast('success', 'Database imported successfully');
                     } else {
-                        alert('Invalid JSON structure. Missing categories array.');
+                        showToast('error', 'Invalid JSON structure');
                     }
                 } catch (err) {
-                    alert('Invalid JSON file format: ' + err.message);
+                    showToast('error', 'Invalid JSON file');
                 }
-                // Reset file input to allow re-importing the same file
                 event.target.value = '';
             };
             reader.readAsText(file);
         }
 
-        // Dark Mode
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        // Theme toggle
+        function toggleTheme() {
+            document.body.hasAttribute('data-theme')
+                ? document.body.removeAttribute('data-theme')
+                : document.body.setAttribute('data-theme', 'dark');
         }
 
-        // Initialization
-        window.onload = () => {
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
-            }
-            renderApp();
-        };
+        // Toast notifications
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const icon = type === 'success'
+                ? '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+                : '<svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+
+            toast.innerHTML = `
+                ${icon}
+                <div class="toast-content">
+                    <div class="toast-title">${type === 'success' ? 'Success' : 'Error'}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', renderApp);
+        document.getElementById('categoryFilter').addEventListener('change', renderApp);
+        document.getElementById('offlineFilter').addEventListener('change', renderApp);
+
+        // Close modal on backdrop click
+        document.getElementById('resourceModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
     </script>
 </body>
 </html>

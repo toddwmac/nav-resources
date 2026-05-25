@@ -1,36 +1,4 @@
-<!--Below is a **starter research database** plus a **single-file browser app** you can save locally. I can’t actually launch separate autonomous “agents” from here, but I organized the research as if by function: federal/public-land maps, offline/GIS tools, camping sources, adventure-bike routes/tracks, low-clearance/RV routing, state road-condition systems, and western-state OHV/trail portals.
-
-**Important safety note for a 12-foot-tall rig:** use RV/truck routing as a planning aid—not as the final authority. Posted bridge/underpass signs, agency closures, ranger/district offices, DOT traveler info, and on-the-ground conditions override app routing.
-
-Key verified source families used below: BLM maintains maps, georeferenced PDFs, recreation maps, and a geospatial data hub; USFS provides the Interactive Visitor Map, MVUM/legal motor-vehicle-use map resources, and Enterprise Data/Geodata access; USGS provides The National Map/topo products and PAD-US public/protected land data; Recreation.gov/RIDB provides federal recreation/camping data. 
-
-Offline/navigation tools included here were verified from official or support pages: Gaia GPS has off-road/MVUM/USFS layers, Avenza supports offline GPS use of geospatial PDF/GeoPDF/GeoTIFF maps and GPX/KML imports, CalTopo imports/exports GPX/KML/GeoJSON and supports offline layer use, and OsmAnd is an offline OpenStreetMap-based navigation app with GPX overlays/tracks. 
-
-For your 12-foot height constraint, I included RV/truck routing and low-clearance tools: Garmin RV/Camper/Overlander devices can use height/weight profiles where supported; Roadtrippers Premium offers RV-safe routing with vehicle height/weight/propane preferences; CoPilot supports truck/RV-type routing profiles and custom size restrictions; LowClearances.com sells a low-clearance POI database; AllStays lists many road hazards; Hammer and TruckMap advertise truck-safe routing around low bridges/restrictions. 
-
-For public-land camping and route planning, BLM’s camping page explains dispersed camping and variable local rules; Recreation.gov is the primary reservation portal for many federal facilities; Campendium, The Dyrt, AllStays, and Harvest Hosts are included as complementary campground/overnight databases. 
-
-State DOT systems and OHV portals were included because closures, snow, fires, construction, seasonal gates, and local restrictions change constantly across the West. Examples verified include Caltrans QuickMap, AZ511, COtrip, UDOT Traffic, WSDOT Travel, Oregon TripCheck, Montana 511, NMRoads, and WYDOT/WyoRoad. 
-
-For adventure-bike/OHV planning, BDR provides free GPS tracks and route pages; TransAmerica Trail provides official maps/GPS tracks; Colorado’s COTREX maps trails statewide; Utah, Oregon, Idaho, Nevada, Washington, Montana, New Mexico, Wyoming, Arizona, and California all have official or state-linked OHV/trail resources included below. 
-
----
-
-
-Save this as **`western-nav-database.html`**.
-
-How to use:
-
-1. Save the JSON above as `western-nav-resources.json`.
-2. Open the HTML file in your browser.
-3. Click **Import JSON** and select `western-nav-resources.json`.
-4. Add/edit/remove resources.
-5. Use **Export JSON** to save your edited copy.
-6. The app stores edits in your browser’s `localStorage`.
-7. Dark mode is included.
--->
-LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in file
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -408,6 +376,15 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
           Import JSON
           <input id="importFile" type="file" accept=".json,application/json" />
         </label>
+        <button id="exportChangesBtn" style="position: relative;">
+          Export Changes
+          <span id="changesBadge" style="position: absolute; top: -4px; right: -4px; background: var(--accent); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; display: none;">0</span>
+        </button>
+        <label class="file-button">
+          Import Changes
+          <input id="importChangesFile" type="file" accept=".json,application/json" />
+        </label>
+        <button id="clearChangesBtn" class="btn-muted">Clear Changes</button>
         <button id="darkBtn" class="btn-muted">Dark mode</button>
         <button id="resetBtn" class="btn-muted" title="Clear local saved data and reload defaults">Reset</button>
       </div>
@@ -532,6 +509,7 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
   <script>
     const STORAGE_KEY = "westernNavResourceDatabaseV1";
     const THEME_KEY = "westernNavResourceTheme";
+    const CHANGES_KEY = "gptNavResourceChanges";
 
     const FALLBACK_DB = {
       schemaVersion: "1.0.0",
@@ -594,150 +572,193 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
       ]
     };
 
-    let db = loadDb();
+    let db = loadDbSync();
     let filtered = [];
     let editingResourceId = null;
+    let changes = { added: [], edited: [], deleted: [] };
 
-    const els = {
-      cards: document.getElementById("cards"),
-      empty: document.getElementById("empty"),
-      search: document.getElementById("search"),
-      categoryFilter: document.getElementById("categoryFilter"),
-      stateFilter: document.getElementById("stateFilter"),
-      priorityFilter: document.getElementById("priorityFilter"),
-      countShown: document.getElementById("countShown"),
-      countTotal: document.getElementById("countTotal"),
-      rigHeight: document.getElementById("rigHeight"),
-      lastVerified: document.getElementById("lastVerified"),
-      addBtn: document.getElementById("addBtn"),
-      exportBtn: document.getElementById("exportBtn"),
-      importFile: document.getElementById("importFile"),
-      darkBtn: document.getElementById("darkBtn"),
-      resetBtn: document.getElementById("resetBtn"),
-      modal: document.getElementById("modal"),
-      modalTitle: document.getElementById("modalTitle"),
-      closeModalBtn: document.getElementById("closeModalBtn"),
-      cancelBtn: document.getElementById("cancelBtn"),
-      form: document.getElementById("resourceForm"),
-      deleteInModalBtn: document.getElementById("deleteInModalBtn"),
-      toast: document.getElementById("toast")
-    };
+    // DOM element references - will be populated when DOM is ready
+    let els = {};
+    let form = {};
 
-    const form = {
-      editingId: document.getElementById("editingId"),
-      id: document.getElementById("id"),
-      title: document.getElementById("title"),
-      category: document.getElementById("category"),
-      type: document.getElementById("type"),
-      url: document.getElementById("url"),
-      states: document.getElementById("states"),
-      cost: document.getElementById("cost"),
-      offline: document.getElementById("offline"),
-      vehicleRouting: document.getElementById("vehicleRouting"),
-      priority: document.getElementById("priority"),
-      geoFormats: document.getElementById("geoFormats"),
-      tags: document.getElementById("tags"),
-      summary: document.getElementById("summary"),
-      notes: document.getElementById("notes")
-    };
+    // Wait for DOM to be fully loaded before accessing elements
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize element references
+      els = {
+        cards: document.getElementById("cards"),
+        empty: document.getElementById("empty"),
+        search: document.getElementById("search"),
+        categoryFilter: document.getElementById("categoryFilter"),
+        stateFilter: document.getElementById("stateFilter"),
+        priorityFilter: document.getElementById("priorityFilter"),
+        countShown: document.getElementById("countShown"),
+        countTotal: document.getElementById("countTotal"),
+        rigHeight: document.getElementById("rigHeight"),
+        lastVerified: document.getElementById("lastVerified"),
+        addBtn: document.getElementById("addBtn"),
+        exportBtn: document.getElementById("exportBtn"),
+        importFile: document.getElementById("importFile"),
+        darkBtn: document.getElementById("darkBtn"),
+        resetBtn: document.getElementById("resetBtn"),
+        modal: document.getElementById("modal"),
+        modalTitle: document.getElementById("modalTitle"),
+        closeModalBtn: document.getElementById("closeModalBtn"),
+        cancelBtn: document.getElementById("cancelBtn"),
+        form: document.getElementById("resourceForm"),
+        deleteInModalBtn: document.getElementById("deleteInModalBtn"),
+        toast: document.getElementById("toast")
+      };
 
-    initTheme();
-    // Initialize with async loading from master-resources.json
-    (async function initializeApp() {
-      const masterData = await loadFromMasterResources();
-      if (masterData) {
-        db = masterData;
-        console.log('Loaded ' + masterData.resources.length + ' resources from master-resources.json');
-      } else {
-        db = loadDbSync();
-      }
-      refresh();
-    })();
+      form = {
+        editingId: document.getElementById("editingId"),
+        id: document.getElementById("id"),
+        title: document.getElementById("title"),
+        category: document.getElementById("category"),
+        type: document.getElementById("type"),
+        url: document.getElementById("url"),
+        states: document.getElementById("states"),
+        cost: document.getElementById("cost"),
+        offline: document.getElementById("offline"),
+        vehicleRouting: document.getElementById("vehicleRouting"),
+        priority: document.getElementById("priority"),
+        geoFormats: document.getElementById("geoFormats"),
+        tags: document.getElementById("tags"),
+        summary: document.getElementById("summary"),
+        notes: document.getElementById("notes")
+      };
 
-    els.search.addEventListener("input", refresh);
-    els.categoryFilter.addEventListener("change", refresh);
-    els.stateFilter.addEventListener("change", refresh);
-    els.priorityFilter.addEventListener("change", refresh);
-
-    els.addBtn.addEventListener("click", () => openModal());
-    els.closeModalBtn.addEventListener("click", closeModal);
-    els.cancelBtn.addEventListener("click", closeModal);
-    els.modal.addEventListener("click", (event) => {
-      if (event.target === els.modal) closeModal();
+      initTheme();
+      initializeApp();
+      setupEventListeners();
     });
 
-    els.darkBtn.addEventListener("click", () => {
-      const current = document.body.dataset.theme || "light";
-      const next = current === "dark" ? "light" : "dark";
-      document.body.dataset.theme = next;
-      localStorage.setItem(THEME_KEY, next);
-      els.darkBtn.textContent = next === "dark" ? "Light mode" : "Dark mode";
-    });
+    function initTheme() {
+      const theme = localStorage.getItem(THEME_KEY) || "light";
+      document.body.dataset.theme = theme;
+      if (els.darkBtn) els.darkBtn.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+    }
 
-    els.exportBtn.addEventListener("click", exportJson);
-
-    els.importFile.addEventListener("change", async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
+    async function initializeApp() {
       try {
-        const text = await file.text();
-        const imported = JSON.parse(text);
-        db = normalizeDb(imported);
-        saveDb();
+        const masterData = await loadFromMasterResources();
+        if (masterData) {
+          db = masterData;
+          console.log('Loaded ' + masterData.resources.length + ' resources from master-resources.json');
+        } else {
+          console.log('Loaded ' + db.resources.length + ' resources from localStorage/fallback');
+        }
+        changes = loadChanges();
+        updateChangesBadge();
         refresh();
-        showToast("Imported JSON successfully.");
-      } catch (err) {
-        showToast("Import failed: " + err.message);
-      } finally {
+      } catch (error) {
+        console.error('Initialization error:', error);
+        console.log('Fallback: Loaded ' + db.resources.length + ' resources from FALLBACK_DB');
+        changes = loadChanges();
+        updateChangesBadge();
+        refresh();
+      }
+    }
+
+    function setupEventListeners() {
+      els.search.addEventListener("input", refresh);
+      els.categoryFilter.addEventListener("change", refresh);
+      els.stateFilter.addEventListener("change", refresh);
+      els.priorityFilter.addEventListener("change", refresh);
+
+      els.addBtn.addEventListener("click", () => openModal());
+      els.closeModalBtn.addEventListener("click", closeModal);
+      els.cancelBtn.addEventListener("click", closeModal);
+      els.modal.addEventListener("click", (event) => {
+        if (event.target === els.modal) closeModal();
+      });
+
+      els.darkBtn.addEventListener("click", () => {
+        const current = document.body.dataset.theme || "light";
+        const next = current === "dark" ? "light" : "dark";
+        document.body.dataset.theme = next;
+        localStorage.setItem(THEME_KEY, next);
+        els.darkBtn.textContent = next === "dark" ? "Light mode" : "Dark mode";
+      });
+
+      els.exportBtn.addEventListener("click", exportJson);
+
+      els.importFile.addEventListener("change", async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const imported = JSON.parse(text);
+          db = normalizeDb(imported);
+          saveDb();
+          refresh();
+          showToast("Imported JSON successfully.");
+        } catch (err) {
+          showToast("Import failed: " + err.message);
+        } finally {
+          event.target.value = "";
+        }
+      });
+
+      els.resetBtn.addEventListener("click", () => {
+        if (!confirm("Clear saved data and reload the built-in starter sample?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        db = structuredClone(FALLBACK_DB);
+        refresh();
+        showToast("Reset complete. Import your full JSON file again if needed.");
+      });
+
+      document.getElementById("exportChangesBtn").addEventListener("click", exportChanges);
+
+      document.getElementById("importChangesFile").addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (file) importChanges(file);
         event.target.value = "";
-      }
-    });
+      });
 
-    els.resetBtn.addEventListener("click", () => {
-      if (!confirm("Clear saved data and reload the built-in starter sample?")) return;
-      localStorage.removeItem(STORAGE_KEY);
-      db = structuredClone(FALLBACK_DB);
-      refresh();
-      showToast("Reset complete. Import your full JSON file again if needed.");
-    });
+      document.getElementById("clearChangesBtn").addEventListener("click", clearChanges);
 
-    els.form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const resource = resourceFromForm();
+      els.form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const resource = resourceFromForm();
 
-      if (!resource.id) {
-        showToast("ID is required.");
-        return;
-      }
+        if (!resource.id) {
+          showToast("ID is required.");
+          return;
+        }
 
-      const oldId = editingResourceId;
-      const duplicate = db.resources.find(r => r.id === resource.id && r.id !== oldId);
-      if (duplicate) {
-        showToast("That ID already exists. Choose a unique ID.");
-        return;
-      }
+        const oldId = editingResourceId;
+        const duplicate = db.resources.find(r => r.id === resource.id && r.id !== oldId);
+        if (duplicate) {
+          showToast("That ID already exists. Choose a unique ID.");
+          return;
+        }
 
-      if (oldId) {
-        const index = db.resources.findIndex(r => r.id === oldId);
-        if (index >= 0) db.resources[index] = resource;
-      } else {
-        db.resources.push(resource);
-      }
+        if (oldId) {
+          const index = db.resources.findIndex(r => r.id === oldId);
+          if (index >= 0) {
+            const originalResource = db.resources[index];
+            db.resources[index] = resource;
+            trackEdit(originalResource, resource);
+          }
+        } else {
+          db.resources.push(resource);
+          trackAdd(resource);
+        }
 
-      db.lastEdited = new Date().toISOString();
-      saveDb();
-      closeModal();
-      refresh();
-      showToast("Resource saved.");
-    });
-
-    els.deleteInModalBtn.addEventListener("click", () => {
-      if (!editingResourceId) {
+        db.lastEdited = new Date().toISOString();
+        saveDb();
         closeModal();
-        return;
-      }
-      deleteResource(editingResourceId);
-    });
+        refresh();
+      });
+
+      els.deleteInModalBtn.addEventListener("click", () => {
+        if (!editingResourceId) {
+          closeModal();
+          return;
+        }
+        deleteResource(editingResourceId);
+      });
+    }
 
     async function loadFromMasterResources() {
       try {
@@ -748,8 +769,8 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
         const convertedData = {
           schemaVersion: masterData.schemaVersion,
           lastVerified: masterData.lastVerified,
-          project: masterData.metadata.title,
-          rigProfile: masterData.metadata.vehicleProfile,
+          project: masterData.metadata?.title || 'Nav Resource Database',
+          rigProfile: masterData.metadata?.vehicleProfile || { heightFeet: 12, heightInches: 0 },
           resources: masterData.resources.map(r => ({
             id: r.id,
             title: r.name,
@@ -761,7 +782,7 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
             offline: r.offline || r.offlineCapable || false,
             geoFormats: r.geoFormats || [],
             vehicleRouting: r.vehicleRouting || false,
-            priority: r.priority.charAt(0).toUpperCase() + r.priority.slice(1), // Capitalize first letter
+            priority: r.priority ? (r.priority.charAt(0).toUpperCase() + r.priority.slice(1)) : 'Medium',
             tags: r.tags || [],
             summary: r.description || '',
             notes: (r.bestFor ? `Best for: ${r.bestFor}. ` : '') + (r.notes || '')
@@ -775,12 +796,6 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
         console.error('Failed to load master resources:', error);
         return null;
       }
-    }
-
-    function loadDb() {
-      // First try to load from master-resources.json, then fall back to localStorage/FA
-      // This is handled by the async initialization below
-      return loadDbSync();
     }
 
     function loadDbSync() {
@@ -845,7 +860,171 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db, null, 2));
     }
 
+    function loadChanges() {
+      try {
+        const stored = localStorage.getItem(CHANGES_KEY);
+        return stored ? JSON.parse(stored) : { added: [], edited: [], deleted: [] };
+      } catch {
+        return { added: [], edited: [], deleted: [] };
+      }
+    }
+
+    function saveChanges() {
+      localStorage.setItem(CHANGES_KEY, JSON.stringify(changes));
+      updateChangesBadge();
+    }
+
+    function trackAdd(resource) {
+      if (!changes.added.some(a => a.id === resource.id)) {
+        changes.added.push(resource);
+        saveChanges();
+        showToast("Resource added to changes.");
+      }
+    }
+
+    function trackEdit(originalResource, updatedResource) {
+      const addedIndex = changes.added.findIndex(a => a.id === originalResource.id);
+      if (addedIndex !== -1) {
+        changes.added[addedIndex] = updatedResource;
+        saveChanges();
+        return;
+      }
+
+      const editedIndex = changes.edited.findIndex(e => e.originalId === originalResource.id);
+      if (editedIndex !== -1) {
+        changes.edited[editedIndex] = { ...updatedResource, originalId: originalResource.id };
+        saveChanges();
+        return;
+      }
+
+      changes.edited.push({ ...updatedResource, originalId: originalResource.id });
+      saveChanges();
+      showToast("Edit tracked.");
+    }
+
+    function trackDelete(resource) {
+      const addedIndex = changes.added.findIndex(a => a.id === resource.id);
+      if (addedIndex !== -1) {
+        changes.added.splice(addedIndex, 1);
+        saveChanges();
+        return;
+      }
+
+      const editedIndex = changes.edited.findIndex(e => e.originalId === resource.id);
+      if (editedIndex !== -1) {
+        changes.edited.splice(editedIndex, 1);
+      }
+
+      if (!changes.deleted.includes(resource.id)) {
+        changes.deleted.push(resource.id);
+        saveChanges();
+        showToast("Deletion tracked.");
+      }
+    }
+
+    function getChangeStatus(resourceId) {
+      if (changes.added.some(a => a.id === resourceId)) return 'added';
+      if (changes.edited.some(e => e.originalId === resourceId)) return 'edited';
+      return null;
+    }
+
+    function exportChanges() {
+      if (changes.added.length === 0 && changes.edited.length === 0 && changes.deleted.length === 0) {
+        showToast("No changes to export.");
+        return;
+      }
+
+      const exportData = {
+        version: "1.0.0",
+        exportDate: new Date().toISOString(),
+        appName: "GPT Nav Resource Manager",
+        changes: {
+          added: changes.added.map(r => normalizeResource(r)),
+          edited: changes.edited.map(e => normalizeResource(e)),
+          deleted: changes.deleted
+        }
+      };
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `gpt-nav-changes-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Changes exported!");
+    }
+
+    function importChanges(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+
+          if (!data.changes || typeof data.changes !== 'object') {
+            throw new Error('Invalid format');
+          }
+
+          if (data.changes.added) {
+            data.changes.added.forEach(resource => {
+              if (!changes.added.some(a => a.id === resource.id)) {
+                changes.added.push(normalizeResource(resource));
+              }
+            });
+          }
+
+          if (data.changes.edited) {
+            data.changes.edited.forEach(edit => {
+              if (!changes.edited.some(e => e.originalId === edit.originalId)) {
+                changes.edited.push(normalizeResource(edit));
+              }
+            });
+          }
+
+          if (data.changes.deleted) {
+            data.changes.deleted.forEach(id => {
+              if (!changes.deleted.includes(id)) {
+                changes.deleted.push(id);
+              }
+            });
+          }
+
+          saveChanges();
+          showToast("Changes imported successfully!");
+        } catch (error) {
+          showToast("Failed to import changes.");
+          console.error('Import error:', error);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function clearChanges() {
+      if (!confirm("Are you sure you want to clear all tracked changes? This cannot be undone.")) {
+        return;
+      }
+      changes = { added: [], edited: [], deleted: [] };
+      saveChanges();
+      refresh();
+      showToast("All changes cleared.");
+    }
+
+    function updateChangesBadge() {
+      const total = changes.added.length + changes.edited.length + changes.deleted.length;
+      const badge = document.getElementById("changesBadge");
+      if (badge) {
+        badge.textContent = total > 0 ? total : "";
+        badge.style.display = total > 0 ? "inline-flex" : "none";
+      }
+    }
+
     function refresh() {
+      if (!db || !db.resources) {
+        console.warn('Database not initialized, using fallback');
+        db = loadDbSync();
+      }
       db.resources = (db.resources || []).map(normalizeResource);
       populateFilters();
       filtered = applyFilters();
@@ -857,8 +1036,8 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
       const currentCategory = els.categoryFilter.value;
       const currentState = els.stateFilter.value;
 
-      const categories = [...new Set(db.resources.map(r => r.category).filter(Boolean))].sort();
-      const states = [...new Set(db.resources.flatMap(r => r.states).filter(Boolean))].sort((a, b) => {
+      const categories = [...new Set((db.resources || []).map(r => r.category).filter(Boolean))].sort();
+      const states = [...new Set((db.resources || []).flatMap(r => r.states).filter(Boolean))].sort((a, b) => {
         if (a === "US") return -1;
         if (b === "US") return 1;
         return a.localeCompare(b);
@@ -880,7 +1059,7 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
       const state = els.stateFilter.value;
       const priority = els.priorityFilter.value;
 
-      return db.resources.filter(r => {
+      return (db.resources || []).filter(r => {
         const haystack = [
           r.id, r.title, r.category, r.type, r.url, r.cost, r.priority,
           r.summary, r.notes,
@@ -917,6 +1096,8 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
         const card = document.createElement("article");
         card.className = "card";
         const priorityClass = `priority-${String(r.priority || "").toLowerCase()}`;
+        const changeStatus = getChangeStatus(r.id);
+        const changeBadge = changeStatus ? `<span class="chip" style="border-color: ${changeStatus === 'added' ? 'rgba(74,222,128,.8)' : 'rgba(251,191,36,.8)'}; background: ${changeStatus === 'added' ? 'rgba(74,222,128,.15)' : 'rgba(251,191,36,.15)'};">${changeStatus.toUpperCase()}</span>` : "";
 
         card.innerHTML = `
           <div>
@@ -925,6 +1106,7 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
           </div>
 
           <div class="chips">
+            ${changeBadge}
             <span class="chip ${priorityClass}">${escapeHtml(r.priority || "Medium")}</span>
             ${r.offline ? '<span class="chip">Offline</span>' : ''}
             ${r.vehicleRouting ? '<span class="chip">RV / vehicle routing</span>' : ''}
@@ -1028,12 +1210,12 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
       const r = db.resources.find(item => item.id === id);
       if (!r) return;
       if (!confirm(`Delete "${r.title}"?`)) return;
+      trackDelete(r);
       db.resources = db.resources.filter(item => item.id !== id);
       db.lastEdited = new Date().toISOString();
       saveDb();
       closeModal();
       refresh();
-      showToast("Resource deleted.");
     }
 
     function exportJson() {
@@ -1050,14 +1232,6 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
       a.remove();
       URL.revokeObjectURL(url);
       showToast("Exported JSON.");
-    }
-
-    function initTheme() {
-      const theme = localStorage.getItem(THEME_KEY) || "light";
-      document.body.dataset.theme = theme;
-      document.addEventListener("DOMContentLoaded", () => {
-        if (els.darkBtn) els.darkBtn.textContent = theme === "dark" ? "Light mode" : "Dark mode";
-      });
     }
 
     function showToast(message) {
@@ -1092,13 +1266,3 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
   </script>
 </body>
 </html>
-Workflow in comments
-<!--
-### Recommended workflow for your journey
-
-- **Planning layer:** RV LIFE / Roadtrippers / Garmin / CoPilot for 12-foot clearance routing.
-- **Legal motorized-access layer:** USFS MVUMs, BLM travel-management maps, state OHV maps.
-- **Offline field layer:** Avenza for GeoPDF/MVUM; Gaia/CalTopo/OsmAnd for tracks, topo, waypoints, and redundancy.
-- **Camp layer:** Recreation.gov + BLM/USFS official pages + Campendium/The Dyrt/AllStays for user reports.
-- **Daily go/no-go layer:** state DOT 511 maps + NIFC/NASA FIRMS + local forest/BLM alerts.
--->

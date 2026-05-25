@@ -160,6 +160,15 @@ footer{margin-top:auto;text-align:center;padding:24px;font-size:12px;color:var(-
     <button data-id="45" class="btn btn-primary btn-sm" id="btn-add-y6g8"><i data-id="46" data-lucide="plus" class="w-4 h-4"></i> Add</button>
     <button data-id="47" class="btn btn-secondary btn-sm" id="btn-export-e5d2"><i data-id="48" data-lucide="download" class="w-4 h-4"></i> Export JSON</button>
     <button data-id="49" class="btn btn-secondary btn-sm" id="btn-import-u7h1"><i data-id="50" data-lucide="upload" class="w-4 h-4"></i> Import JSON</button>
+    <button class="btn btn-secondary btn-sm" id="btn-export-changes" style="position: relative;">
+      <i data-lucide="git-branch" class="w-4 h-4"></i> Export Changes
+      <span id="changesBadge" style="position: absolute; top: -2px; right: -2px; background: var(--accent); color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none;">0</span>
+    </button>
+    <label class="btn btn-secondary btn-sm">
+      <i data-lucide="git-branch" class="w-4 h-4"></i> Import Changes
+      <input type="file" accept=".json" id="import-changes-file" style="display: none;">
+    </label>
+    <button class="btn btn-secondary btn-sm" id="btn-clear-changes"><i data-lucide="x" class="w-4 h-4"></i> Clear Changes</button>
     <input data-id="51" type="file" accept=".json" class="hidden-input" id="import-file-z3k9">
   </div>
 </div>
@@ -304,6 +313,9 @@ async function loadFromMasterResources() {
 let resources = JSON.parse(JSON.stringify(INITIAL_DATA.resources));
 let expandedCard = null;
 let deleteConfirmId = null;
+let changes = loadChanges();
+
+const CHANGES_KEY = 'copilotNavResourceChanges';
 
 // Extract unique categories from resources
 function getCategoriesFromResources(resourceList) {
@@ -327,6 +339,175 @@ function loadState(){
     }
   }catch(e){}
   return null;
+}
+
+// ── CHANGE TRACKING ─────────────────────────────────────────────────────
+function loadChanges() {
+  try {
+    const stored = localStorage.getItem(CHANGES_KEY);
+    return stored ? JSON.parse(stored) : { added: [], edited: [], deleted: [] };
+  } catch {
+    return { added: [], edited: [], deleted: [] };
+  }
+}
+
+function saveChanges() {
+  localStorage.setItem(CHANGES_KEY, JSON.stringify(changes));
+  updateChangesBadge();
+}
+
+function trackAdd(resource) {
+  if (!changes.added.some(a => a.id === resource.id)) {
+    changes.added.push(resource);
+    saveChanges();
+    showToast('Resource added to changes');
+  }
+}
+
+function trackEdit(originalResource, updatedResource) {
+  // Check if in added - update it
+  const addedIndex = changes.added.findIndex(a => a.id === originalResource.id);
+  if (addedIndex !== -1) {
+    changes.added[addedIndex] = updatedResource;
+    saveChanges();
+    return;
+  }
+
+  // Check if already in edited
+  const editedIndex = changes.edited.findIndex(e => e.originalId === originalResource.id);
+  if (editedIndex !== -1) {
+    changes.edited[editedIndex] = { ...updatedResource, originalId: originalResource.id };
+    saveChanges();
+    return;
+  }
+
+  // Add to edited
+  changes.edited.push({ ...updatedResource, originalId: originalResource.id });
+  saveChanges();
+  showToast('Edit tracked');
+}
+
+function trackDelete(resource) {
+  // Check if in added - remove from added
+  const addedIndex = changes.added.findIndex(a => a.id === resource.id);
+  if (addedIndex !== -1) {
+    changes.added.splice(addedIndex, 1);
+    saveChanges();
+    return;
+  }
+
+  // Check if in edited - remove from edited and add to deleted
+  const editedIndex = changes.edited.findIndex(e => e.originalId === resource.id);
+  if (editedIndex !== -1) {
+    changes.edited.splice(editedIndex, 1);
+  }
+
+  // Add to deleted if not already there
+  if (!changes.deleted.includes(resource.id)) {
+    changes.deleted.push(resource.id);
+    saveChanges();
+    showToast('Deletion tracked');
+  }
+}
+
+function getChangeStatus(resourceId) {
+  if (changes.added.some(a => a.id === resourceId)) return 'added';
+  if (changes.edited.some(e => e.originalId === resourceId)) return 'edited';
+  return null;
+}
+
+function exportChanges() {
+  if (changes.added.length === 0 && changes.edited.length === 0 && changes.deleted.length === 0) {
+    showToast('No changes to export');
+    return;
+  }
+
+  const exportData = {
+    version: '1.0.0',
+    exportDate: new Date().toISOString(),
+    appName: 'Copilot Nav Resource Manager',
+    changes: {
+      added: changes.added,
+      edited: changes.edited,
+      deleted: changes.deleted
+    }
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `copilot-nav-changes-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Changes exported!');
+}
+
+function importChanges(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      // Validate structure
+      if (!data.changes || typeof data.changes !== 'object') {
+        throw new Error('Invalid format');
+      }
+
+      // Merge changes
+      if (data.changes.added) {
+        data.changes.added.forEach(resource => {
+          if (!changes.added.some(a => a.id === resource.id)) {
+            changes.added.push(resource);
+          }
+        });
+      }
+
+      if (data.changes.edited) {
+        data.changes.edited.forEach(edit => {
+          if (!changes.edited.some(e => e.originalId === edit.originalId)) {
+            changes.edited.push(edit);
+          }
+        });
+      }
+
+      if (data.changes.deleted) {
+        data.changes.deleted.forEach(id => {
+          if (!changes.deleted.includes(id)) {
+            changes.deleted.push(id);
+          }
+        });
+      }
+
+      saveChanges();
+      showToast('Changes imported successfully!');
+    } catch (error) {
+      showToast('Failed to import changes');
+      console.error('Import error:', error);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function clearChanges() {
+  if (!confirm('Are you sure you want to clear all tracked changes? This cannot be undone.')) {
+    return;
+  }
+  changes = { added: [], edited: [], deleted: [] };
+  saveChanges();
+  renderCards();
+  showToast('All changes cleared');
+}
+
+function updateChangesBadge() {
+  const total = changes.added.length + changes.edited.length + changes.deleted.length;
+  const badge = document.getElementById('changesBadge');
+  if (badge) {
+    badge.textContent = total > 0 ? total : '';
+    badge.style.display = total > 0 ? 'inline-flex' : 'none';
+  }
 }
 
 // Async initialization: master file → AppSDK → INITIAL_DATA
@@ -436,6 +617,8 @@ function renderCards(){
     const costB = getCostBadge(r.cost_tier);
     const isExpanded = expandedCard === r.id;
     const isDeleting = deleteConfirmId === r.id;
+    const changeStatus = getChangeStatus(r.id);
+    const changeBadge = changeStatus ? `<span class="cat-badge" style="background:${changeStatus === 'added' ? 'rgba(34,197,94,.2)' : 'rgba(251,191,36,.2)'};color:${changeStatus === 'added' ? '#4ade80' : '#fbbf24'}">${changeStatus.toUpperCase()}</span>` : '';
 
     let tagsHtml = (r.tags||[]).map(t=>`<button class="tag-chip" data-tag="${escHtml(t)}">${escHtml(t)}</button>`).join('');
 
@@ -467,6 +650,7 @@ function renderCards(){
       <div class="card-accent" style="background:${catColor}"></div>
       <div class="card-body" data-card-toggle="${r.id}">
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px">
+          ${changeBadge}
           <span class="cat-badge" style="background:${catColor}22;color:${catColor}">${escHtml(r.category)}</span>
           <span class="offline-badge" style="background:${r.offline?'rgba(34,197,94,.12)':'rgba(245,158,11,.12)'};color:${r.offline?'#4ade80':'#fbbf24'}">${r.offline?'📡 Offline':'🌐 Online Only'}</span>
           <span class="cost-badge" style="background:${costB.bg};color:${costB.color}">${costB.label}</span>
@@ -527,6 +711,8 @@ function bindCardEvents(){
   document.querySelectorAll('[data-confirm-del]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const id = btn.dataset.confirmDel;
+      const resource = resources.find(r=>r.id===id);
+      if (resource) trackDelete(resource);
       resources = resources.filter(r=>r.id!==id);
       deleteConfirmId = null;
       expandedCard = null;
@@ -606,10 +792,15 @@ function handleFormSubmit(e){
 
   if(editId){
     const idx = resources.findIndex(r=>r.id===editId);
-    if(idx>-1) resources[idx] = {...resources[idx], ...obj};
+    if(idx>-1) {
+      const originalResource = resources[idx];
+      resources[idx] = {...resources[idx], ...obj};
+      trackEdit(originalResource, resources[idx]);
+    }
     showToast('Resource updated','success');
   } else {
     resources.push(obj);
+    trackAdd(obj);
     showToast('Resource added','success');
   }
 
@@ -708,6 +899,16 @@ async function initApp() {
     document.getElementById('import-file-z3k9').click();
   });
   document.getElementById('import-file-z3k9').addEventListener('change', handleImport);
+
+  // Changes
+  document.getElementById('btn-export-changes').addEventListener('click', exportChanges);
+  document.getElementById('import-changes-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) importChanges(file);
+    e.target.value = '';
+  });
+  document.getElementById('btn-clear-changes').addEventListener('click', clearChanges);
+  updateChangesBadge();
 
   // Modal
   document.getElementById('btn-cancel-c9d0').addEventListener('click', closeModal);

@@ -552,6 +552,13 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
                 <button class="btn" onclick="exportJSON()">📤 Export JSON</button>
                 <button class="btn" onclick="document.getElementById('importFile').click()">📥 Import</button>
                 <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+                <button class="btn" onclick="exportChanges()" style="position: relative;">
+                    📤 Export Changes
+                    <span id="changesBadge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; display: none;">0</span>
+                </button>
+                <button class="btn" onclick="document.getElementById('importChangesFile').click()">📥 Import Changes</button>
+                <input type="file" id="importChangesFile" accept=".json" style="display:none" onchange="importChangesFromFile(event)">
+                <button class="btn" onclick="clearChanges()">🧹 Clear Changes</button>
                 <div class="theme-toggle">
                     <span>☀️</span>
                     <label class="toggle-switch">
@@ -793,6 +800,10 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
     // ── State ──────────────────────────────────────────────────
     let resources = [];
     let deleteTargetId = null;
+    let changes = loadChanges();
+
+    const STORAGE_KEY = 'rvResources';
+    const CHANGES_KEY = 'opusNavResourceChanges';
 
     // ── Init ──────────────────────────────────────────────────
     async function init() {
@@ -819,10 +830,175 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
         }
         populateFilters();
         renderResources();
+        updateChangesBadge();
     }
 
     function save() {
-        localStorage.setItem('rvResources', JSON.stringify(resources));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(resources));
+    }
+
+    // ── Change Tracking ───────────────────────────────────────
+    function loadChanges() {
+        try {
+            const stored = localStorage.getItem(CHANGES_KEY);
+            return stored ? JSON.parse(stored) : { added: [], edited: [], deleted: [] };
+        } catch {
+            return { added: [], edited: [], deleted: [] };
+        }
+    }
+
+    function saveChanges() {
+        localStorage.setItem(CHANGES_KEY, JSON.stringify(changes));
+        updateChangesBadge();
+    }
+
+    function trackAdd(resource) {
+        if (!changes.added.some(a => a.id === resource.id)) {
+            changes.added.push(resource);
+            saveChanges();
+            showToast('Resource added to changes');
+        }
+    }
+
+    function trackEdit(originalResource, updatedResource) {
+        const addedIndex = changes.added.findIndex(a => a.id === originalResource.id);
+        if (addedIndex !== -1) {
+            changes.added[addedIndex] = updatedResource;
+            saveChanges();
+            return;
+        }
+
+        const editedIndex = changes.edited.findIndex(e => e.originalId === originalResource.id);
+        if (editedIndex !== -1) {
+            changes.edited[editedIndex] = { ...updatedResource, originalId: originalResource.id };
+            saveChanges();
+            return;
+        }
+
+        changes.edited.push({ ...updatedResource, originalId: originalResource.id });
+        saveChanges();
+        showToast('Edit tracked');
+    }
+
+    function trackDelete(resource) {
+        const addedIndex = changes.added.findIndex(a => a.id === resource.id);
+        if (addedIndex !== -1) {
+            changes.added.splice(addedIndex, 1);
+            saveChanges();
+            return;
+        }
+
+        const editedIndex = changes.edited.findIndex(e => e.originalId === resource.id);
+        if (editedIndex !== -1) {
+            changes.edited.splice(editedIndex, 1);
+        }
+
+        if (!changes.deleted.includes(resource.id)) {
+            changes.deleted.push(resource.id);
+            saveChanges();
+            showToast('Deletion tracked');
+        }
+    }
+
+    function getChangeStatus(resourceId) {
+        if (changes.added.some(a => a.id === resourceId)) return 'added';
+        if (changes.edited.some(e => e.originalId === resourceId)) return 'edited';
+        return null;
+    }
+
+    function exportChanges() {
+        if (changes.added.length === 0 && changes.edited.length === 0 && changes.deleted.length === 0) {
+            showToast('No changes to export');
+            return;
+        }
+
+        const exportData = {
+            version: '1.0.0',
+            exportDate: new Date().toISOString(),
+            appName: 'Opus Nav Resource Manager',
+            changes: {
+                added: changes.added,
+                edited: changes.edited,
+                deleted: changes.deleted
+            }
+        };
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `opus-nav-changes-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Changes exported!');
+    }
+
+    function importChanges(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (!data.changes || typeof data.changes !== 'object') {
+                    throw new Error('Invalid format');
+                }
+
+                if (data.changes.added) {
+                    data.changes.added.forEach(resource => {
+                        if (!changes.added.some(a => a.id === resource.id)) {
+                            changes.added.push(resource);
+                        }
+                    });
+                }
+
+                if (data.changes.edited) {
+                    data.changes.edited.forEach(edit => {
+                        if (!changes.edited.some(e => e.originalId === edit.originalId)) {
+                            changes.edited.push(edit);
+                        }
+                    });
+                }
+
+                if (data.changes.deleted) {
+                    data.changes.deleted.forEach(id => {
+                        if (!changes.deleted.includes(id)) {
+                            changes.deleted.push(id);
+                        }
+                    });
+                }
+
+                saveChanges();
+                showToast('Changes imported successfully!');
+            } catch (error) {
+                showToast('Failed to import changes');
+                console.error('Import error:', error);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function importChangesFromFile(event) {
+        const file = event.target.files[0];
+        if (file) importChanges(file);
+        event.target.value = '';
+    }
+
+    function clearChanges() {
+        if (!confirm('Are you sure you want to clear all tracked changes?')) return;
+        changes = { added: [], edited: [], deleted: [] };
+        saveChanges();
+        renderResources();
+        showToast('All changes cleared');
+    }
+
+    function updateChangesBadge() {
+        const total = changes.added.length + changes.edited.length + changes.deleted.length;
+        const badge = document.getElementById('changesBadge');
+        if (badge) {
+            badge.textContent = total > 0 ? total : '';
+            badge.style.display = total > 0 ? 'inline-flex' : 'none';
+        }
     }
 
     // ── Theme ─────────────────────────────────────────────────
@@ -899,10 +1075,13 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
             const tags = (r.tags || []).slice(0, 4).map(t => `<span class="meta-tag">${t}</span>`).join('');
             const features = (r.features || []).map(f => `<span class="feature-chip">${f}</span>`).join('');
             const url = r.url ? `<a href="${r.url}" target="_blank" rel="noopener">${r.name}</a>` : r.name;
+            const changeStatus = getChangeStatus(r.id);
+            const changeBadge = changeStatus ? `<span class="priority-badge" style="background:${changeStatus === 'added' ? '#22c55e' : '#f59e0b'}">${changeStatus.toUpperCase()}</span>` : '';
 
             return `<div class="resource-card">
                 <div class="card-header">
                     <span class="card-title">${url}</span>
+                    ${changeBadge}
                     <span class="priority-badge priority-${r.priority}">${r.priority}</span>
                 </div>
                 <div class="card-meta">${tags}</div>
@@ -982,10 +1161,15 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
         };
         if (editId) {
             const idx = resources.findIndex(r => r.id === editId);
-            if (idx !== -1) resources[idx] = data;
+            if (idx !== -1) {
+                const originalResource = resources[idx];
+                resources[idx] = data;
+                trackEdit(originalResource, data);
+            }
             toast('✅ Resource updated!');
         } else {
             resources.push(data);
+            trackAdd(data);
             toast('✅ Resource added!');
         }
         save();
@@ -1003,6 +1187,8 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
     }
 
     function confirmDelete() {
+        const resource = resources.find(r => r.id === deleteTargetId);
+        if (resource) trackDelete(resource);
         resources = resources.filter(r => r.id !== deleteTargetId);
         save();
         populateFilters();
