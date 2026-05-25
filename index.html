@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Western US Navigation Resources | RV & Adventure Bike</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Nav Resource Managers | RV & Adventure Bike Navigation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -582,6 +585,134 @@
             font-size: 0.9rem;
         }
 
+        /* Master Data Modal */
+        .master-data-modal {
+            max-width: 1000px;
+            max-height: 90vh;
+        }
+
+        .master-data-modal .modal-body {
+            padding: 0;
+        }
+
+        .master-table-container {
+            overflow-x: auto;
+            max-height: calc(90vh - 180px);
+        }
+
+        .master-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .master-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .master-table th {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .master-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .master-table tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .master-table .resource-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .master-table .resource-link {
+            color: var(--accent);
+            text-decoration: none;
+            word-break: break-all;
+            max-width: 400px;
+            display: inline-block;
+        }
+
+        .master-table .resource-link:hover {
+            text-decoration: underline;
+        }
+
+        .master-table .category-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: var(--accent-light);
+            color: var(--accent);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .master-table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .master-table-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .master-table-info strong {
+            color: var(--text-primary);
+        }
+
+        .master-table-search {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .master-table-search input {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            min-width: 250px;
+        }
+
+        .master-table-search input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(194, 101, 10, 0.1);
+        }
+
+        .master-table-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
         /* Comment Form */
         .comment-form {
             background: var(--bg-tertiary);
@@ -773,7 +904,7 @@
             <div class="header-logo">
                 <span class="icon">🗺️</span>
                 <div class="header-title">
-                    <h1>Nav Resources</h1>
+                    <h1>Nav Resource Managers</h1>
                     <span>RV & Adventure Bike Navigation</span>
                 </div>
             </div>
@@ -781,6 +912,10 @@
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
                     <span class="icon">🌙</span>
                     <span id="themeLabel">Dark</span>
+                </button>
+                <button class="btn btn-secondary btn-sm" id="viewMasterBtn">
+                    <span>📊</span>
+                    View Master Database
                 </button>
                 <button class="btn btn-primary btn-sm" id="exportBtn">
                     <span>💾</span>
@@ -793,8 +928,8 @@
     <!-- Hero -->
     <section class="hero">
         <div class="hero-icon">🏕️</div>
-        <h1>Western US Navigation Resources</h1>
-        <p>A curated collection of navigation tools, camping resources, and mapping applications for 12-foot motorhome and adventure motorcycle travel through the American West.</p>
+        <h1>Nav Resource Managers</h1>
+        <p>Interactive applications for managing navigation resources, camping tools, and mapping apps for 12-foot motorhome and adventure motorcycle travel through the American West.</p>
         <div class="hero-badges">
             <span class="badge">⚠️ 12ft Height Aware</span>
             <span class="badge">🏍️ Adventure Bike Ready</span>
@@ -868,7 +1003,7 @@
             <div class="section-header">
                 <h2 class="section-title">
                     <span class="icon">📂</span>
-                    Resource Files
+                    Nav Resource Managers
                 </h2>
                 <button class="btn btn-secondary btn-sm" id="expandAllBtn">
                     <span>📖</span> Expand All
@@ -882,7 +1017,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>Western US Navigation Resources — Curated for overland travel through the American West</p>
+        <p>Nav Resource Managers — Interactive navigation resource management for overland travel through the American West</p>
         <div class="footer-links">
             <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
         </div>
@@ -918,6 +1053,50 @@
         </div>
     </div>
 
+    <!-- Master Data Modal -->
+    <div class="modal-overlay" id="masterDataModal">
+        <div class="modal master-data-modal">
+            <div class="modal-header">
+                <h3>📊 Master Resources Database</h3>
+                <button class="modal-close" id="masterModalClose" aria-label="Close modal">×</button>
+            </div>
+            <div class="master-table-header">
+                <div class="master-table-info">
+                    <span>Total: <strong id="masterTotalCount">0</strong> resources</span>
+                    <span>Categories: <strong id="masterCategoryCount">0</strong></span>
+                    <span id="masterLastUpdated">Loading...</span>
+                </div>
+                <div class="master-table-search">
+                    <input type="text" id="masterTableSearch" placeholder="🔍 Search resources...">
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="master-table-container">
+                    <table class="master-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Link</th>
+                            </tr>
+                        </thead>
+                        <tbody id="masterTableBody">
+                            <tr>
+                                <td colspan="3" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                    Loading resources...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="masterShowingCount">Showing 0 resources</span>
+                <button class="btn btn-secondary" id="masterModalCancel">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -925,44 +1104,44 @@
         // Resource definitions
         const resources = [
             {
-                id: 'gpt55-western-nav-database',
-                filename: 'gpt55-western-nav-database.html',
+                id: 'gpt-nav-resource-manager',
+                filename: 'GPT-NavResourceManager.html',
                 type: 'html',
                 icon: '🖥️',
-                title: 'GPT-4.5 Western Nav Database',
+                title: 'GPT Nav Resource Manager',
                 size: '35 KB',
-                generator: 'GPT-4 (LMA)',
+                generator: 'GPT-4',
                 description: 'Light mode web app with gradient header, card-based layout, import/export functionality, and localStorage persistence.',
                 tags: ['HTML', 'GPT-4', 'Interactive']
             },
             {
-                id: 'copilot-western-nav-database',
-                filename: 'copilot-western-nav-database.html',
+                id: 'copilot-nav-resource-manager',
+                filename: 'Copilot-NavResourceManager.html',
                 type: 'html',
                 icon: '🖥️',
-                title: 'Copilot Western Nav Database',
+                title: 'Copilot Nav Resource Manager',
                 size: '68 KB',
                 generator: 'GitHub Copilot',
                 description: 'Dark mode default with Tailwind CSS, Lucide icons, expandable detail panels, and modern card-based UI.',
                 tags: ['HTML', 'Copilot', 'Dark Mode']
             },
             {
-                id: 'Opus46-western-nav-database',
-                filename: 'Opus46-western-nav-database.html',
+                id: 'opus-nav-resource-manager',
+                filename: 'Opus-NavResourceManager.html',
                 type: 'html',
                 icon: '🖥️',
-                title: 'Opus 4.6 Western Nav Database',
+                title: 'Opus Nav Resource Manager',
                 size: '70 KB',
-                generator: 'Claude Opus 4.6',
+                generator: 'Claude Opus',
                 description: 'Feature-rich app with theme toggle, priority badges, modal editing, comprehensive filtering, and advanced sorting options.',
-                tags: ['HTML', 'Opus 4.6', 'Full Featured']
+                tags: ['HTML', 'Opus', 'Full Featured']
             },
             {
-                id: 'lmc-western-nav',
-                filename: 'lmc-western-nav.html',
+                id: 'lmc-nav-resource-manager',
+                filename: 'LMC-NavResourceManager.html',
                 type: 'html',
                 icon: '🖥️',
-                title: 'LMC Western Nav Manager',
+                title: 'LMC Nav Resource Manager',
                 size: '17 KB',
                 generator: 'Claude',
                 description: 'Lightweight overland navigation resource manager with category organization, dark mode toggle, and clean card-based interface.',
@@ -1171,6 +1350,113 @@
                     window.open(resource.filename, '_blank');
                 });
             }
+        });
+
+        // Master Data Modal
+        const viewMasterBtn = document.getElementById('viewMasterBtn');
+        const masterDataModal = document.getElementById('masterDataModal');
+        const masterModalClose = document.getElementById('masterModalClose');
+        const masterModalCancel = document.getElementById('masterModalCancel');
+        const masterTableBody = document.getElementById('masterTableBody');
+        const masterTableSearch = document.getElementById('masterTableSearch');
+        const masterTotalCount = document.getElementById('masterTotalCount');
+        const masterCategoryCount = document.getElementById('masterCategoryCount');
+        const masterLastUpdated = document.getElementById('masterLastUpdated');
+        const masterShowingCount = document.getElementById('masterShowingCount');
+
+        let masterResources = [];
+        let filteredMasterResources = [];
+
+        // Open master data modal
+        viewMasterBtn.addEventListener('click', async () => {
+            masterDataModal.classList.add('active');
+            await loadMasterData();
+        });
+
+        // Close master data modal
+        function closeMasterModal() {
+            masterDataModal.classList.remove('active');
+            masterTableSearch.value = '';
+        }
+
+        masterModalClose.addEventListener('click', closeMasterModal);
+        masterModalCancel.addEventListener('click', closeMasterModal);
+        masterDataModal.addEventListener('click', (e) => {
+            if (e.target === masterDataModal) closeMasterModal();
+        });
+
+        // Escape key closes modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && masterDataModal.classList.contains('active')) {
+                closeMasterModal();
+            }
+        });
+
+        // Load master data from JSON
+        async function loadMasterData() {
+            masterTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-muted);">Loading resources...</td></tr>';
+
+            try {
+                const response = await fetch('master-resources.json');
+                if (!response.ok) throw new Error('Failed to load master resources');
+                const data = await response.json();
+
+                masterResources = data.resources || [];
+                filteredMasterResources = [...masterResources];
+
+                // Update header info
+                masterTotalCount.textContent = masterResources.length;
+                const categories = [...new Set(masterResources.map(r => r.category))];
+                masterCategoryCount.textContent = categories.length;
+                masterLastUpdated.textContent = `Updated: ${data.lastVerified || data.metadata?.lastUpdated || new Date().toISOString().split('T')[0]}`;
+
+                renderMasterTable();
+            } catch (error) {
+                console.error('Error loading master data:', error);
+                masterTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-muted);">Failed to load resources. Please ensure master-resources.json exists.</td></tr>';
+            }
+        }
+
+        // Render master table
+        function renderMasterTable() {
+            if (filteredMasterResources.length === 0) {
+                masterTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-muted);">No resources match your search.</td></tr>';
+                masterShowingCount.textContent = 'Showing 0 resources';
+                return;
+            }
+
+            masterTableBody.innerHTML = filteredMasterResources.map(resource => `
+                <tr>
+                    <td class="resource-name">${escapeHtml(resource.name)}</td>
+                    <td><span class="category-badge">${escapeHtml(resource.category)}</span></td>
+                    <td><a href="${escapeHtml(resource.url)}" class="resource-link" target="_blank" rel="noopener">${escapeHtml(resource.url)}</a></td>
+                </tr>
+            `).join('');
+
+            masterShowingCount.textContent = `Showing ${filteredMasterResources.length} of ${masterResources.length} resources`;
+        }
+
+        // Search functionality
+        masterTableSearch.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+
+            if (!query) {
+                filteredMasterResources = [...masterResources];
+            } else {
+                filteredMasterResources = masterResources.filter(resource => {
+                    const searchableText = [
+                        resource.name,
+                        resource.category,
+                        resource.url,
+                        resource.description,
+                        ...(resource.tags || [])
+                    ].join(' ').toLowerCase();
+
+                    return searchableText.includes(query);
+                });
+            }
+
+            renderMasterTable();
         });
 
         // Initialize

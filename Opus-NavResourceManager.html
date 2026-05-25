@@ -7,7 +7,7 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Western US Motorhome & Adventure Bike Resource Manager</title>
+    <title>Opus Nav Resource Manager</title>
     <style>
         :root {
             --bg-primary: #f0f2f5;
@@ -543,7 +543,7 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
             <div class="header-title">
                 <span class="logo">🗺️</span>
                 <div>
-                    <h1>Trail & Camp Resource Manager</h1>
+                    <h1>Opus Nav Resource Manager</h1>
                     <div class="header-subtitle">Western US Motorhome (12ft) & Adventure Bike Navigation Database</div>
                 </div>
             </div>
@@ -755,19 +755,63 @@ LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
         {id:"res-040",name:"US Fish & Wildlife Interactive Map",category:"Camping & Public Land Resources",subcategory:"Wildlife Refuge Maps",url:"https://www.fws.gov/map",platforms:["Web"],cost:"Free",offlineCapable:false,description:"Locate National Wildlife Refuges and USFWS managed lands. Some refuges offer camping and scenic drives.",features:["Wildlife refuge locations","Managed land boundaries","Recreation info"],bestFor:"Identifying wildlife refuges for camping and scenic drives",tags:["wildlife-refuges","USFWS","public-lands"],priority:"low",notes:"Some NWRs have excellent camping and wildlife viewing."}
     ];
 
+    // ── Master Resources Loader ─────────────────────────────────────
+    async function loadFromMasterResources() {
+        try {
+            const response = await fetch('master-resources.json');
+            if (!response.ok) throw new Error('Failed to fetch master-resources.json');
+            const masterData = await response.json();
+
+            // Convert master schema to this app's format
+            const convertedResources = masterData.resources.map(r => ({
+                id: r.id,
+                name: r.name,
+                category: r.category,
+                subcategory: r.subcategory || '',
+                url: r.url,
+                platforms: r.platforms || ['Web'],
+                cost: r.cost || '',
+                offlineCapable: r.offline || r.offlineCapable || false,
+                description: r.description || '',
+                features: r.features || [],
+                bestFor: r.bestFor || '',
+                tags: r.tags || [],
+                priority: r.priority || 'medium',
+                notes: r.notes || ''
+            }));
+
+            // Save to localStorage
+            localStorage.setItem('rvResources', JSON.stringify(convertedResources));
+            console.log('Loaded ' + convertedResources.length + ' resources from master-resources.json');
+            return convertedResources;
+        } catch (error) {
+            console.error('Failed to load master resources:', error);
+            return null;
+        }
+    }
+
     // ── State ──────────────────────────────────────────────────
     let resources = [];
     let deleteTargetId = null;
 
     // ── Init ──────────────────────────────────────────────────
-    function init() {
-        const saved = localStorage.getItem('rvResources');
-        if (saved) {
-            try { resources = JSON.parse(saved); }
-            catch { resources = [...DEFAULT_RESOURCES]; }
-        } else {
-            resources = [...DEFAULT_RESOURCES];
+    async function init() {
+        // Try master file first
+        let loadedResources = await loadFromMasterResources();
+
+        // Fall back to localStorage
+        if (!loadedResources) {
+            const saved = localStorage.getItem('rvResources');
+            if (saved) {
+                try { loadedResources = JSON.parse(saved); }
+                catch { loadedResources = [...DEFAULT_RESOURCES]; }
+            } else {
+                loadedResources = [...DEFAULT_RESOURCES];
+            }
         }
+
+        resources = loadedResources;
+
         const theme = localStorage.getItem('theme');
         if (theme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');

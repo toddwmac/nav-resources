@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="dark" />
-<title>Western U.S. Nav Resource Database</title>
+<title>Copilot Nav Resource Manager</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.8.0/dist/umd/lucide.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -131,7 +131,7 @@ footer{margin-top:auto;text-align:center;padding:24px;font-size:12px;color:var(-
     <div data-id="4" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <span data-id="5" style="font-size:32px">🗺️</span>
       <div data-id="6">
-        <h1 data-id="7" style="font-size:24px;font-weight:700;letter-spacing:-.3px" id="title-h1ks">Western U.S. Nav Resource Database</h1>
+        <h1 data-id="7" style="font-size:24px;font-weight:700;letter-spacing:-.3px" id="title-h1ks">Copilot Nav Resource Manager</h1>
         <p data-id="8" style="font-size:14px;color:var(--text-muted)">Motorhome &amp; Adventure Bike — <span data-id="9" id="subtitle-count-82ka">30</span> Resources</p>
       </div>
     </div>
@@ -216,7 +216,7 @@ footer{margin-top:auto;text-align:center;padding:24px;font-size:12px;color:var(-
 // ── DATA ────────────────────────────────────────────────────────────────
 const INITIAL_DATA = {"metadata":{"title":"Western U.S. Motorhome & Adventure Bike Navigation Resource Database","version":"1.0","created":"2026-05-24","description":"Curated mapping tools, camping apps, BLM/USFS official resources, low-clearance navigation, adventure motorcycle tools, and hardware for a Western U.S. motorhome and adventure bike journey.","author":"Todd — Copilot Research","totalResources":30},"categories":["RV / Motorhome Navigation","Topo & Mapping Tools","BLM / USFS Official","Camping & Boondocking","Adventure Motorcycle","Safety & Communication","Weather & Conditions"],"resources":[{"id":"rv-001","name":"RV LIFE Trip Wizard + RV LIFE App","category":"RV / Motorhome Navigation","subcategory":"Trip Planning + GPS","url":"https://tripwizard.rvlife.com","platforms":["Web","iOS","Android"],"pricing":"$65/year (7-day free trial)","cost_tier":"Paid","offline":true,"tags":["low-clearance routing","RV-safe GPS","campground reviews","trip planning","fuel planning","height/weight profiles"],"western_us_focus":true,"description":"End-to-end RV trip planner + RV-safe GPS. Build routes in Trip Wizard (web), then navigate turn-by-turn via the RV LIFE app using your rig's height, weight, and length. Avoids low bridges, steep grades, and propane-restricted tunnels. Includes 20,000+ campground reviews and 57,000+ POIs.","key_features":["Custom RV dimension profiles (height, weight, length)","RV-safe turn-by-turn GPS routing","20,000+ campgrounds across all affiliations","57,000+ points of interest","Fuel cost estimation per trip","Trip leg distance/time planning","Good Sam, Escapees, Passport America membership ranking"],"limitations":"Requires separate web + mobile app combo; pricing covers both.","best_for":"Full-trip planning from home + safe daily navigation on the road","source_verified":"https://tripwizard.rvlife.com/features"},{"id":"rv-002","name":"CoPilot RV (Trimble Maps)","category":"RV / Motorhome Navigation","subcategory":"GPS Navigation","url":"https://copilotgps.com/en-us/rv/","platforms":["iOS","Android"],"pricing":"Paid (one-time purchase via app store)","cost_tier":"Paid","offline":true,"tags":["low-clearance routing","offline maps","RV profiles","bridge height alerts"],"western_us_focus":true,"description":"Premium offline RV navigation with robust vehicle dimension profiles. Generates RV-specific routes that avoid low bridges, weight-restricted roads, and propane-prohibited tunnels. Works fully offline after map download.","key_features":["Precise height/weight/length/width RV profiles","Fully offline maps","Live traffic (where available)","Speed and clearance alerts","Multiple RV profile storage"],"limitations":"No trip planning web interface; navigation-only app.","best_for":"Offline RV navigation with robust vehicle dimension safety","source_verified":"https://copilotgps.com/en-us/rv/"},{"id":"rv-003","name":"Sygic Truck & Caravan Navigation","category":"RV / Motorhome Navigation","subcategory":"GPS Navigation","url":"https://www.sygic.com/rv-navigation","platforms":["iOS","Android"],"pricing":"$69.99 Truck Premium / $99.99 with CarPlay+Android Auto (lifetime, North America)","cost_tier":"Paid","offline":true,"tags":["low-clearance routing","offline maps","caravan","motorhome","CarPlay","Android Auto","lane guidance"],"western_us_focus":true,"description":"Dedicated truck/caravan/motorhome navigation with 3D offline maps and routing that avoids low bridges and restricted roads. Supports CarPlay and Android Auto integration. Lifetime license with free map updates.","key_features":["RV/truck/caravan dimension profiles","Reliable 3D offline maps with free updates","Dynamic lane assistant and voice guidance","Speed limit alerts and camera warnings (add-on)","CarPlay / Android Auto support","Multistop route planning","Thousands of truck-related POIs and fuel stations"],"limitations":"Lifetime pricing is per platform unless purchased via e-shop after March 2022; add-ons (traffic, speed cameras) cost extra.","best_for":"Set-it-and-forget-it offline motorhome routing with CarPlay integration","source_verified":"https://www.sygic.com/pricing"},{"id":"rv-004","name":"Togo RV Navigator (Roadpass Pro)","category":"RV / Motorhome Navigation","subcategory":"GPS Navigation","url":"https://www.togorv.com","platforms":["iOS","Android"],"pricing":"Included in Roadpass Pro membership (~$99/year)","cost_tier":"Paid","offline":true,"tags":["low-clearance routing","offline maps","RV-safe GPS","membership bundle"],"western_us_focus":true,"description":"Simple RV-safe GPS navigator using your rig's dimensions for offline routing. Integrated into the broader Togo RV / Roadpass Pro ecosystem alongside campground search and roadside assistance.","key_features":["RV dimension-based safe routing","Offline maps included","Part of Roadpass Pro membership suite"],"limitations":"Best value only if you use the broader Roadpass Pro ecosystem.","best_for":"RVers already in the Roadpass/Togo ecosystem wanting integrated nav","source_verified":"https://www.togorv.com"},{"id":"topo-001","name":"Gaia GPS","category":"Topo & Mapping Tools","subcategory":"Multi-Sport Topo App","url":"https://www.gaiagps.com","platforms":["iOS","Android","Web"],"pricing":"Free (limited) / $39.99/year Premium","cost_tier":"Freemium","offline":true,"tags":["public land overlays","BLM boundaries","topo maps","NatGeo maps","offline","multi-sport","GPX import/export"],"western_us_focus":true,"description":"All-purpose outdoor GPS with excellent public/private land boundary overlays, National Geographic topo maps, and 15+ map layer options. Strong balance of features for overlanding, hiking, and dispersed camping research.","key_features":["BLM/USFS/private land boundary overlays","National Geographic topo maps","15+ map layer options","Offline map downloads","GPX/KML import and export","Waypoint and track recording","Clean mobile interface"],"limitations":"Premium required for best map layers and offline downloads; less trail-specific than Trailforks.","best_for":"Public land boundary verification and multi-sport navigation","source_verified":"https://www.gaiagps.com/features"},{"id":"topo-002","name":"CalTopo","category":"Topo & Mapping Tools","subcategory":"Advanced Mapping / Route Creation","url":"https://caltopo.com","platforms":["Web","iOS","Android"],"pricing":"Free (basic) / $50/year Plus","cost_tier":"Freemium","offline":true,"tags":["backcountry planning","slope angle shading","custom map printing","weather overlay","fire overlay","GPX import/export","desktop sync"],"western_us_focus":true,"description":"The power user's mapping tool. Best-in-class for route creation, slope analysis, custom map printing, and overlay stacking. Ideal for pre-trip backcountry planning. Steep learning curve but unmatched depth.","key_features":["20+ map layer options","Slope angle shading (avalanche/steep terrain awareness)","Custom map printing for field use","Weather and active fire overlays","Desktop + mobile sync","GPX, KML, and KMZ import/export","Offline map capability"],"limitations":"Steep learning curve; no crowd-sourced trail database; overkill for casual navigation.","best_for":"Pre-trip route creation and backcountry/off-road planning","source_verified":"https://caltopo.com/about.html"},{"id":"topo-003","name":"Avenza Maps","category":"Topo & Mapping Tools","subcategory":"MVUM / Geospatial PDF Viewer","url":"https://www.avenzamaps.com","platforms":["iOS","Android"],"pricing":"Free app; individual maps from $0 (USFS free) to ~$10+","cost_tier":"Freemium","offline":true,"tags":["MVUM","geospatial PDF","Forest Service maps","BLM maps","offline","legal trail verification","low battery drain"],"western_us_focus":true,"description":"The specialist tool for viewing and navigating with official USFS Motor Vehicle Use Maps (MVUMs) and BLM georeferenced PDF maps. Shows your GPS position overlaid on downloaded official maps. Extremely low battery drain.","key_features":["Loads official USFS MVUM PDFs directly","BLM georeferenced PDF compatibility","GPS position shown on downloaded maps","Works fully offline","Minimal battery consumption","Very simple interface","Free access to all USFS-published MVUMs"],"limitations":"No route planning; basic GPS features only; limited to available map inventory; no trail conditions data.","best_for":"Legal trail verification and MVUM compliance on the ground","source_verified":"https://www.avenzamaps.com/maps/how-it-works.html"},{"id":"topo-004","name":"OsmAnd","category":"Topo & Mapping Tools","subcategory":"Open-Source Offline Navigation","url":"https://osmand.net","platforms":["iOS","Android"],"pricing":"Free (open-source) / OsmAnd+ ~$9.99 one-time","cost_tier":"Free / Low-Cost","offline":true,"tags":["OpenStreetMap","offline topo","contour lines","hill-shading","open-source","GPX","bicycle routes","hiking"],"western_us_focus":true,"description":"Fully open-source navigation app built on OpenStreetMap data. Completely offline after download with contour lines, hill-shading, hiking/bike paths, and Wikipedia POIs. Updated monthly. Great free alternative with deep customization.","key_features":["Fully offline vector maps (updated monthly)","Contour lines and hill-shading plugin","OpenStreetMap trail and path data","Turn-by-turn navigation offline","GPX track recording and import","Wikipedia POIs for sightseeing","Slope and terrain plugins","Open-source (no subscription required)"],"limitations":"No crowd-sourced trail conditions; public land boundaries require external overlay; less polished UI than commercial apps.","best_for":"Free, fully offline topo navigation with deep customization","source_verified":"https://osmand.net/features"},{"id":"topo-005","name":"Trailforks","category":"Topo & Mapping Tools","subcategory":"Trail-Specific Navigation","url":"https://www.trailforks.com","platforms":["iOS","Android","Web"],"pricing":"Free / Pro $20/year","cost_tier":"Freemium","offline":true,"tags":["trail database","trail conditions","MTB","motorcycle trails","difficulty ratings","user-generated"],"western_us_focus":true,"description":"Largest crowd-sourced trail database in the world. Excellent for finding and navigating established single-track and OHV trails. User-submitted conditions and heat maps show current trail status. Pro required for offline use.","key_features":["Massive user-generated trail database","Trail difficulty ratings","User-submitted trail conditions","One-tap navigation to trailheads","Heat maps of popular routes","Offline maps (Pro only)"],"limitations":"Limited backcountry/dispersed coverage; basic map layers; cannot create custom routes easily.","best_for":"Finding and navigating established OHV and dual-sport trails","source_verified":"https://www.trailforks.com/about/"},{"id":"blm-001","name":"BLM Georeferenced PDF Maps","category":"BLM / USFS Official","subcategory":"Official BLM Download Maps","url":"https://www.blm.gov/maps","platforms":["Web download","Avenza Maps"],"pricing":"Free","cost_tier":"Free","offline":true,"tags":["BLM","georeferenced PDF","campground maps","recreation area maps","official","Avenza-compatible"],"western_us_focus":true,"description":"BLM library of georeferenced PDF maps covering campgrounds, recreation areas, wilderness areas, OHV areas, back-country byways, and special management areas across the Western U.S. Download directly or load into Avenza Maps for GPS use. Covers OR, WA, CA, NV, AZ, UT, CO, ID, MT, WY, NM, and AK.","key_features":["Free download for all maps","Georeferenced = GPS-enabled in Avenza","Covers campground maps, OHV areas, wilderness, byways","Searchable by state at blm.gov/maps","Maps updated regularly by district offices"],"limitations":"Coverage and detail vary by district; no interactive planning tools.","best_for":"Offline campground and recreation area navigation on BLM land","source_verified":"https://www.blm.gov/maps"},{"id":"blm-002","name":"USFS Motor Vehicle Use Maps (MVUM)","category":"BLM / USFS Official","subcategory":"Official Forest Service Road/Trail Designations","url":"https://www.fs.usda.gov/visit/maps","platforms":["Web download","Avenza Maps"],"pricing":"Free","cost_tier":"Free","offline":true,"tags":["MVUM","Forest Service","motorized routes","road designations","legal compliance","OHV","motorcycle","motorhome"],"western_us_focus":true,"description":"Official USFS maps required by the 2005 Travel Management Rule showing all designated motorized routes in each National Forest. Displays allowed vehicle classes (highway vehicles, ATVs <50in, motorcycles, motorhomes), seasonal allowances, and distance rules. Routes NOT on MVUM are closed to motor vehicles. Available as geospatial PDFs via MVUM Finder or Avenza Map Store.","key_features":["Legal vehicle use designations by route","Vehicle class breakdowns: passenger car, high-clearance, motorhome, ATV, motorcycle","Seasonal use windows per route","Downloadable geospatial PDF (GPS-enabled in Avenza)","Available via Avenza Map Store","Covers all National Forests in Western U.S."],"limitations":"Black-and-white maps with no topographic features; best used alongside a forest visitor map.","best_for":"Legal OHV/moto/RV trail compliance in National Forests","source_verified":"https://www.fs.usda.gov/visit/maps"},{"id":"blm-003","name":"USFS MVUM ArcGIS Feature Layer","category":"BLM / USFS Official","subcategory":"GIS Data Layer","url":"https://www.arcgis.com","platforms":["Web GIS","ArcGIS apps"],"pricing":"Free (public CC0 license)","cost_tier":"Free","offline":false,"tags":["ArcGIS","GIS layer","MVUM","feature layer","28746 routes","motorized vehicle data","Forest Service"],"western_us_focus":true,"description":"Authoritative USFS enterprise GIS feature layer with 28,746 motorized vehicle use records. Includes per-route data on allowed vehicle classes, seasonal windows, trail class, e-bike categories, and district info. Data updated January 30, 2025. Free CC0 license for any use.","key_features":["28,746 route records nationwide","Per-route vehicle class permissions","Seasonal date windows per vehicle class","Trail class and status fields","E-bike class categories included","CC0 public domain license"],"limitations":"Requires GIS software or ArcGIS Online to use; not a consumer app.","best_for":"Developers or power users building custom map tools or integrations","source_verified":"https://www.arcgis.com"},{"id":"blm-004","name":"BLM Recreation Opportunities Interactive Map","category":"BLM / USFS Official","subcategory":"Official BLM Web Map Viewer","url":"https://www.blm.gov/maps","platforms":["Web"],"pricing":"Free","cost_tier":"Free","offline":false,"tags":["BLM","interactive map","recreation","camping","OHV","land boundaries"],"western_us_focus":true,"description":"BLM's official web-based National Data map viewer showing BLM land boundaries, recreation areas, campgrounds, OHV areas, and special management zones across all Western U.S. states. Use for research and planning before downloading georeferenced PDFs.","key_features":["BLM land boundary layers","Recreation area and campground locations","OHV area designations","Special management area overlays","Free and publicly accessible"],"limitations":"Online only; not suitable for field use without downloading maps.","best_for":"Pre-trip BLM land and recreation opportunity research","source_verified":"https://www.blm.gov/maps"},{"id":"camp-001","name":"The Dyrt","category":"Camping & Boondocking","subcategory":"Campground Discovery & Reviews","url":"https://thedyrt.com","platforms":["iOS","Android","Web"],"pricing":"Free / PRO $35.99/year","cost_tier":"Freemium","offline":true,"tags":["campground reviews","dispersed camping","offline maps","RV sites","free camping","national parks"],"western_us_focus":true,"description":"The most comprehensive all-in-one camping app in the U.S. with 50,000+ listings, honest user reviews, and photos. PRO unlocks offline maps, free camping filters, and exclusive discounts. Covers dispersed/boondocking sites, state parks, national parks, RV parks, and more.","key_features":["50,000+ campground listings","Honest user reviews with photos","Dispersed and free camping filter","Offline maps (PRO only)","RV trip planner","Hookup type, pet-friendly, shower filters","Cancellation scan for popular sites"],"limitations":"Offline and free-camping features require PRO upgrade.","best_for":"All-around campground discovery with community reviews","source_verified":"https://thedyrt.com"},{"id":"camp-002","name":"Campendium","category":"Camping & Boondocking","subcategory":"RV-Focused Campground Reviews","url":"https://www.campendium.com","platforms":["iOS","Android","Web"],"pricing":"Free","cost_tier":"Free","offline":false,"tags":["RV camping","cell signal reports","campground reviews","digital nomad","boondocking","free camping"],"western_us_focus":true,"description":"RV-focused campground review platform beloved by digital nomads and full-timers. Uniquely includes cell signal strength reports per site, making it invaluable for remote work on the road. Reviews cover BLM sites, national forests, RV parks, and more.","key_features":["Cell signal strength reports by carrier","RV-focused reviews and ratings","Free and boondocking site listings","Hookup and amenity details","No subscription required"],"limitations":"No offline maps; smaller listing database than The Dyrt.","best_for":"Cell signal research and RV-specific site reviews","source_verified":"https://www.campendium.com"},{"id":"camp-003","name":"iOverlander","category":"Camping & Boondocking","subcategory":"Overlanding & Wild Camping","url":"https://www.ioverlander.com","platforms":["iOS","Android","Web"],"pricing":"Free","cost_tier":"Free","offline":false,"tags":["overlanding","wild camping","boondocking","water refill","community-driven","off-grid","international"],"western_us_focus":true,"description":"Community-driven app designed by overlanders and travelers for finding wild camping spots, water refill stations, dump stations, and off-grid resources. Excellent for adventure travel and motorhome boondocking. Coverage extends to international destinations.","key_features":["Community-submitted wild camping locations","Water refill station locations","Dump station locations","Camp condition and road access notes","Works for RVs, vans, motorcycles, and overlanders","International coverage"],"limitations":"Online-dependent for most features; listing quality varies by location.","best_for":"Wild camping, water, and dump station location on the road","source_verified":"https://www.ioverlander.com"},{"id":"camp-004","name":"Recreation.gov","category":"Camping & Boondocking","subcategory":"Federal Reservation System","url":"https://www.recreation.gov","platforms":["iOS","Android","Web"],"pricing":"Free (reservation fees apply per site)","cost_tier":"Free","offline":false,"tags":["national parks","national forests","reservations","federal camping","permits","day passes"],"western_us_focus":true,"description":"Official U.S. government reservation platform for national parks, national forests, monuments, BLM areas, and other federal lands. Required for reserved campsites at high-demand Western U.S. parks. Books up quickly in peak season.","key_features":["Official reservations for all federal lands","Campsite maps and photos","Day-use and permit booking","Cancellation monitoring","National Parks, USFS, BLM, Army Corps"],"limitations":"High-demand sites fill up months in advance; no dispersed/free camping listings.","best_for":"Reserving developed campsites at national parks and forests","source_verified":"https://www.recreation.gov"},{"id":"camp-005","name":"Harvest Hosts","category":"Camping & Boondocking","subcategory":"Unique Overnight Stays — Membership","url":"https://harvesthosts.com","platforms":["iOS","Android","Web"],"pricing":"Classic $69.30/yr | Classic + Boondockers Welcome $118.30/yr | All Access $125.30/yr","cost_tier":"Paid","offline":false,"tags":["wineries","farms","breweries","unique stays","membership","no camping fees","self-contained"],"western_us_focus":true,"description":"RV membership granting unlimited overnight stays at 5,931+ unique small-business locations — farms, wineries, breweries, distilleries, and attractions. No camping fees per stay. Self-contained RV required. Typically pays for itself after 2-3 nights.","key_features":["5,931+ host locations (farms, wineries, breweries, distilleries)","Unlimited overnight stays per year","No per-stay camping fees","Map layers: satellite, cell coverage, weather","Dump station info","Boondockers Welcome add-on available (+3,421 private hosts)"],"limitations":"Self-contained RV required; hookups not guaranteed; must support hosts by purchasing their products.","best_for":"Unique RV overnight experiences with local business connection","source_verified":"https://harvesthosts.com/plans"},{"id":"camp-006","name":"Boondockers Welcome","category":"Camping & Boondocking","subcategory":"Private Property Overnight Stays — Membership","url":"https://boondockerswelcome.com","platforms":["iOS","Android","Web"],"pricing":"$79/year standalone; bundled in Harvest Hosts plans","cost_tier":"Paid","offline":false,"tags":["private property","free overnight","community","hookups","self-contained","driveway camping"],"western_us_focus":true,"description":"Community-driven RV network connecting travelers with private property owners offering free overnight parking. 3,421+ host locations across the U.S. and Canada. Over 70% of hosts offer electric/water hookups. Up to 2-5 night stays at most hosts.","key_features":["3,421+ private property host locations","70%+ of hosts offer 15A/30A electric or water","Up to 2-5 night stays per host","No per-stay camping fees","U.S. and Canada coverage"],"limitations":"Self-contained RV required; sewer hookups are rare; generator rules vary by host.","best_for":"Free community overnight stays with hookup potential","source_verified":"https://boondockerswelcome.com"},{"id":"camp-007","name":"Boondockers Bible","category":"Camping & Boondocking","subcategory":"Boondocking Research — Web Resource","url":"https://boondockersbible.com","platforms":["Web"],"pricing":"Free","cost_tier":"Free","offline":false,"tags":["boondocking","crowd-sourced","road conditions","cell reception","dump stations","honest reviews"],"western_us_focus":true,"description":"Free web-based boondocking map and database with crowd-sourced reviews from experienced boondockers. Provides honest feedback on road conditions, crowding, cell reception by carrier, and nearby dump stations.","key_features":["Crowd-sourced boondocking site reviews","Road condition reports","Cell signal info by carrier","Nearby dump station info","Crowd level and seasonal notes","No account required"],"limitations":"Web-only; no offline maps; requires cell/WiFi to access.","best_for":"Pre-trip boondocking site research with real-world conditions","source_verified":"https://boondockersbible.com"},{"id":"camp-008","name":"AllStays Camp & RV","category":"Camping & Boondocking","subcategory":"RV Infrastructure Map","url":"https://www.allstays.com","platforms":["iOS","Android","Web"],"pricing":"iOS app ~$9.99 one-time; web version subscription","cost_tier":"Paid","offline":true,"tags":["campgrounds","RV parks","truck stops","overnight parking","Walmart camping","dump stations","propane"],"western_us_focus":true,"description":"The most comprehensive RV infrastructure map app, covering campgrounds, RV parks, truck stops, rest areas, Walmart/Cracker Barrel overnight parking, dump stations, propane fill stations, and weigh stations. Offline capable after download.","key_features":["Campgrounds, RV parks, and state parks","Truck stops and rest areas","Overnight parking locations (Walmart, Cracker Barrel, Cabela's)","Dump stations and propane fill points","Weigh station locations","Filter by hookup type, price, amenities","Offline access after download"],"limitations":"Paid app; UI is functional but dated.","best_for":"Finding all RV-relevant stops along a route (fuel, dump, overnight)","source_verified":"https://www.allstays.com"},{"id":"moto-001","name":"Rever Motorcycle App + Butler Maps","category":"Adventure Motorcycle","subcategory":"Route Planning & GPS Navigation","url":"https://www.rever.co","platforms":["iOS","Android","Web"],"pricing":"Free / Pro (subscription); Butler Maps overlay free in-app","cost_tier":"Freemium","offline":true,"tags":["motorcycle","route planning","ride tracking","Butler Maps","offline maps","off-road","ADV","turn-by-turn","live tracking"],"western_us_focus":true,"description":"Dedicated motorcycle trip planner and GPS app with 3,000+ curated road maps worldwide. Integrates Butler Maps rated roads (G1 epic/ADV dirt/Paved Trails) as an in-app overlay. Offline maps, turn-by-turn navigation, voice guidance, and live friend tracking.","key_features":["3,000+ curated motorcycle road trip maps","Butler Maps overlay: G1, ADV, Paved Trails, Lost Highways","Offline maps and turn-by-turn navigation","Voice guidance without cell service","Ride recording and tracking","Live friend location sharing","GPX route import/export","Web planner + mobile sync"],"limitations":"Best features may require Pro subscription; verify current pricing.","best_for":"End-to-end adventure moto trip planning and on-bike navigation","source_verified":"https://www.rever.co"},{"id":"moto-002","name":"Butler Maps (Physical + Digital)","category":"Adventure Motorcycle","subcategory":"Curated Riding Maps","url":"https://butlermaps.com","platforms":["Physical map","Rever app overlay"],"pricing":"Physical maps ~$15–$25 each; digital via Rever","cost_tier":"Paid","offline":true,"tags":["motorcycle","curated routes","G1 roads","ADV dirt roads","paved trails","waterproof maps","Western US"],"western_us_focus":true,"description":"Waterproof, tear-resistant curated motorcycle maps for the Western U.S. Each map highlights the best paved (G1 rated) and dirt (ADV rated) roads. Adventure Series covers AZ, CO, ID, NM, Southern CA, UT, and WY. Also available as digital overlays in the Rever app.","key_features":["G1: Best epic paved roads","ADV: Best hand-picked dirt/unpaved roads","Paved Trails: Dual-sport routes","Lost Hwys: Historic original routes","Waterproof and tear-resistant","Adventure Series: AZ, CO, ID, NM, SoCal, UT, WY","BDR map bundles available"],"limitations":"Physical maps require manual navigation; digital requires Rever app.","best_for":"Discovering the best motorcycle roads in the Western U.S.","source_verified":"https://butlermaps.com"},{"id":"moto-003","name":"Garmin Zumo XT2","category":"Adventure Motorcycle","subcategory":"Dedicated Motorcycle GPS Hardware","url":"https://www.garmin.com/en-US/p/784388","platforms":["Standalone device"],"pricing":"$599 USD","cost_tier":"Paid","offline":true,"tags":["hardware","GPS","motorcycle","waterproof","glove-friendly","topographic maps","BirdsEye satellite","IP65"],"western_us_focus":true,"description":"Garmin's flagship dedicated motorcycle GPS with a 6-inch glove-friendly HD touchscreen. IP65 waterproof and shockproof. Includes topographic maps, BirdsEye Satellite imagery (no subscription), adventurous routing, and group ride tracking via Tread app.","key_features":["6-inch glove-friendly HD TFT touchscreen","IP65 waterproof and shockproof","Street + topographic maps preloaded","BirdsEye Satellite imagery (no subscription)","Adventurous routing mode","Off-road trail routing","Group Ride via Garmin Tread app","GPX route import","Incident detection / emergency notification","Garmin InReach compatible"],"limitations":"Expensive; touchscreen can be temperamental; best paired with Tread app.","best_for":"Purpose-built, all-weather dedicated moto GPS for off-road and touring","source_verified":"https://www.garmin.com/en-US/p/784388"},{"id":"moto-004","name":"Scenic Motorcycle App","category":"Adventure Motorcycle","subcategory":"On-Bike Navigation App","url":"https://scenicapp.space","platforms":["iOS"],"pricing":"Subscription (free trial available)","cost_tier":"Paid","offline":true,"tags":["motorcycle","on-bike navigation","GPX import","offline maps","HUD","CarPlay","iOS"],"western_us_focus":true,"description":"iOS motorcycle navigation app optimized for use while riding. Clean, minimal HUD-style interface, GPX route import, offline maps, and CarPlay support. Popular among riders who plan routes in MyRoute-app or CalTopo then want best-in-class on-bike UX.","key_features":["Motorcycle-optimized on-bike UI","GPX route import and navigation","Offline map downloads","Apple CarPlay support","Speed, elevation, and trip metrics","Route recording"],"limitations":"iOS only; no Android version.","best_for":"iOS users wanting the cleanest on-bike navigation experience","source_verified":"https://scenicapp.space"},{"id":"moto-005","name":"MyRoute-app (MRA)","category":"Adventure Motorcycle","subcategory":"Route Planning Tool","url":"https://www.myrouteapp.com","platforms":["Web","iOS","Android"],"pricing":"Free tier / Premium subscription","cost_tier":"Freemium","offline":false,"tags":["motorcycle","route planning","GPX export","multi-day itinerary","waypoints"],"western_us_focus":false,"description":"Precision route planning tool for multi-day motorcycle trips. Allows detailed day-by-day itinerary creation, waypoint management, and GPX/KML export to navigation apps like Scenic or Garmin Zumo. Strong preference among touring riders for pre-trip planning.","key_features":["Day-by-day multi-stop itinerary planning","Precise route shaping and waypoints","GPX and KML export","Import into Scenic, Zumo, and other nav apps","Desktop and mobile sync"],"limitations":"Best used as a planning tool, not real-time navigation.","best_for":"Pre-trip multi-day route planning with export to on-bike nav apps","source_verified":"https://www.myrouteapp.com"},{"id":"moto-006","name":"Kurviger","category":"Adventure Motorcycle","subcategory":"Twisty-Route Navigation","url":"https://kurviger.de","platforms":["Web","Android"],"pricing":"Free / Pro ~$19.99/year","cost_tier":"Freemium","offline":true,"tags":["motorcycle","twisty roads","curvy route planning","offline maps","GPX","mountain roads"],"western_us_focus":true,"description":"Route planner and navigation app optimized to maximize twisty, scenic roads and avoid highways. Great for U.S. mountain and canyon riding. GPX export for use in other apps.","key_features":["Curviness-optimized route planning","Avoids highways and straight roads","Offline map support (Android Pro)","GPX export for other apps","Web planner + mobile sync"],"limitations":"Android-only for mobile; less U.S. road data quality than Europe.","best_for":"Generating maximally twisty routes through mountain and canyon terrain","source_verified":"https://kurviger.de"},{"id":"safety-001","name":"Garmin inReach Mini 2","category":"Safety & Communication","subcategory":"Satellite Emergency Communicator","url":"https://www.garmin.com/en-US/p/775785","platforms":["Standalone device + iOS/Android Earthmate app"],"pricing":"$349.99 device + satellite plan from $14.95/month","cost_tier":"Paid","offline":true,"tags":["satellite","emergency SOS","two-way messaging","location sharing","no cell needed","backcountry","Iridium satellite"],"western_us_focus":true,"description":"Two-way Iridium satellite communicator for backcountry and remote travel. Send/receive text messages, share GPS location, and trigger 24/7 emergency SOS — all without cell service. Pairs with Zumo XT2 for integrated navigation + emergency capability.","key_features":["Two-way satellite texting (Iridium network)","24/7 GEOS emergency SOS","GPS location sharing","Weather forecast by location","Compatible with Garmin Zumo XT2","Earthmate app pairing","100% global satellite coverage"],"limitations":"Monthly satellite plan required; message delays in heavy tree cover.","best_for":"Off-grid emergency communication for solo moto and remote RV travel","source_verified":"https://www.garmin.com/en-US/p/775785"},{"id":"weather-001","name":"MyRadar","category":"Weather & Conditions","subcategory":"Weather Radar App","url":"https://myradar.com","platforms":["iOS","Android"],"pricing":"Free / Pro $5.99/year","cost_tier":"Freemium","offline":false,"tags":["weather","radar","storm tracking","trip planning","real-time weather"],"western_us_focus":true,"description":"Fast, lightweight weather radar app with real-time storm tracking, wind overlays, and lightning detection. Essential for daily departure decisions in the Western U.S. where afternoon thunderstorms are common in mountain terrain.","key_features":["Real-time weather radar","Wind speed and direction overlay","Lightning detection","Hurricane and severe storm tracking","Clean, fast interface"],"limitations":"Requires cell/WiFi for real-time data; no offline weather.","best_for":"Daily go/no-go weather decisions and storm avoidance","source_verified":"https://myradar.com"},{"id":"weather-002","name":"Windy.com","category":"Weather & Conditions","subcategory":"Wind & Weather Visualization","url":"https://www.windy.com","platforms":["Web","iOS","Android"],"pricing":"Free / Premium $19.99/year","cost_tier":"Freemium","offline":false,"tags":["wind","weather","forecast","visualization","mountain passes","fire weather","smoke"],"western_us_focus":true,"description":"Stunning wind and weather visualization tool using multiple forecast models. Essential for understanding wind patterns, mountain pass conditions, and fire weather in the Western U.S. Displays wind, rain, temperature, and smoke/aerosol layers.","key_features":["Animated wind and weather visualization","Multiple forecast model support (ECMWF, GFS, ICON)","Mountain pass wind and temperature forecasts","Smoke and aerosol layer (critical near wildfires)","Webcam integration","48+ hour forecasts"],"limitations":"Requires internet; complex UI for new users.","best_for":"Mountain pass planning, wind assessment, and wildfire smoke monitoring","source_verified":"https://www.windy.com"}]};
 
-const CATEGORIES = INITIAL_DATA.categories;
+// CATEGORIES will be initialized dynamically after resources load
 const CAT_COLORS = {
   "RV / Motorhome Navigation":"#3b82f6",
   "Topo & Mapping Tools":"#8b5cf6",
@@ -224,27 +224,140 @@ const CAT_COLORS = {
   "Camping & Boondocking":"#f59e0b",
   "Adventure Motorcycle":"#ef4444",
   "Safety & Communication":"#ec4899",
-  "Weather & Conditions":"#06b6d4"
+  "Weather & Conditions":"#06b6d4",
+  // Master file categories
+  "Height & Clearance Navigation":"#3b82f6",
+  "RV & Motorhome Navigation":"#3b82f6",
+  "Overlanding & Trail Navigation":"#8b5cf6",
+  "Geo-Located PDF Maps":"#8b5cf6",
+  "Federal Mapping & Public Lands":"#22c55e",
+  "State DOT Road Conditions":"#22c55e",
+  "State OHV & Trail Maps":"#ef4444",
+  "Print Maps & Atlases":"#8b5cf6",
+  "Trip Planning & Scouting":"#8b5cf6"
 };
+
+// Helper to get color for category, default to gray if not found
+function getCategoryColor(category) {
+  return CAT_COLORS[category] || "#6b7280";
+}
+
+// ── MASTER RESOURCES LOADER ───────────────────────────────────────────────
+async function loadFromMasterResources() {
+  try {
+    const response = await fetch('master-resources.json');
+    if (!response.ok) throw new Error('Failed to fetch master-resources.json');
+    const masterData = await response.json();
+
+    // Map master categories to this app's categories
+    const categoryMap = {
+      "Height & Clearance Navigation": "RV / Motorhome Navigation",
+      "RV & Motorhome Navigation": "RV / Motorhome Navigation",
+      "Overlanding & Trail Navigation": "Topo & Mapping Tools",
+      "Adventure Motorcycle": "Adventure Motorcycle",
+      "Geo-Located PDF Maps": "Topo & Mapping Tools",
+      "Federal Mapping & Public Lands": "BLM / USFS Official",
+      "Camping & Boondocking": "Camping & Boondocking",
+      "State DOT Road Conditions": "BLM / USFS Official",
+      "State OHV & Trail Maps": "Adventure Motorcycle",
+      "Print Maps & Atlases": "Topo & Mapping Tools",
+      "Trip Planning & Scouting": "Topo & Mapping Tools",
+      "Safety & Communication": "Safety & Communication",
+      "Weather & Conditions": "Weather & Conditions"
+    };
+
+    // Convert master schema to this app's format
+    const convertedResources = masterData.resources.map(r => ({
+      id: r.id,
+      name: r.name,
+      category: categoryMap[r.category] || "Topo & Mapping Tools",
+      subcategory: r.subcategory || '',
+      url: r.url,
+      platforms: r.platforms || ['Web'],
+      pricing: r.cost || '',
+      cost_tier: r.cost_tier || 'Free',
+      offline: r.offline || r.offlineCapable || false,
+      western_us_focus: r.states ? r.states.includes('US') || r.states.length > 1 : true,
+      description: r.description || '',
+      key_features: r.features || [],
+      limitations: r.notes || '',
+      best_for: r.bestFor || '',
+      tags: r.tags || [],
+      source_verified: r.source_verified || r.url
+    }));
+
+    // Save to AppSDK storage
+    try {
+      if (window.AppSDK && AppSDK.setState) {
+        AppSDK.setState({ resources: convertedResources });
+      }
+    } catch (e) {}
+
+    return convertedResources;
+  } catch (error) {
+    console.error('Failed to load master resources:', error);
+    return null;
+  }
+}
 
 // ── STATE ───────────────────────────────────────────────────────────────
 let resources = JSON.parse(JSON.stringify(INITIAL_DATA.resources));
 let expandedCard = null;
 let deleteConfirmId = null;
 
+// Extract unique categories from resources
+function getCategoriesFromResources(resourceList) {
+  const cats = new Set(resourceList.map(r => r.category));
+  return Array.from(cats).sort();
+}
+
+// Update CATEGORIES dynamically
+let CATEGORIES = getCategoriesFromResources(resources);
+
 // Persistence via AppSDK
 function saveState(){
   try{ if(window.AppSDK && AppSDK.setState) AppSDK.setState({resources}); }catch(e){}
 }
+
 function loadState(){
   try{
     if(window.AppSDK && AppSDK.getState){
       const s = AppSDK.getState();
-      if(s && s.resources && Array.isArray(s.resources) && s.resources.length) resources = s.resources;
+      if(s && s.resources && Array.isArray(s.resources) && s.resources.length) return s.resources;
     }
   }catch(e){}
+  return null;
 }
-loadState();
+
+// Async initialization: master file → AppSDK → INITIAL_DATA
+(async function initializeResources() {
+  let loadedResources = null;
+
+  // Try master file first
+  loadedResources = await loadFromMasterResources();
+
+  // Fall back to AppSDK storage
+  if (!loadedResources) {
+    const stored = loadState();
+    if (stored) loadedResources = stored;
+  }
+
+  // Fall back to INITIAL_DATA
+  if (!loadedResources) {
+    loadedResources = JSON.parse(JSON.stringify(INITIAL_DATA.resources));
+    console.log('Using INITIAL_DATA fallback');
+  } else {
+    console.log('Loaded ' + loadedResources.length + ' resources from master-resources.json');
+  }
+
+  resources = loadedResources;
+  CATEGORIES = getCategoriesFromResources(resources);
+  console.log('Categories: ' + CATEGORIES.join(', '));
+
+  // Re-populate filters and re-render after loading
+  populateFilters();
+  renderCards();
+})();
 
 // ── HELPERS ─────────────────────────────────────────────────────────────
 function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
@@ -552,14 +665,26 @@ function handleImport(e){
 }
 
 // ── INIT ────────────────────────────────────────────────────────────────
-(function init(){
-  // Populate category dropdowns
+// Populate category dropdowns
+function populateFilters() {
   const filterCat = document.getElementById('filter-cat-h8n3');
   const formCat = document.getElementById('form-cat-c3d4');
+  filterCat.innerHTML = '<option value="">All Categories</option>';
+  formCat.innerHTML = '';
   CATEGORIES.forEach(c=>{
     filterCat.innerHTML += `<option value="${c}">${c}</option>`;
     formCat.innerHTML += `<option value="${c}">${c}</option>`;
   });
+}
+
+async function initApp() {
+  // Wait for resources to be loaded
+  while (typeof resources === 'undefined' || resources === null) {
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+
+  // Populate category dropdowns
+  populateFilters();
 
   // Bind toolbar events
   document.getElementById('search-input-f4r2').addEventListener('input', ()=>renderCards());
@@ -594,7 +719,14 @@ function handleImport(e){
   // Initial render
   renderCards();
   lucide.createIcons();
-})();
+}
+
+// Call init when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 </script>
 </body>
 </html>

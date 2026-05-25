@@ -35,7 +35,7 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Western Navigation Resource Database - LMA </title>
+  <title>GPT Nav Resource Manager</title>
   <style>
     :root {
       --bg: #f6f7fb;
@@ -363,7 +363,7 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
 </head>
 <body data-theme="light">
   <header>
-    <h1>Western Navigation Resource Database</h1>
+    <h1>GPT Nav Resource Manager</h1>
     <p>
       Mapping tools, public-land maps, GeoPDF/PDF resources, tracks/routes, camping databases,
       low-clearance/RV routing tools, and western-state DOT/OHV resources.
@@ -642,7 +642,17 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
     };
 
     initTheme();
-    refresh();
+    // Initialize with async loading from master-resources.json
+    (async function initializeApp() {
+      const masterData = await loadFromMasterResources();
+      if (masterData) {
+        db = masterData;
+        console.log('Loaded ' + masterData.resources.length + ' resources from master-resources.json');
+      } else {
+        db = loadDbSync();
+      }
+      refresh();
+    })();
 
     els.search.addEventListener("input", refresh);
     els.categoryFilter.addEventListener("change", refresh);
@@ -729,7 +739,51 @@ LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in fil
       deleteResource(editingResourceId);
     });
 
+    async function loadFromMasterResources() {
+      try {
+        const response = await fetch('master-resources.json');
+        const masterData = await response.json();
+
+        // Convert master schema to this app's format
+        const convertedData = {
+          schemaVersion: masterData.schemaVersion,
+          lastVerified: masterData.lastVerified,
+          project: masterData.metadata.title,
+          rigProfile: masterData.metadata.vehicleProfile,
+          resources: masterData.resources.map(r => ({
+            id: r.id,
+            title: r.name,
+            category: r.category,
+            type: r.type || 'Web',
+            url: r.url,
+            states: r.states || ['US'],
+            cost: r.cost,
+            offline: r.offline || r.offlineCapable || false,
+            geoFormats: r.geoFormats || [],
+            vehicleRouting: r.vehicleRouting || false,
+            priority: r.priority.charAt(0).toUpperCase() + r.priority.slice(1), // Capitalize first letter
+            tags: r.tags || [],
+            summary: r.description || '',
+            notes: (r.bestFor ? `Best for: ${r.bestFor}. ` : '') + (r.notes || '')
+          }))
+        };
+
+        // Save to localStorage for persistence
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(convertedData));
+        return convertedData;
+      } catch (error) {
+        console.error('Failed to load master resources:', error);
+        return null;
+      }
+    }
+
     function loadDb() {
+      // First try to load from master-resources.json, then fall back to localStorage/FA
+      // This is handled by the async initialization below
+      return loadDbSync();
+    }
+
+    function loadDbSync() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (!stored) return structuredClone(FALLBACK_DB);
       try {

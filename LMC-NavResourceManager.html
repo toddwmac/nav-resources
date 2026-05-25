@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Overland & RV Navigation Resource Manager</title>
+    <title>LMC Nav Resource Manager</title>
     <style>
         :root {
             --bg-color: #f4f7f6;
@@ -132,7 +132,7 @@
 <body>
 
     <header>
-        <h1>Overland Nav Database</h1>
+        <h1>LMC Nav Resource Manager</h1>
         <div class="controls">
             <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
             <button onclick="openModal()">Add Resource</button>
@@ -186,6 +186,69 @@
     </div>
 
     <script>
+        // Category mapping from master schema to this app's format
+        const CATEGORY_MAP = {
+            "Height & Clearance Navigation": "rv_navigation",
+            "RV & Motorhome Navigation": "rv_navigation",
+            "Overlanding & Trail Navigation": "adv_motorcycle",
+            "Adventure Motorcycle": "adv_motorcycle",
+            "Geo-Located PDF Maps": "geopdf_mvum",
+            "Federal Mapping & Public Lands": "geopdf_mvum",
+            "Camping & Boondocking": "camping_boondocking",
+            "State DOT Road Conditions": "geopdf_mvum",
+            "State OHV & Trail Maps": "adv_motorcycle",
+            "Print Maps & Atlases": "geopdf_mvum",
+            "Trip Planning & Scouting": "adv_motorcycle",
+            "Safety & Communication": "geopdf_mvum",
+            "Weather & Conditions": "geopdf_mvum"
+        };
+
+        const CATEGORY_NAMES = {
+            "rv_navigation": "RV & Large Vehicle Navigation",
+            "adv_motorcycle": "Adventure Motorcycle Navigation",
+            "geopdf_mvum": "Geospatial PDF & Agency Maps",
+            "camping_boondocking": "Dispersed Camping"
+        };
+
+        // Load from master-resources.json and convert to app format
+        async function loadFromMasterResources() {
+            try {
+                const response = await fetch('master-resources.json');
+                const masterData = await response.json();
+
+                // Convert master format to this app's format
+                const convertedData = { categories: [] };
+                const categoryMap = {};
+
+                masterData.resources.forEach(resource => {
+                    const catId = CATEGORY_MAP[resource.category] || "geopdf_mvum";
+                    const catName = CATEGORY_NAMES[catId];
+
+                    if (!categoryMap[catId]) {
+                        categoryMap[catId] = {
+                            id: catId,
+                            name: catName,
+                            resources: []
+                        };
+                        convertedData.categories.push(categoryMap[catId]);
+                    }
+
+                    categoryMap[catId].resources.push({
+                        id: resource.id,
+                        name: resource.name,
+                        url: resource.url,
+                        description: resource.description,
+                        tags: resource.tags || []
+                    });
+                });
+
+                return convertedData;
+            } catch (error) {
+                console.error('Failed to load master resources:', error);
+                return null;
+            }
+        }
+
         // Initial Default Database matching the research
         const defaultData = {
             "categories": [
@@ -219,7 +282,26 @@
             ]
         };
 
-        let db = JSON.parse(localStorage.getItem('overlandDB')) || defaultData;
+        let db = defaultData; // Start with default, then try to load from master
+
+        // Initialize: try to load from master, fall back to default/localStorage
+        (async function initializeDB() {
+            const masterData = await loadFromMasterResources();
+            if (masterData) {
+                db = masterData;
+                const totalCount = masterData.categories.reduce((sum, cat) => sum + cat.resources.length, 0);
+                console.log('Loaded ' + totalCount + ' resources from master-resources.json');
+            } else {
+                const localData = localStorage.getItem('overlandDB');
+                if (localData) {
+                    db = JSON.parse(localData);
+                    console.log('Loaded from localStorage');
+                } else {
+                    console.log('Using default data');
+                }
+            }
+            renderApp();
+        })();
 
         // Render Database
         function renderApp() {
