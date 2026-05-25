@@ -1,0 +1,121 @@
+{
+  "project": "Western US Overland & RV Navigational Database",
+  "updated": "2026-05-24",
+  "categories": [
+    {
+      "id": "rv_navigation",
+      "title": "RV & Large Vehicle Navigation (Clearance Avoidance)",
+      "resources": [
+        {
+          "id": "rv_trip_wizard",
+          "name": "RV LIFE Trip Wizard",
+          "url": "https://tripwizard.rvlife.com/",
+          "description": "Visual RV trip planner that customizes routes based on the 12ft height and weight of the motorhome. Avoids low clearances, steep grades, and propane restrictions.",
+          "tags": ["Low Clearance", "Routing", "Campgrounds"]
+        },
+        {
+          "id": "headroom",
+          "name": "HeadRoom by Low Clearance Map",
+          "url": "https://lowclearancemap.com/",
+          "description": "Mobile app featuring 24,000+ verified low-clearance bridges. Features Hazard Headings (directional warnings) and Sentry Mode for background hazard monitoring.",
+          "tags": ["Bridge Heights", "Hazards", "Turn-by-turn"]
+        },
+        {
+          "id": "trucker_path",
+          "name": "Trucker Path",
+          "url": "https://truckerpath.com/",
+          "description": "Commercial trucking app adapted for RV use. Provides truck-safe navigation, clearance heights, and statuses on large truck stops and weigh stations.",
+          "tags": ["Clearance", "Truck Stops", "Commercial"]
+        }
+      ]
+    },
+    {
+      "id": "adv_motorcycle",
+      "name": "Adventure Motorcycle Off-Road Navigation",
+      "resources": [
+        {
+          "id": "bdr",
+          "name": "Backcountry Discovery Routes (BDR)",
+          "url": "https://ridebdr.com/",
+          "description": "Non-profit organization providing free GPX tracks and maps for multi-day, off-pavement adventure motorcycle routes across Western states.",
+          "tags": ["GPX Tracks", "Off-Road", "Routes"]
+        },
+        {
+          "id": "onx_offroad",
+          "name": "onX Offroad",
+          "url": "https://www.onxmaps.com/offroad/app",
+          "description": "Official navigation app of the BDR. Provides seamless GPX imports, offline maps, and clearly defined public land boundaries.",
+          "tags": ["Public Lands", "Offline", "Topo"]
+        },
+        {
+          "id": "gaia_gps",
+          "name": "Gaia GPS",
+          "url": "https://www.gaiagps.com/",
+          "description": "Highly detailed topographic mapping application. Features one-click BDR route imports, MVUM layers, and custom off-grid map caching.",
+          "tags": ["Topo", "BDR Integration", "Offline"]
+        },
+        {
+          "id": "adv_rider_app",
+          "name": "ADV Rider",
+          "url": "https://www.advrider.app/",
+          "description": "iOS app built for enduro/adventure riders featuring rally-style navigation, GPX tracking, and fuel-range gauges.",
+          "tags": ["Rally", "GPX", "Motorcycle"]
+        }
+      ]
+    },
+    {
+      "id": "geopdf_mvum",
+      "name": "Geospatial PDF & Agency Maps",
+      "resources": [
+        {
+          "id": "avenza_maps",
+          "name": "Avenza Maps",
+          "url": "https://www.avenza.com/avenza-maps/",
+          "description": "Offline map viewer that interacts with device GPS. The primary tool for downloading and viewing USFS MVUMs (Motor Vehicle Use Maps) and GeoPDFs.",
+          "tags": ["GeoPDF", "Offline", "USFS"]
+        },
+        {
+          "id": "usfs_mvum_portal",
+          "name": "USFS Interactive MVUM Finder",
+          "url": "https://www.fs.usda.gov/r04/data-tools/interactive-maps/motorized-vehicle-use-maps-mvum",
+          "description": "Federal portal to locate and download official legal Motor Vehicle Use Maps for National Forests.",
+          "tags": ["MVUM", "USFS", "Legal"]
+        },
+        {
+          "id": "blm_national_data",
+          "name": "BLM National Data Viewer",
+          "url": "https://experience.arcgis.com/experience/9a89ee80c604431e8f8d939a186fbdbb",
+          "description": "Official ArcGIS interactive map showing Surface Management Agency (SMA) boundaries, ensuring legal camping on BLM land.",
+          "tags": ["BLM", "ArcGIS", "Boundaries"]
+        }
+      ]
+    },
+    {
+      "id": "camping_boondocking",
+      "name": "Dispersed Camping & Boondocking",
+      "resources": [
+        {
+          "id": "ioverlander",
+          "name": "iOverlander",
+          "url": "https://ioverlander.com/",
+          "description": "Crowdsourced database of wild campsites, water points, and stealth parking. Operates primarily offline.",
+          "tags": ["Dispersed Camping", "Crowdsourced", "Water"]
+        },
+        {
+          "id": "campendium",
+          "name": "Campendium",
+          "url": "https://www.campendium.com/",
+          "description": "Database for finding free dispersed campsites, state parks, and RV parks, featuring user reviews and cellular coverage reports.",
+          "tags": ["Reviews", "Cell Coverage", "Boondocking"]
+        },
+        {
+          "id": "wa_dnr",
+          "name": "Washington DNR Recreation Map",
+          "url": "https://dnr.wa.gov/recreation/find-your-campsite",
+          "description": "Interactive map for state forests in Washington. Indicates open campsites and Discover Pass requirements.",
+          "tags": ["State Forest", "Washington", "Camping"]
+        }
+      ]
+    }
+  ]
+}

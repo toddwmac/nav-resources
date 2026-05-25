@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark" />
+<title>Western U.S. Nav Resource Database</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'sans-serif'] },
+      colors: {
+        dark: { 900:'#0f1117', 800:'#1a1d27', 700:'#2a2d3a', 600:'#353849' },
+        txt: { primary:'#e2e8f0', muted:'#94a3b8', dim:'#64748b' },
+        blue: { 400:'#60a5fa', 500:'#3b82f6' },
+        green: { 500:'#22c55e', 400:'#4ade80' },
+        amber: { 500:'#f59e0b', 400:'#fbbf24' },
+        red: { 500:'#ef4444', 400:'#f87171' },
+        purple: { 500:'#8b5cf6' },
+        pink: { 500:'#ec4899' },
+        cyan: { 500:'#06b6d4' },
+      }
+    }
+  }
+};
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--border:#2a2d3a;
+  --accent:#3b82f6;--accent-hover:#60a5fa;
+  --text:#e2e8f0;--text-muted:#94a3b8;--text-dim:#64748b;
+  --green:#22c55e;--amber:#f59e0b;--red:#ef4444;
+  --cat-rv:#3b82f6;--cat-topo:#8b5cf6;--cat-blm:#22c55e;
+  --cat-camp:#f59e0b;--cat-moto:#ef4444;--cat-safety:#ec4899;--cat-weather:#06b6d4;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;line-height:1.6}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#3a3d4a}
+.header-gradient{background:linear-gradient(180deg,#1e293b 0%,#0f1117 100%)}
+.stat-pill{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:13px}
+.stat-pill .stat-num{font-weight:700;font-variant-numeric:tabular-nums}
+.toolbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;position:sticky;top:0;z-index:40;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.toolbar input,.toolbar select{background:#252836;border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 12px;font-size:13px;font-family:inherit;outline:none;transition:border-color .2s}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--accent)}
+.toolbar input{min-width:200px;flex:1 1 200px}
+.toolbar select{min-width:140px}
+.toolbar label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);cursor:pointer;white-space:nowrap}
+.toolbar label input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+.filter-count{font-size:13px;color:var(--text-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .2s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-secondary{background:#252836;color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:#2f3244}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--red)}
+.btn-danger:hover{background:rgba(239,68,68,.25)}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:8px}
+.grid-container{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px;max-width:1600px;margin:0 auto;width:100%}
+@media(max-width:1200px){.grid-container{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.grid-container{grid-template-columns:1fr;padding:12px}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:pointer;position:relative}
+.card:hover{transform:scale(1.008);box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.card-accent{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:14px 0 0 14px}
+.card-body{padding:16px 16px 16px 20px}
+.cat-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.3px}
+.offline-badge,.cost-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:8px;font-size:11px;font-weight:600}
+.platform-chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;background:#252836;color:var(--text-muted)}
+.tag-chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;background:rgba(59,130,246,.1);color:#60a5fa;cursor:pointer;transition:background .2s;border:none;font-family:inherit}
+.tag-chip:hover{background:rgba(59,130,246,.2)}
+.desc-clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;line-clamp:3}
+.desc-full{display:block!important;-webkit-line-clamp:unset!important;overflow:visible!important}
+.detail-panel{display:none;border-top:1px solid var(--border);padding:16px 16px 16px 20px;background:#151722;animation:slideDown .25s ease}
+.detail-panel.open{display:block}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
+.detail-panel h4{font-size:13px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px}
+.detail-panel h4:first-child{margin-top:0}
+.feature-item{display:flex;align-items:flex-start;gap:6px;font-size:13px;color:var(--text);margin:4px 0}
+.feature-item::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+.card-actions{display:flex;gap:6px;padding:0 16px 12px 20px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;padding:24px}
+.modal h2{font-size:20px;font-weight:700;margin-bottom:16px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:#252836;border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 12px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{min-height:80px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}}
+.form-check{display:flex;align-items:center;gap:8px;font-size:14px}
+.form-check input{accent-color:var(--accent);width:18px;height:18px}
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 18px;border-radius:12px;font-size:13px;font-weight:500;color:#fff;animation:toastIn .3s ease;min-width:240px;max-width:380px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast-success{background:#166534}
+.toast-error{background:#991b1b}
+.toast-info{background:#1e3a5f}
+@keyframes toastIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(60px)}}
+.confirm-bar{display:flex;align-items:center;gap:8px;padding:8px 16px 12px 20px;background:rgba(239,68,68,.08);border-top:1px solid rgba(239,68,68,.2);font-size:13px;color:var(--text-muted)}
+.confirm-bar span{flex:1}
+.source-link{color:var(--accent);text-decoration:none;word-break:break-all;font-size:13px}
+.source-link:hover{text-decoration:underline}
+.stats-bar{display:flex;flex-wrap:wrap;gap:10px;padding:16px 20px;justify-content:center}
+@media(max-width:500px){.stats-bar{gap:6px}.stat-pill{padding:6px 10px;font-size:11px}}
+footer{margin-top:auto;text-align:center;padding:24px;font-size:12px;color:var(--text-dim)}
+.toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+@media(max-width:768px){
+  .toolbar{padding:10px 12px;gap:8px}
+  .toolbar input{min-width:100%;flex:1 1 100%}
+  .toolbar-actions{width:100%}
+}
+.hidden-input{position:absolute;width:0;height:0;opacity:0;pointer-events:none}
+</style>
+</head>
+<body data-id="0">
+<app-icon data-id="1" hidden data-icon="compass" data-palette="Blue"></app-icon>
+
+<!-- HEADER -->
+<header data-id="2" class="header-gradient" id="header-main">
+  <div data-id="3" style="max-width:1600px;margin:0 auto;padding:28px 20px 0">
+    <div data-id="4" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span data-id="5" style="font-size:32px">🗺️</span>
+      <div data-id="6">
+        <h1 data-id="7" style="font-size:24px;font-weight:700;letter-spacing:-.3px" id="title-h1ks">Western U.S. Nav Resource Database</h1>
+        <p data-id="8" style="font-size:14px;color:var(--text-muted)">Motorhome &amp; Adventure Bike — <span data-id="9" id="subtitle-count-82ka">30</span> Resources</p>
+      </div>
+    </div>
+  </div>
+  <!-- STATS BAR -->
+  <div data-id="10" class="stats-bar" id="stats-bar-x9k2">
+    <div data-id="11" class="stat-pill"><i data-id="12" data-lucide="database" class="w-4 h-4" style="color:var(--accent)"></i> Total Resources: <span data-id="13" class="stat-num" id="stat-total-g7f1">30</span></div>
+    <div data-id="14" class="stat-pill"><i data-id="15" data-lucide="wifi-off" class="w-4 h-4" style="color:var(--green)"></i> Offline Capable: <span data-id="16" class="stat-num" id="stat-offline-m3z9">0</span></div>
+    <div data-id="17" class="stat-pill"><i data-id="18" data-lucide="circle-dollar-sign" class="w-4 h-4" style="color:var(--amber)"></i> Free / Freemium: <span data-id="19" class="stat-num" id="stat-free-q2v8">0</span></div>
+    <div data-id="20" class="stat-pill"><i data-id="21" data-lucide="map-pin" class="w-4 h-4" style="color:var(--red)"></i> Western US Focus: <span data-id="22" class="stat-num" id="stat-western-j5k4">0</span></div>
+  </div>
+</header>
+
+<!-- TOOLBAR -->
+<div data-id="23" class="toolbar" id="toolbar-p1w3">
+  <div data-id="24" style="position:relative;flex:1 1 200px;display:flex;align-items:center">
+    <i data-id="25" data-lucide="search" class="w-4 h-4" style="position:absolute;left:12px;color:var(--text-dim);pointer-events:none"></i>
+    <input data-id="26" type="text" id="search-input-f4r2" placeholder="Search name, tags, description…" style="padding-left:34px;width:100%">
+  </div>
+  <select data-id="27" id="filter-cat-h8n3"><option data-id="28" value="">All Categories</option></select>
+  <select data-id="29" id="filter-cost-k1m7"><option data-id="30" value="">All Cost Tiers</option><option data-id="31" value="Free">Free</option><option data-id="32" value="Freemium">Freemium</option><option data-id="33" value="Paid">Paid</option><option data-id="34" value="Free / Low-Cost">Free / Low-Cost</option></select>
+  <label data-id="35"><input data-id="36" type="checkbox" id="filter-offline-w2x6"> Offline only</label>
+  <select data-id="37" id="sort-select-t3b5"><option data-id="38" value="name-asc">Name A–Z</option><option data-id="39" value="name-desc">Name Z–A</option><option data-id="40" value="category">Category</option><option data-id="41" value="cost">Cost Tier</option><option data-id="42" value="offline">Offline First</option></select>
+  <span data-id="43" class="filter-count" id="filter-count-r9c4">Showing 30 of 30</span>
+  <div data-id="44" class="toolbar-actions">
+    <button data-id="45" class="btn btn-primary btn-sm" id="btn-add-y6g8"><i data-id="46" data-lucide="plus" class="w-4 h-4"></i> Add</button>
+    <button data-id="47" class="btn btn-secondary btn-sm" id="btn-export-e5d2"><i data-id="48" data-lucide="download" class="w-4 h-4"></i> Export JSON</button>
+    <button data-id="49" class="btn btn-secondary btn-sm" id="btn-import-u7h1"><i data-id="50" data-lucide="upload" class="w-4 h-4"></i> Import JSON</button>
+    <input data-id="51" type="file" accept=".json" class="hidden-input" id="import-file-z3k9">
+  </div>
+</div>
+
+<!-- GRID -->
+<main data-id="52">
+  <div data-id="53" class="grid-container" id="grid-container-a2b4"></div>
+</main>
+
+<!-- MODAL -->
+<div data-id="54" class="modal-overlay" id="modal-overlay-c6d8">
+  <div data-id="55" class="modal" id="modal-form-n4p5">
+    <h2 data-id="56" id="modal-title-s1q3">Add Resource</h2>
+    <form data-id="57" id="resource-form-v8w2">
+      <input data-id="58" type="hidden" id="form-edit-id-x0y1">
+      <div data-id="59" class="form-row">
+        <div data-id="60" class="form-group"><label data-id="61">Name *</label><input data-id="62" type="text" id="form-name-a1b2" required></div>
+        <div data-id="63" class="form-group"><label data-id="64">Category *</label><select data-id="65" id="form-cat-c3d4" required><option data-id="66" value="">Select…</option></select></div>
+      </div>
+      <div data-id="67" class="form-row">
+        <div data-id="68" class="form-group"><label data-id="69">Subcategory</label><input data-id="70" type="text" id="form-subcat-e5f6"></div>
+        <div data-id="71" class="form-group"><label data-id="72">URL</label><input data-id="73" type="url" id="form-url-g7h8"></div>
+      </div>
+      <div data-id="74" class="form-row">
+        <div data-id="75" class="form-group"><label data-id="76">Platforms (comma-separated)</label><input data-id="77" type="text" id="form-platforms-i9j0"></div>
+        <div data-id="78" class="form-group"><label data-id="79">Pricing</label><input data-id="80" type="text" id="form-pricing-k1l2"></div>
+      </div>
+      <div data-id="81" class="form-row">
+        <div data-id="82" class="form-group"><label data-id="83">Cost Tier</label><select data-id="84" id="form-cost-m3n4"><option data-id="85" value="Free">Free</option><option data-id="86" value="Freemium">Freemium</option><option data-id="87" value="Paid">Paid</option><option data-id="88" value="Free / Low-Cost">Free / Low-Cost</option></select></div>
+        <div data-id="89" class="form-group" style="display:flex;gap:20px;align-items:flex-end;padding-bottom:2px">
+          <label data-id="90" class="form-check"><input data-id="91" type="checkbox" id="form-offline-o5p6"> Offline</label>
+          <label data-id="92" class="form-check"><input data-id="93" type="checkbox" id="form-western-q7r8"> Western US Focus</label>
+        </div>
+      </div>
+      <div data-id="94" class="form-group"><label data-id="95">Description</label><textarea data-id="96" id="form-desc-s9t0"></textarea></div>
+      <div data-id="97" class="form-group"><label data-id="98">Key Features (one per line)</label><textarea data-id="99" id="form-features-u1v2"></textarea></div>
+      <div data-id="100" class="form-group"><label data-id="101">Limitations</label><input data-id="102" type="text" id="form-limits-w3x4"></div>
+      <div data-id="103" class="form-group"><label data-id="104">Best For</label><input data-id="105" type="text" id="form-bestfor-y5z6"></div>
+      <div data-id="106" class="form-group"><label data-id="107">Tags (comma-separated)</label><input data-id="108" type="text" id="form-tags-a7b8"></div>
+      <div data-id="109" style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
+        <button data-id="110" type="button" class="btn btn-secondary" id="btn-cancel-c9d0">Cancel</button>
+        <button data-id="111" type="submit" class="btn btn-primary" id="btn-save-e1f2">Save Resource</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div data-id="112" class="toast-container" id="toast-container-g3h4"></div>
+
+<footer data-id="113"><p data-id="114">Made by Copilot</p></footer>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────
+const INITIAL_DATA = {"metadata":{"title":"Western U.S. Motorhome & Adventure Bike Navigation Resource Database","version":"1.0","created":"2026-05-24","description":"Curated mapping tools, camping apps, BLM/USFS official resources, low-clearance navigation, adventure motorcycle tools, and hardware for a Western U.S. motorhome and adventure bike journey.","author":"Todd — Copilot Research","totalResources":30},"categories":["RV / Motorhome Navigation","Topo & Mapping Tools","BLM / USFS Official","Camping & Boondocking","Adventure Motorcycle","Safety & Communication","Weather & Conditions"],"resources":[{"id":"rv-001","name":"RV LIFE Trip Wizard + RV LIFE App","category":"RV / Motorhome Navigation","subcategory":"Trip Planning + GPS","url":"https://tripwizard.rvlife.com","platforms":["Web","iOS","Android"],"pricing":"$65/year (7-day free trial)","cost_tier":"Paid","offline":true,"tags":["low-clearance routing","RV-safe GPS","campground reviews","trip planning","fuel planning","height/weight profiles"],"western_us_focus":true,"description":"End-to-end RV trip planner + RV-safe GPS. Build routes in Trip Wizard (web), then navigate turn-by-turn via the RV LIFE app using your rig's height, weight, and length. Avoids low bridges, steep grades, and propane-restricted tunnels. Includes 20,000+ campground reviews and 57,000+ POIs.","key_features":["Custom RV dimension profiles (height, weight, length)","RV-safe turn-by-turn GPS routing","20,000+ campgrounds across all affiliations","57,000+ points of interest","Fuel cost estimation per trip","Trip leg distance/time planning","Good Sam, Escapees, Passport America membership ranking"],"limitations":"Requires separate web + mobile app combo; pricing covers both.","best_for":"Full-trip planning from home + safe daily navigation on the road","source_verified":"https://tripwizard.rvlife.com/features"},{"id":"rv-002","name":"CoPilot RV (Trimble Maps)","category":"RV / Motorhome Navigation","subcategory":"GPS Navigation","url":"https://copilotgps.com/en-us/rv/","platforms":["iOS","Android"],"pricing":"Paid (one-time purchase via app store)","cost_tier":"Paid","offline":true,"tags":["low-clearance routing","offline maps","RV profiles","bridge height alerts"],"western_us_focus":true,"description":"Premium offline RV navigation with robust vehicle dimension profiles. Generates RV-specific routes that avoid low bridges, weight-restricted roads, and propane-prohibited tunnels. Works fully offline after map download.","key_features":["Precise height/weight/length/width RV profiles","Fully offline maps","Live traffic (where available)","Speed and clearance alerts","Multiple RV profile storage"],"limitations":"No trip planning web interface; navigation-only app.","best_for":"Offline RV navigation with robust vehicle dimension safety","source_verified":"https://copilotgps.com/en-us/rv/"},{"id":"rv-003","name":"Sygic Truck & Caravan Navigation","category":"RV / Motorhome Navigation","subcategory":"GPS Navigation","url":"https://www.sygic.com/rv-navigation","platforms":["iOS","Android"],"pricing":"$69.99 Truck Premium / $99.99 with CarPlay+Android Auto (lifetime, North America)","cost_tier":"Paid","offline":true,"tags":["low-clearance routing","offline maps","caravan","motorhome","CarPlay","Android Auto","lane guidance"],"western_us_focus":true,"description":"Dedicated truck/caravan/motorhome navigation with 3D offline maps and routing that avoids low bridges and restricted roads. Supports CarPlay and Android Auto integration. Lifetime license with free map updates.","key_features":["RV/truck/caravan dimension profiles","Reliable 3D offline maps with free updates","Dynamic lane assistant and voice guidance","Speed limit alerts and camera warnings (add-on)","CarPlay / Android Auto support","Multistop route planning","Thousands of truck-related POIs and fuel stations"],"limitations":"Lifetime pricing is per platform unless purchased via e-shop after March 2022; add-ons (traffic, speed cameras) cost extra.","best_for":"Set-it-and-forget-it offline motorhome routing with CarPlay integration","source_verified":"https://www.sygic.com/pricing"},{"id":"rv-004","name":"Togo RV Navigator (Roadpass Pro)","category":"RV / Motorhome Navigation","subcategory":"GPS Navigation","url":"https://www.togorv.com","platforms":["iOS","Android"],"pricing":"Included in Roadpass Pro membership (~$99/year)","cost_tier":"Paid","offline":true,"tags":["low-clearance routing","offline maps","RV-safe GPS","membership bundle"],"western_us_focus":true,"description":"Simple RV-safe GPS navigator using your rig's dimensions for offline routing. Integrated into the broader Togo RV / Roadpass Pro ecosystem alongside campground search and roadside assistance.","key_features":["RV dimension-based safe routing","Offline maps included","Part of Roadpass Pro membership suite"],"limitations":"Best value only if you use the broader Roadpass Pro ecosystem.","best_for":"RVers already in the Roadpass/Togo ecosystem wanting integrated nav","source_verified":"https://www.togorv.com"},{"id":"topo-001","name":"Gaia GPS","category":"Topo & Mapping Tools","subcategory":"Multi-Sport Topo App","url":"https://www.gaiagps.com","platforms":["iOS","Android","Web"],"pricing":"Free (limited) / $39.99/year Premium","cost_tier":"Freemium","offline":true,"tags":["public land overlays","BLM boundaries","topo maps","NatGeo maps","offline","multi-sport","GPX import/export"],"western_us_focus":true,"description":"All-purpose outdoor GPS with excellent public/private land boundary overlays, National Geographic topo maps, and 15+ map layer options. Strong balance of features for overlanding, hiking, and dispersed camping research.","key_features":["BLM/USFS/private land boundary overlays","National Geographic topo maps","15+ map layer options","Offline map downloads","GPX/KML import and export","Waypoint and track recording","Clean mobile interface"],"limitations":"Premium required for best map layers and offline downloads; less trail-specific than Trailforks.","best_for":"Public land boundary verification and multi-sport navigation","source_verified":"https://www.gaiagps.com/features"},{"id":"topo-002","name":"CalTopo","category":"Topo & Mapping Tools","subcategory":"Advanced Mapping / Route Creation","url":"https://caltopo.com","platforms":["Web","iOS","Android"],"pricing":"Free (basic) / $50/year Plus","cost_tier":"Freemium","offline":true,"tags":["backcountry planning","slope angle shading","custom map printing","weather overlay","fire overlay","GPX import/export","desktop sync"],"western_us_focus":true,"description":"The power user's mapping tool. Best-in-class for route creation, slope analysis, custom map printing, and overlay stacking. Ideal for pre-trip backcountry planning. Steep learning curve but unmatched depth.","key_features":["20+ map layer options","Slope angle shading (avalanche/steep terrain awareness)","Custom map printing for field use","Weather and active fire overlays","Desktop + mobile sync","GPX, KML, and KMZ import/export","Offline map capability"],"limitations":"Steep learning curve; no crowd-sourced trail database; overkill for casual navigation.","best_for":"Pre-trip route creation and backcountry/off-road planning","source_verified":"https://caltopo.com/about.html"},{"id":"topo-003","name":"Avenza Maps","category":"Topo & Mapping Tools","subcategory":"MVUM / Geospatial PDF Viewer","url":"https://www.avenzamaps.com","platforms":["iOS","Android"],"pricing":"Free app; individual maps from $0 (USFS free) to ~$10+","cost_tier":"Freemium","offline":true,"tags":["MVUM","geospatial PDF","Forest Service maps","BLM maps","offline","legal trail verification","low battery drain"],"western_us_focus":true,"description":"The specialist tool for viewing and navigating with official USFS Motor Vehicle Use Maps (MVUMs) and BLM georeferenced PDF maps. Shows your GPS position overlaid on downloaded official maps. Extremely low battery drain.","key_features":["Loads official USFS MVUM PDFs directly","BLM georeferenced PDF compatibility","GPS position shown on downloaded maps","Works fully offline","Minimal battery consumption","Very simple interface","Free access to all USFS-published MVUMs"],"limitations":"No route planning; basic GPS features only; limited to available map inventory; no trail conditions data.","best_for":"Legal trail verification and MVUM compliance on the ground","source_verified":"https://www.avenzamaps.com/maps/how-it-works.html"},{"id":"topo-004","name":"OsmAnd","category":"Topo & Mapping Tools","subcategory":"Open-Source Offline Navigation","url":"https://osmand.net","platforms":["iOS","Android"],"pricing":"Free (open-source) / OsmAnd+ ~$9.99 one-time","cost_tier":"Free / Low-Cost","offline":true,"tags":["OpenStreetMap","offline topo","contour lines","hill-shading","open-source","GPX","bicycle routes","hiking"],"western_us_focus":true,"description":"Fully open-source navigation app built on OpenStreetMap data. Completely offline after download with contour lines, hill-shading, hiking/bike paths, and Wikipedia POIs. Updated monthly. Great free alternative with deep customization.","key_features":["Fully offline vector maps (updated monthly)","Contour lines and hill-shading plugin","OpenStreetMap trail and path data","Turn-by-turn navigation offline","GPX track recording and import","Wikipedia POIs for sightseeing","Slope and terrain plugins","Open-source (no subscription required)"],"limitations":"No crowd-sourced trail conditions; public land boundaries require external overlay; less polished UI than commercial apps.","best_for":"Free, fully offline topo navigation with deep customization","source_verified":"https://osmand.net/features"},{"id":"topo-005","name":"Trailforks","category":"Topo & Mapping Tools","subcategory":"Trail-Specific Navigation","url":"https://www.trailforks.com","platforms":["iOS","Android","Web"],"pricing":"Free / Pro $20/year","cost_tier":"Freemium","offline":true,"tags":["trail database","trail conditions","MTB","motorcycle trails","difficulty ratings","user-generated"],"western_us_focus":true,"description":"Largest crowd-sourced trail database in the world. Excellent for finding and navigating established single-track and OHV trails. User-submitted conditions and heat maps show current trail status. Pro required for offline use.","key_features":["Massive user-generated trail database","Trail difficulty ratings","User-submitted trail conditions","One-tap navigation to trailheads","Heat maps of popular routes","Offline maps (Pro only)"],"limitations":"Limited backcountry/dispersed coverage; basic map layers; cannot create custom routes easily.","best_for":"Finding and navigating established OHV and dual-sport trails","source_verified":"https://www.trailforks.com/about/"},{"id":"blm-001","name":"BLM Georeferenced PDF Maps","category":"BLM / USFS Official","subcategory":"Official BLM Download Maps","url":"https://www.blm.gov/maps","platforms":["Web download","Avenza Maps"],"pricing":"Free","cost_tier":"Free","offline":true,"tags":["BLM","georeferenced PDF","campground maps","recreation area maps","official","Avenza-compatible"],"western_us_focus":true,"description":"BLM library of georeferenced PDF maps covering campgrounds, recreation areas, wilderness areas, OHV areas, back-country byways, and special management areas across the Western U.S. Download directly or load into Avenza Maps for GPS use. Covers OR, WA, CA, NV, AZ, UT, CO, ID, MT, WY, NM, and AK.","key_features":["Free download for all maps","Georeferenced = GPS-enabled in Avenza","Covers campground maps, OHV areas, wilderness, byways","Searchable by state at blm.gov/maps","Maps updated regularly by district offices"],"limitations":"Coverage and detail vary by district; no interactive planning tools.","best_for":"Offline campground and recreation area navigation on BLM land","source_verified":"https://www.blm.gov/maps"},{"id":"blm-002","name":"USFS Motor Vehicle Use Maps (MVUM)","category":"BLM / USFS Official","subcategory":"Official Forest Service Road/Trail Designations","url":"https://www.fs.usda.gov/visit/maps","platforms":["Web download","Avenza Maps"],"pricing":"Free","cost_tier":"Free","offline":true,"tags":["MVUM","Forest Service","motorized routes","road designations","legal compliance","OHV","motorcycle","motorhome"],"western_us_focus":true,"description":"Official USFS maps required by the 2005 Travel Management Rule showing all designated motorized routes in each National Forest. Displays allowed vehicle classes (highway vehicles, ATVs <50in, motorcycles, motorhomes), seasonal allowances, and distance rules. Routes NOT on MVUM are closed to motor vehicles. Available as geospatial PDFs via MVUM Finder or Avenza Map Store.","key_features":["Legal vehicle use designations by route","Vehicle class breakdowns: passenger car, high-clearance, motorhome, ATV, motorcycle","Seasonal use windows per route","Downloadable geospatial PDF (GPS-enabled in Avenza)","Available via Avenza Map Store","Covers all National Forests in Western U.S."],"limitations":"Black-and-white maps with no topographic features; best used alongside a forest visitor map.","best_for":"Legal OHV/moto/RV trail compliance in National Forests","source_verified":"https://www.fs.usda.gov/visit/maps"},{"id":"blm-003","name":"USFS MVUM ArcGIS Feature Layer","category":"BLM / USFS Official","subcategory":"GIS Data Layer","url":"https://www.arcgis.com","platforms":["Web GIS","ArcGIS apps"],"pricing":"Free (public CC0 license)","cost_tier":"Free","offline":false,"tags":["ArcGIS","GIS layer","MVUM","feature layer","28746 routes","motorized vehicle data","Forest Service"],"western_us_focus":true,"description":"Authoritative USFS enterprise GIS feature layer with 28,746 motorized vehicle use records. Includes per-route data on allowed vehicle classes, seasonal windows, trail class, e-bike categories, and district info. Data updated January 30, 2025. Free CC0 license for any use.","key_features":["28,746 route records nationwide","Per-route vehicle class permissions","Seasonal date windows per vehicle class","Trail class and status fields","E-bike class categories included","CC0 public domain license"],"limitations":"Requires GIS software or ArcGIS Online to use; not a consumer app.","best_for":"Developers or power users building custom map tools or integrations","source_verified":"https://www.arcgis.com"},{"id":"blm-004","name":"BLM Recreation Opportunities Interactive Map","category":"BLM / USFS Official","subcategory":"Official BLM Web Map Viewer","url":"https://www.blm.gov/maps","platforms":["Web"],"pricing":"Free","cost_tier":"Free","offline":false,"tags":["BLM","interactive map","recreation","camping","OHV","land boundaries"],"western_us_focus":true,"description":"BLM's official web-based National Data map viewer showing BLM land boundaries, recreation areas, campgrounds, OHV areas, and special management zones across all Western U.S. states. Use for research and planning before downloading georeferenced PDFs.","key_features":["BLM land boundary layers","Recreation area and campground locations","OHV area designations","Special management area overlays","Free and publicly accessible"],"limitations":"Online only; not suitable for field use without downloading maps.","best_for":"Pre-trip BLM land and recreation opportunity research","source_verified":"https://www.blm.gov/maps"},{"id":"camp-001","name":"The Dyrt","category":"Camping & Boondocking","subcategory":"Campground Discovery & Reviews","url":"https://thedyrt.com","platforms":["iOS","Android","Web"],"pricing":"Free / PRO $35.99/year","cost_tier":"Freemium","offline":true,"tags":["campground reviews","dispersed camping","offline maps","RV sites","free camping","national parks"],"western_us_focus":true,"description":"The most comprehensive all-in-one camping app in the U.S. with 50,000+ listings, honest user reviews, and photos. PRO unlocks offline maps, free camping filters, and exclusive discounts. Covers dispersed/boondocking sites, state parks, national parks, RV parks, and more.","key_features":["50,000+ campground listings","Honest user reviews with photos","Dispersed and free camping filter","Offline maps (PRO only)","RV trip planner","Hookup type, pet-friendly, shower filters","Cancellation scan for popular sites"],"limitations":"Offline and free-camping features require PRO upgrade.","best_for":"All-around campground discovery with community reviews","source_verified":"https://thedyrt.com"},{"id":"camp-002","name":"Campendium","category":"Camping & Boondocking","subcategory":"RV-Focused Campground Reviews","url":"https://www.campendium.com","platforms":["iOS","Android","Web"],"pricing":"Free","cost_tier":"Free","offline":false,"tags":["RV camping","cell signal reports","campground reviews","digital nomad","boondocking","free camping"],"western_us_focus":true,"description":"RV-focused campground review platform beloved by digital nomads and full-timers. Uniquely includes cell signal strength reports per site, making it invaluable for remote work on the road. Reviews cover BLM sites, national forests, RV parks, and more.","key_features":["Cell signal strength reports by carrier","RV-focused reviews and ratings","Free and boondocking site listings","Hookup and amenity details","No subscription required"],"limitations":"No offline maps; smaller listing database than The Dyrt.","best_for":"Cell signal research and RV-specific site reviews","source_verified":"https://www.campendium.com"},{"id":"camp-003","name":"iOverlander","category":"Camping & Boondocking","subcategory":"Overlanding & Wild Camping","url":"https://www.ioverlander.com","platforms":["iOS","Android","Web"],"pricing":"Free","cost_tier":"Free","offline":false,"tags":["overlanding","wild camping","boondocking","water refill","community-driven","off-grid","international"],"western_us_focus":true,"description":"Community-driven app designed by overlanders and travelers for finding wild camping spots, water refill stations, dump stations, and off-grid resources. Excellent for adventure travel and motorhome boondocking. Coverage extends to international destinations.","key_features":["Community-submitted wild camping locations","Water refill station locations","Dump station locations","Camp condition and road access notes","Works for RVs, vans, motorcycles, and overlanders","International coverage"],"limitations":"Online-dependent for most features; listing quality varies by location.","best_for":"Wild camping, water, and dump station location on the road","source_verified":"https://www.ioverlander.com"},{"id":"camp-004","name":"Recreation.gov","category":"Camping & Boondocking","subcategory":"Federal Reservation System","url":"https://www.recreation.gov","platforms":["iOS","Android","Web"],"pricing":"Free (reservation fees apply per site)","cost_tier":"Free","offline":false,"tags":["national parks","national forests","reservations","federal camping","permits","day passes"],"western_us_focus":true,"description":"Official U.S. government reservation platform for national parks, national forests, monuments, BLM areas, and other federal lands. Required for reserved campsites at high-demand Western U.S. parks. Books up quickly in peak season.","key_features":["Official reservations for all federal lands","Campsite maps and photos","Day-use and permit booking","Cancellation monitoring","National Parks, USFS, BLM, Army Corps"],"limitations":"High-demand sites fill up months in advance; no dispersed/free camping listings.","best_for":"Reserving developed campsites at national parks and forests","source_verified":"https://www.recreation.gov"},{"id":"camp-005","name":"Harvest Hosts","category":"Camping & Boondocking","subcategory":"Unique Overnight Stays — Membership","url":"https://harvesthosts.com","platforms":["iOS","Android","Web"],"pricing":"Classic $69.30/yr | Classic + Boondockers Welcome $118.30/yr | All Access $125.30/yr","cost_tier":"Paid","offline":false,"tags":["wineries","farms","breweries","unique stays","membership","no camping fees","self-contained"],"western_us_focus":true,"description":"RV membership granting unlimited overnight stays at 5,931+ unique small-business locations — farms, wineries, breweries, distilleries, and attractions. No camping fees per stay. Self-contained RV required. Typically pays for itself after 2-3 nights.","key_features":["5,931+ host locations (farms, wineries, breweries, distilleries)","Unlimited overnight stays per year","No per-stay camping fees","Map layers: satellite, cell coverage, weather","Dump station info","Boondockers Welcome add-on available (+3,421 private hosts)"],"limitations":"Self-contained RV required; hookups not guaranteed; must support hosts by purchasing their products.","best_for":"Unique RV overnight experiences with local business connection","source_verified":"https://harvesthosts.com/plans"},{"id":"camp-006","name":"Boondockers Welcome","category":"Camping & Boondocking","subcategory":"Private Property Overnight Stays — Membership","url":"https://boondockerswelcome.com","platforms":["iOS","Android","Web"],"pricing":"$79/year standalone; bundled in Harvest Hosts plans","cost_tier":"Paid","offline":false,"tags":["private property","free overnight","community","hookups","self-contained","driveway camping"],"western_us_focus":true,"description":"Community-driven RV network connecting travelers with private property owners offering free overnight parking. 3,421+ host locations across the U.S. and Canada. Over 70% of hosts offer electric/water hookups. Up to 2-5 night stays at most hosts.","key_features":["3,421+ private property host locations","70%+ of hosts offer 15A/30A electric or water","Up to 2-5 night stays per host","No per-stay camping fees","U.S. and Canada coverage"],"limitations":"Self-contained RV required; sewer hookups are rare; generator rules vary by host.","best_for":"Free community overnight stays with hookup potential","source_verified":"https://boondockerswelcome.com"},{"id":"camp-007","name":"Boondockers Bible","category":"Camping & Boondocking","subcategory":"Boondocking Research — Web Resource","url":"https://boondockersbible.com","platforms":["Web"],"pricing":"Free","cost_tier":"Free","offline":false,"tags":["boondocking","crowd-sourced","road conditions","cell reception","dump stations","honest reviews"],"western_us_focus":true,"description":"Free web-based boondocking map and database with crowd-sourced reviews from experienced boondockers. Provides honest feedback on road conditions, crowding, cell reception by carrier, and nearby dump stations.","key_features":["Crowd-sourced boondocking site reviews","Road condition reports","Cell signal info by carrier","Nearby dump station info","Crowd level and seasonal notes","No account required"],"limitations":"Web-only; no offline maps; requires cell/WiFi to access.","best_for":"Pre-trip boondocking site research with real-world conditions","source_verified":"https://boondockersbible.com"},{"id":"camp-008","name":"AllStays Camp & RV","category":"Camping & Boondocking","subcategory":"RV Infrastructure Map","url":"https://www.allstays.com","platforms":["iOS","Android","Web"],"pricing":"iOS app ~$9.99 one-time; web version subscription","cost_tier":"Paid","offline":true,"tags":["campgrounds","RV parks","truck stops","overnight parking","Walmart camping","dump stations","propane"],"western_us_focus":true,"description":"The most comprehensive RV infrastructure map app, covering campgrounds, RV parks, truck stops, rest areas, Walmart/Cracker Barrel overnight parking, dump stations, propane fill stations, and weigh stations. Offline capable after download.","key_features":["Campgrounds, RV parks, and state parks","Truck stops and rest areas","Overnight parking locations (Walmart, Cracker Barrel, Cabela's)","Dump stations and propane fill points","Weigh station locations","Filter by hookup type, price, amenities","Offline access after download"],"limitations":"Paid app; UI is functional but dated.","best_for":"Finding all RV-relevant stops along a route (fuel, dump, overnight)","source_verified":"https://www.allstays.com"},{"id":"moto-001","name":"Rever Motorcycle App + Butler Maps","category":"Adventure Motorcycle","subcategory":"Route Planning & GPS Navigation","url":"https://www.rever.co","platforms":["iOS","Android","Web"],"pricing":"Free / Pro (subscription); Butler Maps overlay free in-app","cost_tier":"Freemium","offline":true,"tags":["motorcycle","route planning","ride tracking","Butler Maps","offline maps","off-road","ADV","turn-by-turn","live tracking"],"western_us_focus":true,"description":"Dedicated motorcycle trip planner and GPS app with 3,000+ curated road maps worldwide. Integrates Butler Maps rated roads (G1 epic/ADV dirt/Paved Trails) as an in-app overlay. Offline maps, turn-by-turn navigation, voice guidance, and live friend tracking.","key_features":["3,000+ curated motorcycle road trip maps","Butler Maps overlay: G1, ADV, Paved Trails, Lost Highways","Offline maps and turn-by-turn navigation","Voice guidance without cell service","Ride recording and tracking","Live friend location sharing","GPX route import/export","Web planner + mobile sync"],"limitations":"Best features may require Pro subscription; verify current pricing.","best_for":"End-to-end adventure moto trip planning and on-bike navigation","source_verified":"https://www.rever.co"},{"id":"moto-002","name":"Butler Maps (Physical + Digital)","category":"Adventure Motorcycle","subcategory":"Curated Riding Maps","url":"https://butlermaps.com","platforms":["Physical map","Rever app overlay"],"pricing":"Physical maps ~$15–$25 each; digital via Rever","cost_tier":"Paid","offline":true,"tags":["motorcycle","curated routes","G1 roads","ADV dirt roads","paved trails","waterproof maps","Western US"],"western_us_focus":true,"description":"Waterproof, tear-resistant curated motorcycle maps for the Western U.S. Each map highlights the best paved (G1 rated) and dirt (ADV rated) roads. Adventure Series covers AZ, CO, ID, NM, Southern CA, UT, and WY. Also available as digital overlays in the Rever app.","key_features":["G1: Best epic paved roads","ADV: Best hand-picked dirt/unpaved roads","Paved Trails: Dual-sport routes","Lost Hwys: Historic original routes","Waterproof and tear-resistant","Adventure Series: AZ, CO, ID, NM, SoCal, UT, WY","BDR map bundles available"],"limitations":"Physical maps require manual navigation; digital requires Rever app.","best_for":"Discovering the best motorcycle roads in the Western U.S.","source_verified":"https://butlermaps.com"},{"id":"moto-003","name":"Garmin Zumo XT2","category":"Adventure Motorcycle","subcategory":"Dedicated Motorcycle GPS Hardware","url":"https://www.garmin.com/en-US/p/784388","platforms":["Standalone device"],"pricing":"$599 USD","cost_tier":"Paid","offline":true,"tags":["hardware","GPS","motorcycle","waterproof","glove-friendly","topographic maps","BirdsEye satellite","IP65"],"western_us_focus":true,"description":"Garmin's flagship dedicated motorcycle GPS with a 6-inch glove-friendly HD touchscreen. IP65 waterproof and shockproof. Includes topographic maps, BirdsEye Satellite imagery (no subscription), adventurous routing, and group ride tracking via Tread app.","key_features":["6-inch glove-friendly HD TFT touchscreen","IP65 waterproof and shockproof","Street + topographic maps preloaded","BirdsEye Satellite imagery (no subscription)","Adventurous routing mode","Off-road trail routing","Group Ride via Garmin Tread app","GPX route import","Incident detection / emergency notification","Garmin InReach compatible"],"limitations":"Expensive; touchscreen can be temperamental; best paired with Tread app.","best_for":"Purpose-built, all-weather dedicated moto GPS for off-road and touring","source_verified":"https://www.garmin.com/en-US/p/784388"},{"id":"moto-004","name":"Scenic Motorcycle App","category":"Adventure Motorcycle","subcategory":"On-Bike Navigation App","url":"https://scenicapp.space","platforms":["iOS"],"pricing":"Subscription (free trial available)","cost_tier":"Paid","offline":true,"tags":["motorcycle","on-bike navigation","GPX import","offline maps","HUD","CarPlay","iOS"],"western_us_focus":true,"description":"iOS motorcycle navigation app optimized for use while riding. Clean, minimal HUD-style interface, GPX route import, offline maps, and CarPlay support. Popular among riders who plan routes in MyRoute-app or CalTopo then want best-in-class on-bike UX.","key_features":["Motorcycle-optimized on-bike UI","GPX route import and navigation","Offline map downloads","Apple CarPlay support","Speed, elevation, and trip metrics","Route recording"],"limitations":"iOS only; no Android version.","best_for":"iOS users wanting the cleanest on-bike navigation experience","source_verified":"https://scenicapp.space"},{"id":"moto-005","name":"MyRoute-app (MRA)","category":"Adventure Motorcycle","subcategory":"Route Planning Tool","url":"https://www.myrouteapp.com","platforms":["Web","iOS","Android"],"pricing":"Free tier / Premium subscription","cost_tier":"Freemium","offline":false,"tags":["motorcycle","route planning","GPX export","multi-day itinerary","waypoints"],"western_us_focus":false,"description":"Precision route planning tool for multi-day motorcycle trips. Allows detailed day-by-day itinerary creation, waypoint management, and GPX/KML export to navigation apps like Scenic or Garmin Zumo. Strong preference among touring riders for pre-trip planning.","key_features":["Day-by-day multi-stop itinerary planning","Precise route shaping and waypoints","GPX and KML export","Import into Scenic, Zumo, and other nav apps","Desktop and mobile sync"],"limitations":"Best used as a planning tool, not real-time navigation.","best_for":"Pre-trip multi-day route planning with export to on-bike nav apps","source_verified":"https://www.myrouteapp.com"},{"id":"moto-006","name":"Kurviger","category":"Adventure Motorcycle","subcategory":"Twisty-Route Navigation","url":"https://kurviger.de","platforms":["Web","Android"],"pricing":"Free / Pro ~$19.99/year","cost_tier":"Freemium","offline":true,"tags":["motorcycle","twisty roads","curvy route planning","offline maps","GPX","mountain roads"],"western_us_focus":true,"description":"Route planner and navigation app optimized to maximize twisty, scenic roads and avoid highways. Great for U.S. mountain and canyon riding. GPX export for use in other apps.","key_features":["Curviness-optimized route planning","Avoids highways and straight roads","Offline map support (Android Pro)","GPX export for other apps","Web planner + mobile sync"],"limitations":"Android-only for mobile; less U.S. road data quality than Europe.","best_for":"Generating maximally twisty routes through mountain and canyon terrain","source_verified":"https://kurviger.de"},{"id":"safety-001","name":"Garmin inReach Mini 2","category":"Safety & Communication","subcategory":"Satellite Emergency Communicator","url":"https://www.garmin.com/en-US/p/775785","platforms":["Standalone device + iOS/Android Earthmate app"],"pricing":"$349.99 device + satellite plan from $14.95/month","cost_tier":"Paid","offline":true,"tags":["satellite","emergency SOS","two-way messaging","location sharing","no cell needed","backcountry","Iridium satellite"],"western_us_focus":true,"description":"Two-way Iridium satellite communicator for backcountry and remote travel. Send/receive text messages, share GPS location, and trigger 24/7 emergency SOS — all without cell service. Pairs with Zumo XT2 for integrated navigation + emergency capability.","key_features":["Two-way satellite texting (Iridium network)","24/7 GEOS emergency SOS","GPS location sharing","Weather forecast by location","Compatible with Garmin Zumo XT2","Earthmate app pairing","100% global satellite coverage"],"limitations":"Monthly satellite plan required; message delays in heavy tree cover.","best_for":"Off-grid emergency communication for solo moto and remote RV travel","source_verified":"https://www.garmin.com/en-US/p/775785"},{"id":"weather-001","name":"MyRadar","category":"Weather & Conditions","subcategory":"Weather Radar App","url":"https://myradar.com","platforms":["iOS","Android"],"pricing":"Free / Pro $5.99/year","cost_tier":"Freemium","offline":false,"tags":["weather","radar","storm tracking","trip planning","real-time weather"],"western_us_focus":true,"description":"Fast, lightweight weather radar app with real-time storm tracking, wind overlays, and lightning detection. Essential for daily departure decisions in the Western U.S. where afternoon thunderstorms are common in mountain terrain.","key_features":["Real-time weather radar","Wind speed and direction overlay","Lightning detection","Hurricane and severe storm tracking","Clean, fast interface"],"limitations":"Requires cell/WiFi for real-time data; no offline weather.","best_for":"Daily go/no-go weather decisions and storm avoidance","source_verified":"https://myradar.com"},{"id":"weather-002","name":"Windy.com","category":"Weather & Conditions","subcategory":"Wind & Weather Visualization","url":"https://www.windy.com","platforms":["Web","iOS","Android"],"pricing":"Free / Premium $19.99/year","cost_tier":"Freemium","offline":false,"tags":["wind","weather","forecast","visualization","mountain passes","fire weather","smoke"],"western_us_focus":true,"description":"Stunning wind and weather visualization tool using multiple forecast models. Essential for understanding wind patterns, mountain pass conditions, and fire weather in the Western U.S. Displays wind, rain, temperature, and smoke/aerosol layers.","key_features":["Animated wind and weather visualization","Multiple forecast model support (ECMWF, GFS, ICON)","Mountain pass wind and temperature forecasts","Smoke and aerosol layer (critical near wildfires)","Webcam integration","48+ hour forecasts"],"limitations":"Requires internet; complex UI for new users.","best_for":"Mountain pass planning, wind assessment, and wildfire smoke monitoring","source_verified":"https://www.windy.com"}]};
+
+const CATEGORIES = INITIAL_DATA.categories;
+const CAT_COLORS = {
+  "RV / Motorhome Navigation":"#3b82f6",
+  "Topo & Mapping Tools":"#8b5cf6",
+  "BLM / USFS Official":"#22c55e",
+  "Camping & Boondocking":"#f59e0b",
+  "Adventure Motorcycle":"#ef4444",
+  "Safety & Communication":"#ec4899",
+  "Weather & Conditions":"#06b6d4"
+};
+
+// ── STATE ───────────────────────────────────────────────────────────────
+let resources = JSON.parse(JSON.stringify(INITIAL_DATA.resources));
+let expandedCard = null;
+let deleteConfirmId = null;
+
+// Persistence via AppSDK
+function saveState(){
+  try{ if(window.AppSDK && AppSDK.setState) AppSDK.setState({resources}); }catch(e){}
+}
+function loadState(){
+  try{
+    if(window.AppSDK && AppSDK.getState){
+      const s = AppSDK.getState();
+      if(s && s.resources && Array.isArray(s.resources) && s.resources.length) resources = s.resources;
+    }
+  }catch(e){}
+}
+loadState();
+
+// ── HELPERS ─────────────────────────────────────────────────────────────
+function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+function escHtml(s){ const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+
+function getCostBadge(tier){
+  if(tier==='Free') return {bg:'rgba(34,197,94,.15)',color:'#4ade80',label:'Free'};
+  if(tier==='Freemium') return {bg:'rgba(59,130,246,.15)',color:'#60a5fa',label:'Freemium'};
+  if(tier==='Free / Low-Cost') return {bg:'rgba(34,197,94,.12)',color:'#86efac',label:'Free / Low-Cost'};
+  return {bg:'rgba(245,158,11,.15)',color:'#fbbf24',label:'Paid'};
+}
+
+// ── TOAST ───────────────────────────────────────────────────────────────
+function showToast(msg, type='success'){
+  const c = document.getElementById('toast-container-g3h4');
+  const t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(()=>{ t.style.animation='toastOut .3s ease forwards'; setTimeout(()=>t.remove(),300); },3000);
+}
+
+// ── FILTERS & SORT ──────────────────────────────────────────────────────
+function getFiltered(){
+  const q = document.getElementById('search-input-f4r2').value.toLowerCase().trim();
+  const cat = document.getElementById('filter-cat-h8n3').value;
+  const cost = document.getElementById('filter-cost-k1m7').value;
+  const offOnly = document.getElementById('filter-offline-w2x6').checked;
+  const sort = document.getElementById('sort-select-t3b5').value;
+
+  let list = resources.filter(r=>{
+    if(cat && r.category !== cat) return false;
+    if(cost && r.cost_tier !== cost) return false;
+    if(offOnly && !r.offline) return false;
+    if(q){
+      const hay = [r.name, r.description, r.subcategory||'', r.best_for||'', ...(r.tags||[])].join(' ').toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if(sort==='name-asc') list.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(sort==='name-desc') list.sort((a,b)=>b.name.localeCompare(a.name));
+  else if(sort==='category') list.sort((a,b)=>a.category.localeCompare(b.category));
+  else if(sort==='cost') list.sort((a,b)=>a.cost_tier.localeCompare(b.cost_tier));
+  else if(sort==='offline') list.sort((a,b)=>(b.offline?1:0)-(a.offline?1:0));
+
+  return list;
+}
+
+// ── STATS ───────────────────────────────────────────────────────────────
+function updateStats(){
+  document.getElementById('stat-total-g7f1').textContent = resources.length;
+  document.getElementById('stat-offline-m3z9').textContent = resources.filter(r=>r.offline).length;
+  document.getElementById('stat-free-q2v8').textContent = resources.filter(r=>r.cost_tier==='Free'||r.cost_tier==='Freemium'||r.cost_tier==='Free / Low-Cost').length;
+  document.getElementById('stat-western-j5k4').textContent = resources.filter(r=>r.western_us_focus).length;
+  document.getElementById('subtitle-count-82ka').textContent = resources.length;
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────────
+function renderCards(){
+  const list = getFiltered();
+  const grid = document.getElementById('grid-container-a2b4');
+  const count = document.getElementById('filter-count-r9c4');
+  count.textContent = `Showing ${list.length} of ${resources.length} resources`;
+  updateStats();
+
+  grid.innerHTML = '';
+  if(!list.length){
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-muted)"><p style="font-size:18px;margin-bottom:8px">No resources match your filters</p><p style="font-size:14px">Try adjusting your search or filters</p></div>';
+    return;
+  }
+
+  list.forEach(r=>{
+    const catColor = CAT_COLORS[r.category]||'#3b82f6';
+    const costB = getCostBadge(r.cost_tier);
+    const isExpanded = expandedCard === r.id;
+    const isDeleting = deleteConfirmId === r.id;
+
+    let tagsHtml = (r.tags||[]).map(t=>`<button class="tag-chip" data-tag="${escHtml(t)}">${escHtml(t)}</button>`).join('');
+
+    let platformsHtml = (r.platforms||[]).map(p=>`<span class="platform-chip">${escHtml(p)}</span>`).join(' ');
+
+    let detailHtml = '';
+    if(isExpanded){
+      let featuresHtml = (r.key_features||[]).map(f=>`<div class="feature-item">${escHtml(f)}</div>`).join('');
+      detailHtml = `<div class="detail-panel open">
+        <h4>Full Description</h4>
+        <p style="font-size:13px;color:var(--text);line-height:1.65">${escHtml(r.description)}</p>
+        ${(r.key_features&&r.key_features.length)?`<h4>Key Features</h4>${featuresHtml}`:''}
+        ${r.limitations?`<h4>Limitations</h4><p style="font-size:13px;color:var(--text-muted)">${escHtml(r.limitations)}</p>`:''}
+        ${r.best_for?`<h4>Best For</h4><p style="font-size:13px;color:var(--accent-hover);font-style:italic">${escHtml(r.best_for)}</p>`:''}
+        ${r.url?`<h4>Source</h4><a class="source-link" href="${escHtml(r.url)}" target="_blank" rel="noopener">${escHtml(r.source_verified||r.url)}</a>`:''}
+        <h4>Platforms</h4><div style="display:flex;flex-wrap:wrap;gap:4px">${platformsHtml}</div>
+      </div>`;
+    }
+
+    let confirmHtml = '';
+    if(isDeleting){
+      confirmHtml = `<div class="confirm-bar"><span>Are you sure? This cannot be undone.</span><button class="btn btn-danger btn-sm" data-confirm-del="${r.id}">Confirm Delete</button><button class="btn btn-secondary btn-sm" data-cancel-del="${r.id}">Cancel</button></div>`;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.id = r.id;
+    card.innerHTML = `
+      <div class="card-accent" style="background:${catColor}"></div>
+      <div class="card-body" data-card-toggle="${r.id}">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px">
+          <span class="cat-badge" style="background:${catColor}22;color:${catColor}">${escHtml(r.category)}</span>
+          <span class="offline-badge" style="background:${r.offline?'rgba(34,197,94,.12)':'rgba(245,158,11,.12)'};color:${r.offline?'#4ade80':'#fbbf24'}">${r.offline?'📡 Offline':'🌐 Online Only'}</span>
+          <span class="cost-badge" style="background:${costB.bg};color:${costB.color}">${costB.label}</span>
+        </div>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:2px;line-height:1.3">${escHtml(r.name)}</h3>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:6px">${escHtml(r.subcategory||'')}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${platformsHtml}</div>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px">${escHtml(r.pricing||'')}</p>
+        <p class="${isExpanded?'desc-full':'desc-clamp'}" style="font-size:13px;color:var(--text);margin-bottom:8px">${escHtml(r.description)}</p>
+        ${r.best_for?`<p style="font-size:12px;color:var(--text-dim);font-style:italic;margin-bottom:8px">Best for: ${escHtml(r.best_for)}</p>`:''}
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${tagsHtml}</div>
+      </div>
+      ${detailHtml}
+      <div class="card-actions">
+        ${r.url?`<a href="${escHtml(r.url)}" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="text-decoration:none"><i data-lucide="external-link" class="w-3 h-3"></i> Visit</a>`:''}
+        <button class="btn btn-secondary btn-sm" data-edit="${r.id}"><i data-lucide="pencil" class="w-3 h-3"></i> Edit</button>
+        <button class="btn btn-danger btn-sm" data-delete="${r.id}"><i data-lucide="trash-2" class="w-3 h-3"></i> Delete</button>
+      </div>
+      ${confirmHtml}
+    `;
+    grid.appendChild(card);
+  });
+
+  lucide.createIcons();
+  bindCardEvents();
+}
+
+// ── CARD EVENTS ─────────────────────────────────────────────────────────
+function bindCardEvents(){
+  // Expand/collapse
+  document.querySelectorAll('[data-card-toggle]').forEach(el=>{
+    el.addEventListener('click', e=>{
+      if(e.target.closest('.tag-chip')||e.target.closest('a')||e.target.closest('button')) return;
+      const id = el.dataset.cardToggle;
+      expandedCard = expandedCard===id ? null : id;
+      renderCards();
+    });
+  });
+  // Tag clicks
+  document.querySelectorAll('.tag-chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById('search-input-f4r2').value = btn.dataset.tag;
+      renderCards();
+    });
+  });
+  // Edit
+  document.querySelectorAll('[data-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openEditModal(btn.dataset.edit));
+  });
+  // Delete
+  document.querySelectorAll('[data-delete]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      deleteConfirmId = btn.dataset.delete;
+      renderCards();
+    });
+  });
+  // Confirm delete
+  document.querySelectorAll('[data-confirm-del]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.confirmDel;
+      resources = resources.filter(r=>r.id!==id);
+      deleteConfirmId = null;
+      expandedCard = null;
+      saveState();
+      renderCards();
+      showToast('Resource deleted','info');
+    });
+  });
+  // Cancel delete
+  document.querySelectorAll('[data-cancel-del]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      deleteConfirmId = null;
+      renderCards();
+    });
+  });
+}
+
+// ── MODAL ───────────────────────────────────────────────────────────────
+function openModal(){ document.getElementById('modal-overlay-c6d8').classList.add('open'); }
+function closeModal(){
+  document.getElementById('modal-overlay-c6d8').classList.remove('open');
+  document.getElementById('resource-form-v8w2').reset();
+  document.getElementById('form-edit-id-x0y1').value = '';
+}
+
+function openEditModal(id){
+  const r = resources.find(x=>x.id===id);
+  if(!r) return;
+  document.getElementById('modal-title-s1q3').textContent = 'Edit Resource';
+  document.getElementById('form-edit-id-x0y1').value = r.id;
+  document.getElementById('form-name-a1b2').value = r.name||'';
+  document.getElementById('form-cat-c3d4').value = r.category||'';
+  document.getElementById('form-subcat-e5f6').value = r.subcategory||'';
+  document.getElementById('form-url-g7h8').value = r.url||'';
+  document.getElementById('form-platforms-i9j0').value = (r.platforms||[]).join(', ');
+  document.getElementById('form-pricing-k1l2').value = r.pricing||'';
+  document.getElementById('form-cost-m3n4').value = r.cost_tier||'Free';
+  document.getElementById('form-offline-o5p6').checked = !!r.offline;
+  document.getElementById('form-western-q7r8').checked = !!r.western_us_focus;
+  document.getElementById('form-desc-s9t0').value = r.description||'';
+  document.getElementById('form-features-u1v2').value = (r.key_features||[]).join('\n');
+  document.getElementById('form-limits-w3x4').value = r.limitations||'';
+  document.getElementById('form-bestfor-y5z6').value = r.best_for||'';
+  document.getElementById('form-tags-a7b8').value = (r.tags||[]).join(', ');
+  openModal();
+}
+
+function handleFormSubmit(e){
+  e.preventDefault();
+  const editId = document.getElementById('form-edit-id-x0y1').value;
+  const name = document.getElementById('form-name-a1b2').value.trim();
+  const cat = document.getElementById('form-cat-c3d4').value;
+  if(!name||!cat){ showToast('Name and Category are required','error'); return; }
+
+  const platformsRaw = document.getElementById('form-platforms-i9j0').value;
+  const tagsRaw = document.getElementById('form-tags-a7b8').value;
+  const featuresRaw = document.getElementById('form-features-u1v2').value;
+
+  const obj = {
+    id: editId || slugify(name) + '-' + Date.now().toString(36).slice(-4),
+    name,
+    category: cat,
+    subcategory: document.getElementById('form-subcat-e5f6').value.trim(),
+    url: document.getElementById('form-url-g7h8').value.trim(),
+    platforms: platformsRaw ? platformsRaw.split(',').map(s=>s.trim()).filter(Boolean) : [],
+    pricing: document.getElementById('form-pricing-k1l2').value.trim(),
+    cost_tier: document.getElementById('form-cost-m3n4').value,
+    offline: document.getElementById('form-offline-o5p6').checked,
+    western_us_focus: document.getElementById('form-western-q7r8').checked,
+    description: document.getElementById('form-desc-s9t0').value.trim(),
+    key_features: featuresRaw ? featuresRaw.split('\n').map(s=>s.trim()).filter(Boolean) : [],
+    limitations: document.getElementById('form-limits-w3x4').value.trim(),
+    best_for: document.getElementById('form-bestfor-y5z6').value.trim(),
+    tags: tagsRaw ? tagsRaw.split(',').map(s=>s.trim()).filter(Boolean) : [],
+    source_verified: document.getElementById('form-url-g7h8').value.trim()
+  };
+
+  if(editId){
+    const idx = resources.findIndex(r=>r.id===editId);
+    if(idx>-1) resources[idx] = {...resources[idx], ...obj};
+    showToast('Resource updated','success');
+  } else {
+    resources.push(obj);
+    showToast('Resource added','success');
+  }
+
+  saveState();
+  closeModal();
+  renderCards();
+}
+
+// ── EXPORT ──────────────────────────────────────────────────────────────
+function exportJSON(){
+  const data = {
+    metadata: {...INITIAL_DATA.metadata, totalResources: resources.length, exported: new Date().toISOString()},
+    categories: CATEGORIES,
+    resources
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+  a.href = url; a.download = `nav-resources-${ts}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  showToast('Database exported as JSON','info');
+}
+
+// ── IMPORT ──────────────────────────────────────────────────────────────
+function handleImport(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      const data = JSON.parse(ev.target.result);
+      const incoming = data.resources || data;
+      if(!Array.isArray(incoming)) throw new Error('Invalid format');
+      const existingIds = new Set(resources.map(r=>r.id));
+      let added = 0;
+      incoming.forEach(r=>{
+        if(r.id && !existingIds.has(r.id)){
+          resources.push(r);
+          existingIds.add(r.id);
+          added++;
+        }
+      });
+      saveState();
+      renderCards();
+      showToast(`Imported ${added} new resource${added!==1?'s':''}`,'success');
+    }catch(err){
+      showToast('Invalid JSON file: ' + err.message,'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ── INIT ────────────────────────────────────────────────────────────────
+(function init(){
+  // Populate category dropdowns
+  const filterCat = document.getElementById('filter-cat-h8n3');
+  const formCat = document.getElementById('form-cat-c3d4');
+  CATEGORIES.forEach(c=>{
+    filterCat.innerHTML += `<option value="${c}">${c}</option>`;
+    formCat.innerHTML += `<option value="${c}">${c}</option>`;
+  });
+
+  // Bind toolbar events
+  document.getElementById('search-input-f4r2').addEventListener('input', ()=>renderCards());
+  document.getElementById('filter-cat-h8n3').addEventListener('change', ()=>renderCards());
+  document.getElementById('filter-cost-k1m7').addEventListener('change', ()=>renderCards());
+  document.getElementById('filter-offline-w2x6').addEventListener('change', ()=>renderCards());
+  document.getElementById('sort-select-t3b5').addEventListener('change', ()=>renderCards());
+
+  // Add button
+  document.getElementById('btn-add-y6g8').addEventListener('click', ()=>{
+    document.getElementById('modal-title-s1q3').textContent = 'Add Resource';
+    document.getElementById('form-edit-id-x0y1').value = '';
+    openModal();
+  });
+
+  // Export
+  document.getElementById('btn-export-e5d2').addEventListener('click', exportJSON);
+
+  // Import
+  document.getElementById('btn-import-u7h1').addEventListener('click', ()=>{
+    document.getElementById('import-file-z3k9').click();
+  });
+  document.getElementById('import-file-z3k9').addEventListener('change', handleImport);
+
+  // Modal
+  document.getElementById('btn-cancel-c9d0').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay-c6d8').addEventListener('click', e=>{
+    if(e.target.id==='modal-overlay-c6d8') closeModal();
+  });
+  document.getElementById('resource-form-v8w2').addEventListener('submit', handleFormSubmit);
+
+  // Initial render
+  renderCards();
+  lucide.createIcons();
+})();
+</script>
+</body>
+</html>

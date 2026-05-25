@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overland & RV Navigation Resource Manager</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #fff;
+            --primary-color: #2c3e50;
+            --secondary-color: #18bc9c;
+            --danger-color: #e74c3c;
+            --border-color: #ddd;
+            --tag-bg: #e2e8f0;
+            --tag-text: #475569;
+        }
+
+        body.dark-mode {
+            --bg-color: #1a1a2e;
+            --text-color: #e6e6ea;
+            --card-bg: #16213e;
+            --primary-color: #0f3460;
+            --secondary-color: #e94560;
+            --danger-color: #c0392b;
+            --border-color: #2a2a4a;
+            --tag-bg: #0f3460;
+            --tag-text: #e6e6ea;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .controls button, .controls label.button {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            margin-left: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.2s;
+            display: inline-block;
+        }
+
+        .controls button:hover, .controls label.button:hover { opacity: 0.8; }
+        
+        .controls input[type="file"] { display: none; }
+
+        .category-block { margin-bottom: 40px; }
+        .category-title { margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; color: var(--secondary-color); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .card h3 { margin-bottom: 10px; }
+        .card a { color: var(--secondary-color); text-decoration: none; font-weight: bold; word-break: break-all; margin-bottom: 10px; display: block; }
+        .card p { flex-grow: 1; margin-bottom: 15px; font-size: 14px; line-height: 1.5; }
+        
+        .tags { margin-bottom: 15px; }
+        .tag {
+            background-color: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+            display: inline-block;
+        }
+
+        .card-actions { display: flex; justify-content: flex-end; gap: 10px; }
+        .btn-edit { background-color: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-delete { background-color: var(--danger-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 30px; border-radius: 8px; width: 400px; max-width: 90%;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        .modal-content h2 { margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 8px; border: 1px solid var(--border-color);
+            border-radius: 4px; background-color: var(--bg-color); color: var(--text-color);
+        }
+        .form-actions { display: flex; justify-content: space-between; margin-top: 20px; }
+        .btn-save { background-color: var(--secondary-color); color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 48%;}
+        .btn-cancel { background-color: #7f8c8d; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 48%;}
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Overland Nav Database</h1>
+        <div class="controls">
+            <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            <button onclick="openModal()">Add Resource</button>
+            <button onclick="exportJSON()">Export JSON</button>
+            <label class="button">
+                Import JSON
+                <input type="file" id="importFile" accept=".json" onchange="importJSON(event)">
+            </label>
+        </div>
+    </header>
+
+    <main id="app-container"></main>
+
+    <!-- Modal for Add/Edit -->
+    <div id="resourceModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Add New Resource</h2>
+            <input type="hidden" id="editId">
+            <input type="hidden" id="editCatId">
+            
+            <div class="form-group">
+                <label>Category</label>
+                <select id="resCategory">
+                    <option value="rv_navigation">RV Navigation</option>
+                    <option value="adv_motorcycle">Adventure Motorcycle</option>
+                    <option value="geopdf_mvum">GeoPDF & Agency Maps</option>
+                    <option value="camping_boondocking">Camping & Boondocking</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="resName" required>
+            </div>
+            <div class="form-group">
+                <label>URL</label>
+                <input type="url" id="resUrl" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="resDesc" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Tags (comma separated)</label>
+                <input type="text" id="resTags" placeholder="e.g. Offline, Topo, RV">
+            </div>
+            <div class="form-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-save" onclick="saveResource()">Save Resource</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initial Default Database matching the research
+        const defaultData = {
+            "categories": [
+                {
+                    "id": "rv_navigation", "name": "RV & Large Vehicle Navigation",
+                    "resources": [
+                        { "id": "rv_trip_wizard", "name": "RV LIFE Trip Wizard", "url": "https://tripwizard.rvlife.com/", "description": "Visual planner that customizes routes based on 12ft height.", "tags": ["Low Clearance", "Routing"] },
+                        { "id": "headroom", "name": "HeadRoom", "url": "https://lowclearancemap.com/", "description": "App featuring 24k+ verified low-clearance bridges with directional hazards.", "tags": ["Bridge Heights", "Hazards"] }
+                    ]
+                },
+                {
+                    "id": "adv_motorcycle", "name": "Adventure Motorcycle Navigation",
+                    "resources": [
+                        { "id": "bdr", "name": "Backcountry Discovery Routes", "url": "https://ridebdr.com/", "description": "Free GPX tracks and maps for off-pavement motorcycle routes.", "tags": ["GPX Tracks", "Off-Road"] },
+                        { "id": "onx_offroad", "name": "onX Offroad", "url": "https://www.onxmaps.com/offroad/app", "description": "Official nav app of the BDR. Public land boundaries and offline maps.", "tags": ["Public Lands", "Offline"] }
+                    ]
+                },
+                {
+                    "id": "geopdf_mvum", "name": "Geospatial PDF & Agency Maps",
+                    "resources": [
+                        { "id": "avenza_maps", "name": "Avenza Maps", "url": "https://www.avenza.com/avenza-maps/", "description": "Offline map viewer that interacts with device GPS. Used for USFS MVUMs.", "tags": ["GeoPDF", "Offline", "USFS"] },
+                        { "id": "blm_national_data", "name": "BLM National Data Viewer", "url": "https://experience.arcgis.com/experience/9a89ee80c604431e8f8d939a186fbdbb", "description": "Official ArcGIS map showing Surface Management Agency boundaries.", "tags": ["BLM", "ArcGIS"] }
+                    ]
+                },
+                {
+                    "id": "camping_boondocking", "name": "Dispersed Camping",
+                    "resources": [
+                        { "id": "ioverlander", "name": "iOverlander", "url": "https://ioverlander.com/", "description": "Crowdsourced wild campsites and stealth parking.", "tags": ["Dispersed Camping", "Offline"] }
+                    ]
+                }
+            ]
+        };
+
+        let db = JSON.parse(localStorage.getItem('overlandDB')) || defaultData;
+
+        // Render Database
+        function renderApp() {
+            const container = document.getElementById('app-container');
+            container.innerHTML = '';
+
+            db.categories.forEach(cat => {
+                const catDiv = document.createElement('div');
+                catDiv.className = 'category-block';
+                
+                const title = document.createElement('h2');
+                title.className = 'category-title';
+                title.innerText = cat.name;
+                catDiv.appendChild(title);
+
+                const grid = document.createElement('div');
+                grid.className = 'grid';
+
+                cat.resources.forEach(res => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    const tagsHTML = res.tags ? res.tags.map(tag => `<span class="tag">${tag.trim()}</span>`).join('') : '';
+
+                    card.innerHTML = `
+                        <h3>${res.name}</h3>
+                        <a href="${res.url}" target="_blank">${res.url}</a>
+                        <p>${res.description}</p>
+                        <div class="tags">${tagsHTML}</div>
+                        <div class="card-actions">
+                            <button class="btn-edit" onclick="editResource('${cat.id}', '${res.id}')">Edit</button>
+                            <button class="btn-delete" onclick="deleteResource('${cat.id}', '${res.id}')">Delete</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                catDiv.appendChild(grid);
+                container.appendChild(catDiv);
+            });
+        }
+
+        // Add & Edit Logic
+        function openModal() {
+            document.getElementById('modalTitle').innerText = 'Add New Resource';
+            document.getElementById('editId').value = '';
+            document.getElementById('resName').value = '';
+            document.getElementById('resUrl').value = '';
+            document.getElementById('resDesc').value = '';
+            document.getElementById('resTags').value = '';
+            document.getElementById('resourceModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('resourceModal').style.display = 'none';
+        }
+
+        function saveResource() {
+            const catId = document.getElementById('resCategory').value;
+            const id = document.getElementById('editId').value || 'res_' + Date.now();
+            const oldCatId = document.getElementById('editCatId').value;
+            
+            const newRes = {
+                id: id,
+                name: document.getElementById('resName').value,
+                url: document.getElementById('resUrl').value,
+                description: document.getElementById('resDesc').value,
+                tags: document.getElementById('resTags').value.split(',').map(t => t.trim()).filter(t => t)
+            };
+
+            // If editing and category changed, remove from old category
+            if (oldCatId && oldCatId !== catId) {
+                const oldCat = db.categories.find(c => c.id === oldCatId);
+                oldCat.resources = oldCat.resources.filter(r => r.id !== id);
+            }
+
+            const category = db.categories.find(c => c.id === catId);
+            const existingIndex = category.resources.findIndex(r => r.id === id);
+
+            if (existingIndex > -1) {
+                category.resources[existingIndex] = newRes; // Update
+            } else {
+                category.resources.push(newRes); // Add
+            }
+
+            saveData();
+            closeModal();
+            renderApp();
+        }
+
+        function editResource(catId, resId) {
+            const category = db.categories.find(c => c.id === catId);
+            const res = category.resources.find(r => r.id === resId);
+
+            document.getElementById('modalTitle').innerText = 'Edit Resource';
+            document.getElementById('resCategory').value = catId;
+            document.getElementById('editCatId').value = catId;
+            document.getElementById('editId').value = res.id;
+            document.getElementById('resName').value = res.name;
+            document.getElementById('resUrl').value = res.url;
+            document.getElementById('resDesc').value = res.description;
+            document.getElementById('resTags').value = res.tags ? res.tags.join(', ') : '';
+            
+            document.getElementById('resourceModal').style.display = 'flex';
+        }
+
+        function deleteResource(catId, resId) {
+            if(confirm('Are you sure you want to delete this resource?')) {
+                const category = db.categories.find(c => c.id === catId);
+                category.resources = category.resources.filter(r => r.id !== resId);
+                saveData();
+                renderApp();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('overlandDB', JSON.stringify(db));
+        }
+
+        // Export/Import JSON
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "overland_resources.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importJSON(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    // Validate that the imported data has the expected structure
+                    if (importedData.categories && Array.isArray(importedData.categories)) {
+                        db = importedData;
+                        saveData();
+                        renderApp();
+                        alert('Database imported successfully!');
+                    } else {
+                        alert('Invalid JSON structure. Missing categories array.');
+                    }
+                } catch (err) {
+                    alert('Invalid JSON file format: ' + err.message);
+                }
+                // Reset file input to allow re-importing the same file
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // Dark Mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Initialization
+        window.onload = () => {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            renderApp();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+{
+  "categories": [
+    {
+      "id": "rv_navigation",
+      "name": "RV & Large Vehicle Navigation",
+      "resources": [
+        {
+          "id": "rv_trip_wizard",
+          "name": "RV LIFE Trip Wizard",
+          "url": "https://tripwizard.rvlife.com/",
+          "description": "Visual planner that customizes routes based on 12ft height.",
+          "tags": [
+            "Low Clearance",
+            "Routing"
+          ]
+        },
+        {
+          "id": "headroom",
+          "name": "HeadRoom",
+          "url": "https://lowclearancemap.com/",
+          "description": "App featuring 24k+ verified low-clearance bridges with directional hazards.",
+          "tags": [
+            "Bridge Heights",
+            "Hazards"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "adv_motorcycle",
+      "name": "Adventure Motorcycle Navigation",
+      "resources": [
+        {
+          "id": "bdr",
+          "name": "Backcountry Discovery Routes",
+          "url": "https://ridebdr.com/",
+          "description": "Free GPX tracks and maps for off-pavement motorcycle routes.",
+          "tags": [
+            "GPX Tracks",
+            "Off-Road"
+          ]
+        },
+        {
+          "id": "onx_offroad",
+          "name": "onX Offroad",
+          "url": "https://www.onxmaps.com/offroad/app",
+          "description": "Official nav app of the BDR. Public land boundaries and offline maps.",
+          "tags": [
+            "Public Lands",
+            "Offline"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geopdf_mvum",
+      "name": "Geospatial PDF & Agency Maps",
+      "resources": [
+        {
+          "id": "avenza_maps",
+          "name": "Avenza Maps",
+          "url": "https://www.avenza.com/avenza-maps/",
+          "description": "Offline map viewer that interacts with device GPS. Used for USFS MVUMs.",
+          "tags": [
+            "GeoPDF",
+            "Offline",
+            "USFS"
+          ]
+        },
+        {
+          "id": "blm_national_data",
+          "name": "BLM National Data Viewer",
+          "url": "https://experience.arcgis.com/experience/9a89ee80c604431e8f8d939a186fbdbb",
+          "description": "Official ArcGIS map showing Surface Management Agency boundaries.",
+          "tags": [
+            "BLM",
+            "ArcGIS"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "camping_boondocking",
+      "name": "Dispersed Camping",
+      "resources": [
+        {
+          "id": "ioverlander",
+          "name": "iOverlander",
+          "url": "https://ioverlander.com/",
+          "description": "Crowdsourced wild campsites and stealth parking.",
+          "tags": [
+            "Dispersed Camping",
+            "Offline"
+          ]
+        }
+      ]
+    }
+  ]
+}

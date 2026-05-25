@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Western US Navigation Resources | RV & Adventure Bike</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f5f0e8;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #ebe5db;
+            --text-primary: #2d2a26;
+            --text-secondary: #5a5650;
+            --text-muted: #8a8580;
+            --accent: #c2650a;
+            --accent-hover: #a35208;
+            --accent-light: #f5e6d9;
+            --border: #d4cfc7;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+            --shadow-md: 0 6px 16px rgba(0,0,0,0.1);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --rv-color: #c2650a;
+            --moto-color: #2d6a4f;
+            --geo-color: #3b82f6;
+            --camp-color: #22c55e;
+            --json-color: #f59e0b;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a2026;
+            --bg-tertiary: #242b32;
+            --text-primary: #e8e4df;
+            --text-secondary: #a8a4a0;
+            --text-muted: #6a6764;
+            --accent: #e8a823;
+            --accent-hover: #f5c04e;
+            --accent-light: #2a2418;
+            --border: #3a3835;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+            --shadow-md: 0 6px 16px rgba(0,0,0,0.4);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+            --rv-color: #e8a823;
+            --moto-color: #4ade80;
+            --geo-color: #60a5fa;
+            --camp-color: #4ade80;
+            --json-color: #fbbf24;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.65;
+            transition: background 0.4s ease, color 0.4s ease;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        a:hover {
+            color: var(--accent-hover);
+        }
+
+        /* Noise texture overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.015;
+            z-index: 1000;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo .icon {
+            font-size: 2rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-title span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: var(--border);
+        }
+
+        .theme-toggle .icon {
+            font-size: 1.1rem;
+        }
+
+        .theme-toggle span {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 48px 24px;
+            text-align: center;
+        }
+
+        .hero-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 24px;
+        }
+
+        .hero-badges {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: var(--accent-light);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px 48px;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .icon {
+            font-size: 1.3rem;
+        }
+
+        /* About Card */
+        .about-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .about-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .about-card p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .about-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .about-card li {
+            padding: 8px 0 8px 24px;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .about-card li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* System Architecture */
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .system-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .system-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .system-card .icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .system-card h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .system-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Resources Grid */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .resource-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .resource-card.type-html {
+            border-left: 4px solid var(--rv-color);
+        }
+
+        .resource-card.type-json {
+            border-left: 4px solid var(--json-color);
+        }
+
+        .resource-header {
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .resource-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .resource-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .resource-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .resource-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .resource-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .resource-description {
+            padding: 0 16px 16px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .resource-actions {
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .resource-comment-count {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Comment Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--border);
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Comments List */
+        .comments-list {
+            margin-bottom: 20px;
+        }
+
+        .comment-item {
+            padding: 14px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .comment-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .comment-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .comment-empty {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Comment Form */
+        .comment-form {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: var(--radius-md);
+        }
+
+        .comment-form h4 {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(194, 101, 10, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 600;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: toastIn 0.3s ease;
+            min-width: 280px;
+        }
+
+        .toast.removing {
+            animation: toastOut 0.3s ease forwards;
+        }
+
+        .toast-icon {
+            font-size: 1.3rem;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .toast-message {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 32px 20px;
+            }
+
+            .hero-icon {
+                font-size: 3rem;
+            }
+
+            .main {
+                padding: 0 20px 32px;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .modal {
+                max-height: 90vh;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="header-logo">
+                <span class="icon">🗺️</span>
+                <div class="header-title">
+                    <h1>Nav Resources</h1>
+                    <span>RV & Adventure Bike Navigation</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="icon">🌙</span>
+                    <span id="themeLabel">Dark</span>
+                </button>
+                <button class="btn btn-primary btn-sm" id="exportBtn">
+                    <span>💾</span>
+                    Export Feedback
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-icon">🏕️</div>
+        <h1>Western US Navigation Resources</h1>
+        <p>A curated collection of navigation tools, camping resources, and mapping applications for 12-foot motorhome and adventure motorcycle travel through the American West.</p>
+        <div class="hero-badges">
+            <span class="badge">⚠️ 12ft Height Aware</span>
+            <span class="badge">🏍️ Adventure Bike Ready</span>
+            <span class="badge">📴 Offline Capable</span>
+            <span class="badge">🌲 Public Lands Focus</span>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- About Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="icon">ℹ️</span>
+                    About This Collection
+                </h2>
+            </div>
+            <div class="about-card">
+                <h3>What You'll Find Here</h3>
+                <p>This directory contains a comprehensive database of navigation resources compiled specifically for Western US overland travel. Whether you're piloting a 12-foot motorhome or riding adventure bikes through BDR routes, these tools help you navigate safely, legally, and confidently.</p>
+                <h3>Vehicle Profile</h3>
+                <p><strong>Primary Rig:</strong> 12-foot height motorhome + adventure motorcycle carry<br>
+                <strong>Region:</strong> Western United States (AZ, CA, CO, ID, MT, NV, NM, OR, UT, WA, WY)<br>
+                <strong>Key Constraint:</strong> Low clearance avoidance is critical</p>
+                <h3>Resource Categories</h3>
+                <ul>
+                    <li><strong>RV Navigation:</strong> Low-clearance databases, truck routing, dedicated GPS hardware</li>
+                    <li><strong>Adventure Motorcycle:</strong> BDR routes, off-road mapping, GPX track management</li>
+                    <li><strong>GeoPDF & Agency Maps:</strong> USFS MVUMs, BLM land boundaries, official forest service maps</li>
+                    <li><strong>Camping & Boondocking:</strong> Dispersed camping finders, federal campground reservations</li>
+                    <li><strong>Print Atlases:</strong> Essential backup navigation for when electronics fail</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- System Architecture Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="icon">⚙️</span>
+                    How It Works
+                </h2>
+            </div>
+            <div class="system-grid">
+                <div class="system-card">
+                    <div class="icon">📄</div>
+                    <h4>JSON Data Files</h4>
+                    <p>Structured resource databases with metadata including URLs, categories, cost tiers, offline capability, and priority levels. Import these into the HTML apps or use them as reference.</p>
+                </div>
+                <div class="system-card">
+                    <div class="icon">🖥️</div>
+                    <h4>Interactive HTML Apps</h4>
+                    <p>Single-file web applications with full CRUD operations. Filter, sort, search, and manage resources. Each app uses localStorage for persistence.</p>
+                </div>
+                <div class="system-card">
+                    <div class="icon">💬</div>
+                    <h4>User Feedback System</h4>
+                    <p>Add your own commentary, notes, and experiences to each resource. All feedback is stored locally and can be exported for backup or sharing.</p>
+                </div>
+                <div class="system-card">
+                    <div class="icon">🌙</div>
+                    <h4>Theme System</h4>
+                    <p>Switch between light and dark modes. Your preference is saved automatically. The interface adapts seamlessly for day and night use.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="icon">📂</span>
+                    Resource Files
+                </h2>
+                <button class="btn btn-secondary btn-sm" id="expandAllBtn">
+                    <span>📖</span> Expand All
+                </button>
+            </div>
+            <div class="resources-grid" id="resourcesGrid">
+                <!-- Resources will be populated by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Western US Navigation Resources — Curated for overland travel through the American West</p>
+        <div class="footer-links">
+            <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Back to Top</a>
+        </div>
+    </footer>
+
+    <!-- Comment Modal -->
+    <div class="modal-overlay" id="commentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Commentary</h3>
+                <button class="modal-close" id="modalClose" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="comments-list" id="commentsList">
+                    <!-- Comments will be populated by JavaScript -->
+                </div>
+                <form class="comment-form" id="commentForm">
+                    <h4>Add Your Comment</h4>
+                    <div class="form-group">
+                        <label for="commentAuthor">Name</label>
+                        <input type="text" class="form-input" id="commentAuthor" placeholder="Your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="commentText">Comment</label>
+                        <textarea class="form-textarea" id="commentText" placeholder="Share your experience, tips, or notes about this resource..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Comment</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modalCancel">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Resource definitions
+        const resources = [
+            {
+                id: 'gpt55-western-nav-database',
+                filename: 'gpt55-western-nav-database.html',
+                type: 'html',
+                icon: '🖥️',
+                title: 'GPT-4.5 Western Nav Database',
+                size: '35 KB',
+                generator: 'GPT-4 (LMA)',
+                description: 'Light mode web app with gradient header, card-based layout, import/export functionality, and localStorage persistence.',
+                tags: ['HTML', 'GPT-4', 'Interactive']
+            },
+            {
+                id: 'copilot-western-nav-database',
+                filename: 'copilot-western-nav-database.html',
+                type: 'html',
+                icon: '🖥️',
+                title: 'Copilot Western Nav Database',
+                size: '68 KB',
+                generator: 'GitHub Copilot',
+                description: 'Dark mode default with Tailwind CSS, Lucide icons, expandable detail panels, and modern card-based UI.',
+                tags: ['HTML', 'Copilot', 'Dark Mode']
+            },
+            {
+                id: 'Opus46-western-nav-database',
+                filename: 'Opus46-western-nav-database.html',
+                type: 'html',
+                icon: '🖥️',
+                title: 'Opus 4.6 Western Nav Database',
+                size: '70 KB',
+                generator: 'Claude Opus 4.6',
+                description: 'Feature-rich app with theme toggle, priority badges, modal editing, comprehensive filtering, and advanced sorting options.',
+                tags: ['HTML', 'Opus 4.6', 'Full Featured']
+            },
+            {
+                id: 'lmc-western-nav',
+                filename: 'lmc-western-nav.html',
+                type: 'html',
+                icon: '🖥️',
+                title: 'LMC Western Nav Manager',
+                size: '17 KB',
+                generator: 'Claude',
+                description: 'Lightweight overland navigation resource manager with category organization, dark mode toggle, and clean card-based interface.',
+                tags: ['HTML', 'Lightweight', 'Dark Mode']
+            }
+        ];
+
+        // State management
+        let currentTheme = localStorage.getItem('navTheme') || 'light';
+        let comments = JSON.parse(localStorage.getItem('navComments') || '{}');
+        let currentResourceId = null;
+
+        // DOM elements
+        const themeToggle = document.getElementById('themeToggle');
+        const themeLabel = document.getElementById('themeLabel');
+        const resourcesGrid = document.getElementById('resourcesGrid');
+        const commentModal = document.getElementById('commentModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalClose = document.getElementById('modalClose');
+        const modalCancel = document.getElementById('modalCancel');
+        const commentsList = document.getElementById('commentsList');
+        const commentForm = document.getElementById('commentForm');
+        const commentAuthor = document.getElementById('commentAuthor');
+        const commentText = document.getElementById('commentText');
+        const toastContainer = document.getElementById('toastContainer');
+        const exportBtn = document.getElementById('exportBtn');
+        const expandAllBtn = document.getElementById('expandAllBtn');
+
+        // Initialize theme
+        function initTheme() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            const icon = themeToggle.querySelector('.icon');
+            icon.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+            themeLabel.textContent = currentTheme === 'dark' ? 'Light' : 'Dark';
+        }
+
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('navTheme', currentTheme);
+            initTheme();
+        });
+
+        // Render resources
+        function renderResources() {
+            resourcesGrid.innerHTML = resources.map(resource => {
+                const commentCount = (comments[resource.id] || []).length;
+                return `
+                    <div class="resource-card type-${resource.type}">
+                        <div class="resource-header">
+                            <div class="resource-icon">${resource.icon}</div>
+                            <div class="resource-info">
+                                <div class="resource-title">${resource.title}</div>
+                                <div class="resource-meta">
+                                    <span class="resource-tag">${resource.type.toUpperCase()}</span>
+                                    <span class="resource-tag">${resource.size}</span>
+                                    <span class="resource-tag">${resource.generator}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="resource-description">${resource.description}</div>
+                        <div class="resource-actions">
+                            <a href="${resource.filename}" class="btn btn-primary btn-sm" target="_blank">
+                                <span>🔗</span> Open ${resource.type.toUpperCase()}
+                            </a>
+                            <button class="btn btn-secondary btn-sm" onclick="openComments('${resource.id}')">
+                                <span>💬</span> Comments
+                            </button>
+                            <span class="resource-comment-count">
+                                ${commentCount > 0 ? `💭 ${commentCount}` : ''}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Open comments modal
+        function openComments(resourceId) {
+            currentResourceId = resourceId;
+            const resource = resources.find(r => r.id === resourceId);
+            modalTitle.textContent = `Comments: ${resource.title}`;
+            renderComments();
+            commentModal.classList.add('active');
+        }
+
+        // Render comments
+        function renderComments() {
+            const resourceComments = comments[currentResourceId] || [];
+
+            if (resourceComments.length === 0) {
+                commentsList.innerHTML = '<div class="comment-empty">No comments yet. Be the first to share your thoughts!</div>';
+                return;
+            }
+
+            commentsList.innerHTML = resourceComments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">${escapeHtml(comment.author)}</span>
+                        <span class="comment-date">${new Date(comment.date).toLocaleDateString()}</span>
+                    </div>
+                    <div class="comment-text">${escapeHtml(comment.text)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Add comment
+        commentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const newComment = {
+                author: commentAuthor.value.trim(),
+                text: commentText.value.trim(),
+                date: new Date().toISOString()
+            };
+
+            if (!comments[currentResourceId]) {
+                comments[currentResourceId] = [];
+            }
+
+            comments[currentResourceId].unshift(newComment);
+            localStorage.setItem('navComments', JSON.stringify(comments));
+
+            // Reset form
+            commentAuthor.value = '';
+            commentText.value = '';
+
+            // Re-render
+            renderComments();
+            renderResources();
+
+            showToast('Success', 'Comment added successfully');
+        });
+
+        // Close modal
+        function closeModal() {
+            commentModal.classList.remove('active');
+            currentResourceId = null;
+        }
+
+        modalClose.addEventListener('click', closeModal);
+        modalCancel.addEventListener('click', closeModal);
+        commentModal.addEventListener('click', (e) => {
+            if (e.target === commentModal) closeModal();
+        });
+
+        // Escape key closes modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && commentModal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        // Show toast notification
+        function showToast(title, message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <span class="toast-icon">✓</span>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('removing');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Export feedback
+        exportBtn.addEventListener('click', () => {
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                theme: currentTheme,
+                totalComments: Object.values(comments).flat().length,
+                comments: comments
+            };
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `nav-resources-feedback-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast('Export Complete', 'Your feedback has been downloaded');
+        });
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Expand all resources (opens them in new tabs)
+        expandAllBtn.addEventListener('click', () => {
+            if (confirm('Open all resource files in new tabs?')) {
+                resources.forEach(resource => {
+                    window.open(resource.filename, '_blank');
+                });
+            }
+        });
+
+        // Initialize
+        initTheme();
+        renderResources();
+
+        // Restore saved author name
+        const savedAuthor = localStorage.getItem('navCommentAuthor');
+        if (savedAuthor) {
+            commentAuthor.value = savedAuthor;
+        }
+
+        // Save author name on change
+        commentAuthor.addEventListener('change', () => {
+            localStorage.setItem('navCommentAuthor', commentAuthor.value.trim());
+        });
+    </script>
+</body>
+</html>

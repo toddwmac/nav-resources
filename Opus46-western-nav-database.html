@@ -1,0 +1,1120 @@
+
+
+LMA Opus 46 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Western US Motorhome & Adventure Bike Resource Manager</title>
+    <style>
+        :root {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e8eaed;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --text-muted: #7a7a9a;
+            --accent: #2d6a4f;
+            --accent-hover: #1b4332;
+            --accent-light: #d8f3dc;
+            --border: #d1d5db;
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --success: #10b981;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.2s ease;
+
+            --priority-critical: #dc2626;
+            --priority-high: #f59e0b;
+            --priority-medium: #3b82f6;
+            --priority-low: #6b7280;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #4ade80;
+            --accent-hover: #22c55e;
+            --accent-light: #14532d;
+            --border: #475569;
+            --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-title h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .header-title .logo {
+            font-size: 1.8rem;
+        }
+        .header-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+        .btn:hover { background: var(--bg-tertiary); }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+        .btn-danger:hover { background: var(--danger-hover); }
+        .btn-sm { padding: 4px 10px; font-size: 0.78rem; }
+        .btn-icon {
+            width: 36px; height: 36px;
+            padding: 0; display: flex;
+            align-items: center; justify-content: center;
+            border-radius: 50%; font-size: 1.1rem;
+        }
+
+        /* Toggle Switch */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .toggle-switch {
+            position: relative;
+            width: 48px; height: 26px;
+        }
+        .toggle-switch input { display: none; }
+        .toggle-slider {
+            position: absolute; inset: 0;
+            background: var(--border);
+            border-radius: 26px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 20px; height: 20px;
+            left: 3px; top: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--accent);
+        }
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(22px);
+        }
+
+        /* Toolbar */
+        .toolbar {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(45,106,79,0.15);
+        }
+        .search-box .search-icon {
+            position: absolute;
+            left: 12px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        select {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px 12px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .stat-count {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px 40px;
+        }
+
+        /* Resource Grid */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 16px;
+        }
+
+        /* Resource Card */
+        .resource-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .resource-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-right: 8px;
+        }
+        .card-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .card-title a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        .priority-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .priority-critical { background: #fef2f2; color: var(--priority-critical); border: 1px solid #fecaca; }
+        .priority-high { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+        .priority-medium { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .priority-low { background: #f9fafb; color: #4b5563; border: 1px solid #d1d5db; }
+        [data-theme="dark"] .priority-critical { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
+        [data-theme="dark"] .priority-high { background: #451a03; color: #fcd34d; border-color: #78350f; }
+        [data-theme="dark"] .priority-medium { background: #172554; color: #93c5fd; border-color: #1e3a5f; }
+        [data-theme="dark"] .priority-low { background: #1f2937; color: #9ca3af; border-color: #374151; }
+
+        .card-meta {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .meta-tag {
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            background: var(--accent-light);
+            color: var(--accent);
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .card-description {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+        .card-features {
+            margin-bottom: 12px;
+        }
+        .card-features summary {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            margin-bottom: 6px;
+        }
+        .feature-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .feature-chip {
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 4px;
+        }
+        .card-info-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .card-info-row span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .card-notes {
+            font-size: 0.8rem;
+            color: var(--warning);
+            background: rgba(245,158,11,0.08);
+            border-left: 3px solid var(--warning);
+            padding: 6px 10px;
+            border-radius: 0 4px 4px 0;
+            margin-bottom: 10px;
+        }
+        .card-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            z-index: 1;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+        .modal-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .modal-body { padding: 24px; }
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(45,106,79,0.15);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+        .empty-state h3 { font-size: 1.2rem; margin-bottom: 8px; color: var(--text-secondary); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .resource-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-inner { flex-direction: column; align-items: flex-start; }
+            .header-actions { width: 100%; justify-content: flex-start; }
+            .toolbar { flex-direction: column; }
+            .search-box { min-width: unset; width: 100%; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <div class="header-title">
+                <span class="logo">🗺️</span>
+                <div>
+                    <h1>Trail & Camp Resource Manager</h1>
+                    <div class="header-subtitle">Western US Motorhome (12ft) & Adventure Bike Navigation Database</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openAddModal()">➕ Add Resource</button>
+                <button class="btn" onclick="exportJSON()">📤 Export JSON</button>
+                <button class="btn" onclick="document.getElementById('importFile').click()">📥 Import</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+                <div class="theme-toggle">
+                    <span>☀️</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span>🌙</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="toolbar">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search resources by name, description, features, tags..." oninput="renderResources()">
+        </div>
+        <div class="filter-group">
+            <select id="categoryFilter" onchange="renderResources()">
+                <option value="">All Categories</option>
+            </select>
+            <select id="priorityFilter" onchange="renderResources()">
+                <option value="">All Priorities</option>
+                <option value="critical">🔴 Critical</option>
+                <option value="high">🟡 High</option>
+                <option value="medium">🔵 Medium</option>
+                <option value="low">⚪ Low</option>
+            </select>
+            <select id="platformFilter" onchange="renderResources()">
+                <option value="">All Platforms</option>
+                <option value="Web">Web</option>
+                <option value="iOS">iOS</option>
+                <option value="Android">Android</option>
+                <option value="Print">Print</option>
+                <option value="Dedicated Device">Dedicated Device</option>
+            </select>
+            <select id="offlineFilter" onchange="renderResources()">
+                <option value="">Online/Offline</option>
+                <option value="true">Offline Capable</option>
+                <option value="false">Online Only</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="stats-bar" id="statsBar"></div>
+
+    <main class="main">
+        <div class="resource-grid" id="resourceGrid"></div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="resourceModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Resource</h2>
+                <button class="btn btn-icon" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Resource Name *</label>
+                        <input type="text" id="formName" placeholder="e.g. Gaia GPS">
+                    </div>
+                    <div class="form-group">
+                        <label>URL</label>
+                        <input type="url" id="formUrl" placeholder="https://...">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <input type="text" id="formCategory" placeholder="e.g. Overlanding & Trail Navigation" list="categoryList">
+                        <datalist id="categoryList"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>Subcategory</label>
+                        <input type="text" id="formSubcategory" placeholder="e.g. GPS Mapping App">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea id="formDescription" placeholder="Describe the resource..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Platforms</label>
+                        <input type="text" id="formPlatforms" placeholder="Web, iOS, Android">
+                        <div class="form-hint">Comma-separated</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Cost</label>
+                        <input type="text" id="formCost" placeholder="e.g. Free / $39.99/yr">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="formPriority">
+                            <option value="medium">Medium</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Offline Capable</label>
+                        <select id="formOffline">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Features</label>
+                    <textarea id="formFeatures" placeholder="One feature per line"></textarea>
+                    <div class="form-hint">One feature per line</div>
+                </div>
+                <div class="form-group">
+                    <label>Best For</label>
+                    <input type="text" id="formBestFor" placeholder="e.g. Primary navigation for motorhome">
+                </div>
+                <div class="form-group">
+                    <label>Tags</label>
+                    <input type="text" id="formTags" placeholder="GPS, offline-maps, overlanding">
+                    <div class="form-hint">Comma-separated</div>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="formNotes" placeholder="Important notes, tips, warnings..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveResource()">💾 Save Resource</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal" style="max-width:420px">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <button class="btn btn-icon" onclick="closeDeleteModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteName"></strong>? This cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">🗑️ Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+    // ── Default Data ───────────────────────────────────────────
+    const DEFAULT_RESOURCES = [
+        {id:"res-001",name:"Low Clearance Map + HeadRoom",category:"Height & Clearance Navigation",subcategory:"Bridge Height Avoidance",url:"https://lowclearancemap.com/",platforms:["Web","iOS","Android"],cost:"Subscription (Free trial)",offlineCapable:true,description:"Largest publicly available low-clearance dataset with 24,000+ verified clearances. HeadRoom mobile app with voice-guided turn-by-turn navigation and Sentry Mode hazard monitoring. Directional metadata reduces false alarms.",features:["24,000+ verified clearance points","Directional hazard headings","Voice-guided turn-by-turn navigation","Sentry Mode background monitoring","Route planning with height input","Integrates with Google Maps"],bestFor:"Primary height-aware route planning for 12ft motorhome",tags:["low-clearance","bridge-height","RV-navigation","turn-by-turn"],priority:"critical",notes:"Essential for a 12ft rig. Always add 6 inches to your actual height when entering dimensions."},
+        {id:"res-002",name:"RV Life / RV Trip Wizard",category:"Height & Clearance Navigation",subcategory:"RV Route Planning",url:"https://www.rvlife.com/",platforms:["Web","iOS","Android"],cost:"~$40/year",offlineCapable:true,description:"RV-specific route planner factoring height, weight, length, and propane restrictions. Avoids low bridges and restricted roads. Syncs desktop to phone with CarPlay support.",features:["Vehicle dimension-based routing","Low clearance avoidance","Weight limit restrictions","Propane restriction routing","Multi-stop trip planning","Apple CarPlay / Android Auto"],bestFor:"Pre-trip route planning with vehicle dimension safety",tags:["route-planning","RV-safe","low-clearance"],priority:"high",notes:"Plan on desktop, navigate on phone. Good companion to Low Clearance Map."},
+        {id:"res-003",name:"Sygic Truck & RV GPS Navigation",category:"Height & Clearance Navigation",subcategory:"Turn-by-Turn Navigation",url:"https://www.sygic.com/truck-gps-navigation",platforms:["iOS","Android"],cost:"Subscription",offlineCapable:true,description:"Plans routes excluding roads not suitable for your RV based on vehicle dimensions, weight, and cargo type. Includes offline maps.",features:["Vehicle profile routing","Offline maps","Speed limit warnings","Lane guidance","Hazmat/propane restrictions"],bestFor:"Active turn-by-turn navigation with RV profile",tags:["navigation","RV-routing","offline-maps"],priority:"medium",notes:"Strong offline capability useful in remote Western US areas."},
+        {id:"res-004",name:"Trucker Path",category:"Height & Clearance Navigation",subcategory:"Bridge Height Database",url:"https://truckerpath.com/",platforms:["iOS","Android"],cost:"Free (Premium available)",offlineCapable:false,description:"Locates low-clearance bridges, truck-restricted roads, truck stops, and weigh stations. Routes suitable for large vehicles.",features:["Low-clearance bridge locations","Truck-restricted road alerts","Truck stop directory","Fuel price comparisons"],bestFor:"Supplemental bridge height reference and truck stop planning",tags:["bridge-height","truck-stops","restricted-roads"],priority:"medium",notes:"Designed for truckers but very useful for large motorhomes."},
+        {id:"res-005",name:"Garmin RV GPS (895/1095 Series)",category:"Height & Clearance Navigation",subcategory:"Dedicated GPS Hardware",url:"https://www.garmin.com/en-US/c/automotive/rv-gps/",platforms:["Dedicated Device"],cost:"$300-$500",offlineCapable:true,description:"Dedicated RV GPS programmable for height, width, length, and weight. Automatically routes around over-limit structures.",features:["Custom vehicle profile","Automatic avoidance routing","Campground POI database","Lane guidance","Road warnings (curves, grades)"],bestFor:"Dedicated dashboard navigation for motorhome",tags:["hardware-GPS","RV-navigation","low-clearance","Garmin"],priority:"high",notes:"Many experienced RVers consider this essential. 895/1095 are current models."},
+        {id:"res-006",name:"Rand McNally Motor Carriers Road Atlas",category:"Height & Clearance Navigation",subcategory:"Print Atlas",url:"https://www.randmcnally.com/product/rand-mcnally-motor-carriers-road-atlas",platforms:["Print"],cost:"~$25-$40",offlineCapable:true,description:"The trucker's bible — comprehensive road atlas with all low clearances listed by state. Works when electronics fail.",features:["All low clearances by state","Weight-restricted bridges","Truck-legal routes","No battery required"],bestFor:"Backup reference when electronics fail",tags:["print-atlas","low-clearance","backup","truckers-atlas"],priority:"high",notes:"Get the large spiral-bound version. Essential backup."},
+        {id:"res-007",name:"Gaia GPS (Gaia Overland Map)",category:"Overlanding & Trail Navigation",subcategory:"GPS Mapping App",url:"https://www.gaiagps.com/",platforms:["Web","iOS","Android"],cost:"Free basic / Premium $39.99/yr",offlineCapable:true,description:"Premier overlanding GPS with 18+ map layers. Gaia Overland sources USFS MVUM, BLM road/trail data, OpenStreetMap. Entire states downloadable offline.",features:["Gaia Overland map layer","USFS Roads & Trails layer","Public/Private land overlay","Cell coverage map","Satellite imagery","Offline state-wide downloads","Apple CarPlay / Android Auto","GPX import/export","Track recording"],bestFor:"Primary adventure bike navigation and dispersed campsite scouting",tags:["GPS","overlanding","offline-maps","trail-maps","BLM","USFS","GPX"],priority:"critical",notes:"Top choice for overlanding. Download entire states before departing. Integrates with Trails Offroad."},
+        {id:"res-008",name:"onX Offroad",category:"Overlanding & Trail Navigation",subcategory:"Trail Maps & GPS",url:"https://www.onxmaps.com/offroad",platforms:["Web","iOS","Android"],cost:"~$30/yr",offlineCapable:true,description:"650K+ miles of motorized trails with public land boundaries, difficulty ratings, dispersed camping layer, and cell coverage layers.",features:["650K+ miles motorized trails","Dispersed Camping Layer","Public/private land ownership","Trail difficulty ratings","Cell coverage layers","Wildfire monitoring","Offline maps with GPS","Apple CarPlay / Android Auto","3D trail maps"],bestFor:"Adventure bike trail finding and dispersed camping identification",tags:["trails","offroad","dispersed-camping","land-ownership","GPS"],priority:"critical",notes:"Pair with Gaia GPS for maximum coverage. Dispersed Camping Layer uses USFS verified data."},
+        {id:"res-009",name:"Trails Offroad",category:"Overlanding & Trail Navigation",subcategory:"Curated Trail Routes",url:"https://www.trailsoffroad.com/",platforms:["Web"],cost:"Free basic / All-Access membership",offlineCapable:false,description:"2,400+ hand-curated off-road routes with detailed trip guides, difficulty ratings, and GPX downloads. Integrates with Gaia GPS.",features:["2,400+ curated routes","Detailed trip guides","Difficulty ratings","GPX downloads","Gaia GPS integration"],bestFor:"Finding pre-scouted adventure bike routes in Western US",tags:["trails","GPX","curated-routes","overlanding"],priority:"high",notes:"~200 tracks for CA. Connect Gaia GPS account for seamless import."},
+        {id:"res-010",name:"Overland Bound One",category:"Overlanding & Trail Navigation",subcategory:"Community Maps & GPS",url:"https://www.overlandbound.com/",platforms:["iOS","Android","Web"],cost:"Free basic / Membership",offlineCapable:true,description:"Crowdsourced overlanding community with BLM routes, USFS MVUM trails, topo maps. Expedition mode offers offline navigation and GPX import.",features:["Crowdsourced camping locations","BLM & USFS MVUM layers","Offline maps & navigation","GPX import/export","Track recording","3D terrain maps"],bestFor:"Community-driven route discovery",tags:["community","overlanding","GPX","offline","crowdsourced"],priority:"medium",notes:"Check forums for downloadable routes. Expedition membership for full offline."},
+        {id:"res-011",name:"CalTopo",category:"Overlanding & Trail Navigation",subcategory:"Topographic Mapping",url:"https://caltopo.com/",platforms:["Web","iOS","Android"],cost:"Free basic / Pro $50/yr",offlineCapable:true,description:"Advanced topographic mapping with public land overlays color-coding BLM, Forest Service, and other federal lands. Excellent for custom map creation.",features:["Public land overlays","Multiple topo layers","Slope angle shading","Custom map printing","GPX import/export","Collaborative planning"],bestFor:"Detailed topographic trip planning and custom map creation",tags:["topographic","mapping","public-lands","GPX"],priority:"medium",notes:"Used by SAR teams and serious backcountry travelers."},
+        {id:"res-012",name:"Avenza Maps",category:"Geo-Located PDF Maps",subcategory:"GeoPDF Viewer",url:"https://www.avenza.com/avenza-maps/",platforms:["iOS","Android"],cost:"Free (3 maps) / Pro subscription",offlineCapable:true,description:"Mobile app for georeferenced PDF maps with GPS positioning. Official platform for USFS MVUMs, NPS maps, and USGS topo maps.",features:["GeoPDF viewer with GPS","Free USFS MVUM maps","Free NPS & USGS maps","Real-time location on PDFs","Distance measurement","Waypoint dropping","Map store with free maps"],bestFor:"Viewing official USFS and BLM georeferenced PDF maps in the field",tags:["GeoPDF","MVUM","USFS","BLM","offline","GPS-maps"],priority:"critical",notes:"Essential companion to MVUMs. Search 'MVUM' in map store. All MVUM maps are free."},
+        {id:"res-013",name:"USFS Motor Vehicle Use Maps (MVUM)",category:"Geo-Located PDF Maps",subcategory:"Official Forest Service Maps",url:"https://www.fs.usda.gov/visit/maps",platforms:["Web (PDF)"],cost:"Free",offlineCapable:true,description:"Official free maps showing designated motorized routes in all National Forests. Geospatial PDFs compatible with Avenza Maps.",features:["Legal motorized route designations","Vehicle class restrictions","Seasonal closures","Dispersed camping corridors","GeoPDF format","Free download"],bestFor:"Legal compliance — knowing where motorized travel is permitted",tags:["USFS","MVUM","GeoPDF","legal","forest-roads"],priority:"critical",notes:"If a route is not on the MVUM it is NOT open to motor vehicle travel. Download for every forest along your route."},
+        {id:"res-014",name:"BLM Navigator / National Data Map",category:"Geo-Located PDF Maps",subcategory:"BLM Land Maps",url:"https://navigator.blm.gov/",platforms:["Web"],cost:"Free",offlineCapable:false,description:"Official BLM map tool showing land boundaries, land status, roads, and recreation sites across all BLM-managed lands.",features:["Land ownership boundaries","Land status across US","Recreation sites","Official BLM data"],bestFor:"Confirming BLM land boundaries and official recreation sites",tags:["BLM","land-status","official","boundaries"],priority:"high",notes:"Definitive source for BLM land verification. Use alongside onX or Gaia for better UX."},
+        {id:"res-015",name:"BLM Georeferenced PDF Maps",category:"Geo-Located PDF Maps",subcategory:"BLM State Maps",url:"https://www.blm.gov/maps",platforms:["Web (PDF)"],cost:"Free",offlineCapable:true,description:"State-specific BLM maps compatible with GPS-enabled devices. Use with Avenza Maps for real-time GPS overlay.",features:["State-specific land maps","GPS-compatible PDFs","Land boundaries","Roads and trails"],bestFor:"Offline BLM land navigation without cell service",tags:["BLM","GeoPDF","offline","state-maps"],priority:"high",notes:"Download maps for AZ, CA, CO, ID, MT, NV, NM, OR, UT, WA, WY before trip."},
+        {id:"res-016",name:"USGS Topo Maps (topoView)",category:"Geo-Located PDF Maps",subcategory:"Topographic Maps",url:"https://ngmdb.usgs.gov/topoview/",platforms:["Web"],cost:"Free",offlineCapable:true,description:"Free USGS topographic maps as GeoPDFs. 7.5-minute quadrangle maps with detailed terrain, elevation, water features.",features:["7.5-minute quadrangles","Detailed terrain/elevation","GeoPDF format","Historical archives"],bestFor:"Detailed terrain analysis for adventure bike planning",tags:["USGS","topographic","GeoPDF","terrain"],priority:"medium",notes:"Also available through Avenza Maps store."},
+        {id:"res-017",name:"USFS Interactive Visitor Map",category:"Camping & Public Land Resources",subcategory:"Forest Service Recreation",url:"https://www.fs.usda.gov/ivm/",platforms:["Web"],cost:"Free",offlineCapable:false,description:"Interactive map for all campgrounds, trails, and forest roads in National Forests.",features:["Campground locations","Trail information","Forest road data","Fees and restrictions"],bestFor:"Pre-trip research on National Forest campgrounds",tags:["USFS","campgrounds","trails","forest-roads"],priority:"high",notes:"Use for research then download MVUMs for field navigation."},
+        {id:"res-018",name:"Recreation.gov",category:"Camping & Public Land Resources",subcategory:"Federal Campground Reservations",url:"https://www.recreation.gov/",platforms:["Web","iOS","Android"],cost:"Free (reservation fees vary)",offlineCapable:false,description:"Official federal reservation system for National Parks, Forests, BLM, and other federal campgrounds.",features:["Federal campground reservations","National Park permits","Availability calendar","Campsite photos"],bestFor:"Reserving developed campgrounds",tags:["reservations","campgrounds","national-parks","permits"],priority:"high",notes:"Popular campgrounds book 6 months in advance."},
+        {id:"res-019",name:"iOverlander",category:"Camping & Public Land Resources",subcategory:"Crowdsourced Camp Finder",url:"https://ioverlander.com/",platforms:["Web","iOS","Android"],cost:"Free",offlineCapable:true,description:"Free crowdsourced database of campgrounds, free camping, water, dump stations, propane, and overlander services worldwide.",features:["Global camping database","Free camping locations","Dump stations & water","User reviews & photos","GPS coordinates","Offline capability"],bestFor:"Finding free camping and overlander services",tags:["free-camping","crowdsourced","overlanding","dump-stations"],priority:"high",notes:"Web version gives full access. Treat listings as lead generators — verify with recent comments."},
+        {id:"res-020",name:"Campendium",category:"Camping & Public Land Resources",subcategory:"Campground Reviews & Discovery",url:"https://www.campendium.com/",platforms:["Web","iOS","Android"],cost:"Free basic / Pro $35.99/yr",offlineCapable:true,description:"Detailed campground reviews with cell signal data, price info, and real-world tips. Covers RV parks, public lands, free camping.",features:["Detailed user reviews","Cell signal by carrier","Price paid data","RV size limits","Advanced filtering (Pro)","Offline access (Pro)"],bestFor:"Researching campground quality and cell coverage",tags:["campground-reviews","cell-coverage","RV-parks","dispersed-camping"],priority:"high",notes:"Pro adds cell coverage reports and offline. Very strong for Western US."},
+        {id:"res-021",name:"FreeCampsites.net",category:"Camping & Public Land Resources",subcategory:"Free Camping Database",url:"https://freecampsites.net/",platforms:["Web"],cost:"Free",offlineCapable:false,description:"No-frills database of free and low-cost camping with user reviews, photos, GPS coordinates. No account required.",features:["Free camping locations","GPS coordinates","User reviews & photos","Color-coded map","Max RV size info","No login required"],bestFor:"Desktop pre-trip research for free camping on public land",tags:["free-camping","BLM","USFS","boondocking"],priority:"high",notes:"Data skews toward established BLM and National Forest dispersed spots."},
+        {id:"res-022",name:"The Dyrt",category:"Camping & Public Land Resources",subcategory:"Campground Discovery",url:"https://thedyrt.com/",platforms:["Web","iOS","Android"],cost:"Free basic / PRO $35.99/yr",offlineCapable:true,description:"Claims largest US campground database. PRO adds USFS/BLM map layers and offline downloads.",features:["USFS & BLM map layers (PRO)","Offline map downloads","Extensive photos","User reviews"],bestFor:"Discovering campgrounds with visual content",tags:["campgrounds","BLM-layer","USFS-layer","reviews"],priority:"medium",notes:"PRO needed for BLM/USFS layers."},
+        {id:"res-023",name:"RVParky",category:"Camping & Public Land Resources",subcategory:"Overnight Stop Finder",url:"https://rvparky.com/",platforms:["Web","iOS","Android"],cost:"Free",offlineCapable:false,description:"Free app covering campgrounds, overnight parking, dump stations, rest areas. Strong for city parks, fairgrounds, municipal lots.",features:["Campground directory","Overnight parking spots","Dump stations","Rest areas","User-verified data"],bestFor:"Finding overnight stops in unfamiliar towns",tags:["free","overnight-parking","dump-stations"],priority:"medium",notes:"Most recommended free camping app among experienced RVers."},
+        {id:"res-024",name:"Dispersed App",category:"Camping & Public Land Resources",subcategory:"Dispersed Camping Finder",url:"https://dispersedapp.com/",platforms:["Web","iOS","Android"],cost:"Free",offlineCapable:true,description:"Maps free camping spots on BLM, USFS, and public lands. Filter by location, user reviews, GPS coordinates. Offline saves.",features:["BLM/USFS camping locations","User reviews","GPS coordinates","Offline campsite saves"],bestFor:"Quick discovery of verified dispersed spots",tags:["dispersed-camping","BLM","USFS","boondocking"],priority:"medium",notes:"Offline save critical for BLM land with no cell service."},
+        {id:"res-025",name:"onX Maps (BLM Land Maps)",category:"Camping & Public Land Resources",subcategory:"Public Land Identification",url:"https://www.onxmaps.com/blm-land-maps",platforms:["Web","iOS","Android"],cost:"Subscription",offlineCapable:true,description:"Interactive BLM land maps showing 247.3 million acres with yellow shading. Land ownership boundaries and camping regs.",features:["BLM land identification","Land ownership boundaries","Color-coded public lands","Camping regulations"],bestFor:"Verifying you are on BLM land before camping",tags:["BLM","land-ownership","public-lands"],priority:"high",notes:"247.3 million acres primarily in western states. Yellow = BLM."},
+        {id:"res-026",name:"AllStays Camp & RV",category:"Camping & Public Land Resources",subcategory:"Comprehensive RV Directory",url:"https://www.allstays.com/",platforms:["iOS","Web"],cost:"$9.99 one-time",offlineCapable:true,description:"Comprehensive directory: campgrounds, RV parks, rest stops, Walmart lots, dump stations, low clearance alerts with rig height input.",features:["Campground & RV park directory","Low clearance alerts","Rig height input","Walmart overnight lots","Dump stations","Propane stations"],bestFor:"All-in-one big-picture trip planning",tags:["campgrounds","RV-parks","dump-stations","low-clearance"],priority:"high",notes:"One-time purchase, no subscription. iOS only for mobile. Highly recommended by full-timers."},
+        {id:"res-027",name:"Public Lands of the West Recreation Map",category:"Camping & Public Land Resources",subcategory:"Western US Public Lands",url:"https://publiclands.org/pages/recreationmap",platforms:["Web"],cost:"Free",offlineCapable:false,description:"Interactive map of recreation sites across AZ, CA, CO, ID, MT, NV, NM, OR, UT, WA, and WY public lands.",features:["Western US recreation sites","Multi-agency coverage","Physical map store"],bestFor:"Overview of Western public land recreation",tags:["western-US","public-lands","recreation"],priority:"medium",notes:"Covers all 11 Western states. Online store for physical maps."},
+        {id:"res-028",name:"BLM Camping Information",category:"Camping & Public Land Resources",subcategory:"BLM Campgrounds",url:"https://www.blm.gov/programs/recreation/camping",platforms:["Web"],cost:"Free",offlineCapable:false,description:"Official BLM camping info: developed campgrounds, dispersed camping guidelines, Long-Term Visitor Areas in CA/AZ.",features:["Developed campground info","Dispersed camping rules","Long-Term Visitor Areas","Leave No Trace guidelines"],bestFor:"Official BLM camping rules and campground info",tags:["BLM","campgrounds","dispersed-camping","LTVA"],priority:"medium",notes:"LTVAs in CA and AZ allow camping up to 7 months with permit."},
+        {id:"res-029",name:"DeLorme Atlas & Gazetteer",category:"Print Maps & Atlases",subcategory:"State Topographic Atlas",url:"https://www.garmin.com/en-US/c/outdoor-recreation/maps/atlas-gazetteer/",platforms:["Print"],cost:"~$25/state",offlineCapable:true,description:"State-by-state topographic map books with public land markings, back roads, and recreation areas.",features:["Detailed topographic maps","Public land markings","Back road coverage","No battery required"],bestFor:"Backup navigation when digital tools fail",tags:["print-atlas","topographic","public-lands","backup"],priority:"medium",notes:"Buy for each Western state you visit. Essential backup."},
+        {id:"res-030",name:"Benchmark Road & Recreation Atlas",category:"Print Maps & Atlases",subcategory:"Recreation Atlas",url:"https://www.benchmarkmaps.com/",platforms:["Print"],cost:"~$25/state",offlineCapable:true,description:"Comprehensive topographic maps with clear public land markings. Great for finding BLM areas and access points.",features:["Comprehensive topos","Clear public land markings","Back road detail"],bestFor:"Detailed public land identification",tags:["print-atlas","topographic","public-lands","BLM"],priority:"medium",notes:"Recommended alongside DeLorme for finding BLM camping areas."},
+        {id:"res-031",name:"Stay The Trail (Colorado MVUMs)",category:"Geo-Located PDF Maps",subcategory:"State MVUM Portal",url:"https://staythetrail.org/mvum/",platforms:["Web"],cost:"Free",offlineCapable:true,description:"Central portal for all Colorado USFS Motor Vehicle Use Maps. Kept current and available on Avenza.",features:["All Colorado MVUMs","Kept up to date","Avenza integration","Free downloads"],bestFor:"One-stop Colorado forest MVUM downloads",tags:["Colorado","MVUM","USFS","Avenza"],priority:"medium",notes:"Model state portal. Check for similar resources in other states."},
+        {id:"res-032",name:"COTREX (Colorado Trail Explorer)",category:"Overlanding & Trail Navigation",subcategory:"State Trail App",url:"https://trails.colorado.gov/",platforms:["iOS","Android","Web"],cost:"Free",offlineCapable:true,description:"Free Colorado Parks and Wildlife app with 41,000+ miles of trails including OHV. Offline maps and ride tracking.",features:["41,000+ miles of trails","OHV trail data","Offline maps","Ride tracking","Seasonal closures"],bestFor:"Adventure bike trail finding in Colorado",tags:["Colorado","trails","OHV","free","offline"],priority:"medium",notes:"Free state-specific app. Check for similar in other Western states."},
+        {id:"res-033",name:"Google Earth",category:"Trip Planning & Scouting",subcategory:"Satellite Reconnaissance",url:"https://earth.google.com/",platforms:["Web","iOS","Android","Desktop"],cost:"Free",offlineCapable:false,description:"Satellite imagery for scouting campsites, access roads, and terrain before arrival.",features:["High-res satellite imagery","3D terrain","Street View","Elevation profiles","KML support"],bestFor:"Pre-trip visual reconnaissance of dispersed camping areas",tags:["satellite","scouting","terrain","planning"],priority:"high",notes:"Use to visually assess BLM terrain and road conditions before committing."},
+        {id:"res-034",name:"Roadtrippers",category:"Trip Planning & Scouting",subcategory:"Road Trip Planner",url:"https://roadtrippers.com/",platforms:["Web","iOS","Android"],cost:"Free basic / Premium $49.99/yr",offlineCapable:false,description:"Road trip planner with AI itinerary builder. Discover attractions, campgrounds, and scenic routes.",features:["AI trip planner","RV-friendly routing","Attraction discovery","Multi-stop planning"],bestFor:"High-level road trip itinerary planning",tags:["road-trip","planning","attractions","itinerary"],priority:"medium",notes:"Good for big-picture itinerary. Use specialized tools for detailed nav."},
+        {id:"res-035",name:"WildernessConnect",category:"Camping & Public Land Resources",subcategory:"Wilderness Area Info",url:"https://wilderness.net/",platforms:["Web"],cost:"Free",offlineCapable:false,description:"Information on all US wilderness areas. IMPORTANT: motorized vehicles are prohibited in wilderness areas.",features:["All US wilderness areas","Interactive map","Boundary information"],bestFor:"Identifying wilderness boundaries to AVOID with vehicles",tags:["wilderness","boundaries","no-motors"],priority:"medium",notes:"Motorized vehicles PROHIBITED in wilderness. Know the boundaries."},
+        {id:"res-036",name:"Harvest Hosts",category:"Camping & Public Land Resources",subcategory:"Unique Overnight Stays",url:"https://harvesthosts.com/",platforms:["Web","iOS","Android"],cost:"$99/yr membership",offlineCapable:false,description:"Overnight RV stays at farms, wineries, breweries, and attractions. Self-contained RVs only.",features:["Farm & winery stays","Brewery stops","One-night stays"],bestFor:"Interesting overnight stops between public land camping",tags:["overnight-stays","wineries","farms"],priority:"low",notes:"Must be self-contained."},
+        {id:"res-037",name:"KampTrail",category:"Camping & Public Land Resources",subcategory:"Federal Campsite Data",url:"https://kamptrail.com/",platforms:["Web"],cost:"Free",offlineCapable:false,description:"Uses verified federal campsite data from Recreation.gov RIDB API. Built after FreeRoam shutdown.",features:["Federal campsite data","Recreation.gov API","Verified sources"],bestFor:"Finding federal campsites with official data",tags:["federal-campsites","verified-data"],priority:"low",notes:"Newer tool using official Recreation.gov data."},
+        {id:"res-038",name:"USFS Geospatial Data Discovery Hub",category:"Trip Planning & Scouting",subcategory:"Open Data Portal",url:"https://data-usfs.hub.arcgis.com/",platforms:["Web"],cost:"Free",offlineCapable:false,description:"Open data portal for Forest Service geospatial datasets. Build custom maps with official USFS data.",features:["Public geospatial datasets","ArcGIS integration","Interactive tools"],bestFor:"Power users wanting raw USFS data",tags:["USFS","open-data","GIS","ArcGIS"],priority:"low",notes:"For advanced users. See 'More Applications' section."},
+        {id:"res-039",name:"Boondocking.org",category:"Camping & Public Land Resources",subcategory:"Dispersed Camping Database",url:"https://www.boondocking.org/",platforms:["Web"],cost:"Free",offlineCapable:false,description:"User-submitted dispersed camping spots with GPS pins. Community-driven free camping database.",features:["User-submitted locations","GPS coordinates","Dispersed camping focus"],bestFor:"Supplemental dispersed camping source",tags:["boondocking","dispersed-camping","free-camping"],priority:"low",notes:"Use alongside Campendium and iOverlander."},
+        {id:"res-040",name:"US Fish & Wildlife Interactive Map",category:"Camping & Public Land Resources",subcategory:"Wildlife Refuge Maps",url:"https://www.fws.gov/map",platforms:["Web"],cost:"Free",offlineCapable:false,description:"Locate National Wildlife Refuges and USFWS managed lands. Some refuges offer camping and scenic drives.",features:["Wildlife refuge locations","Managed land boundaries","Recreation info"],bestFor:"Identifying wildlife refuges for camping and scenic drives",tags:["wildlife-refuges","USFWS","public-lands"],priority:"low",notes:"Some NWRs have excellent camping and wildlife viewing."}
+    ];
+
+    // ── State ──────────────────────────────────────────────────
+    let resources = [];
+    let deleteTargetId = null;
+
+    // ── Init ──────────────────────────────────────────────────
+    function init() {
+        const saved = localStorage.getItem('rvResources');
+        if (saved) {
+            try { resources = JSON.parse(saved); }
+            catch { resources = [...DEFAULT_RESOURCES]; }
+        } else {
+            resources = [...DEFAULT_RESOURCES];
+        }
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.getElementById('themeToggle').checked = true;
+        }
+        populateFilters();
+        renderResources();
+    }
+
+    function save() {
+        localStorage.setItem('rvResources', JSON.stringify(resources));
+    }
+
+    // ── Theme ─────────────────────────────────────────────────
+    function toggleTheme() {
+        const dark = document.getElementById('themeToggle').checked;
+        document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+        localStorage.setItem('theme', dark ? 'dark' : 'light');
+    }
+
+    // ── Filters ───────────────────────────────────────────────
+    function populateFilters() {
+        const cats = [...new Set(resources.map(r => r.category))].sort();
+        const sel = document.getElementById('categoryFilter');
+        const dl = document.getElementById('categoryList');
+        sel.innerHTML = '<option value="">All Categories</option>' +
+            cats.map(c => `<option value="${c}">${c}</option>`).join('');
+        dl.innerHTML = cats.map(c => `<option value="${c}">`).join('');
+    }
+
+    function getFiltered() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const cat = document.getElementById('categoryFilter').value;
+        const pri = document.getElementById('priorityFilter').value;
+        const plat = document.getElementById('platformFilter').value;
+        const off = document.getElementById('offlineFilter').value;
+
+        return resources.filter(r => {
+            if (cat && r.category !== cat) return false;
+            if (pri && r.priority !== pri) return false;
+            if (plat && !(r.platforms || []).some(p => p.includes(plat))) return false;
+            if (off !== '' && String(r.offlineCapable) !== off) return false;
+            if (q) {
+                const hay = [
+                    r.name, r.category, r.subcategory, r.description,
+                    r.bestFor, r.notes, ...(r.features || []), ...(r.tags || [])
+                ].join(' ').toLowerCase();
+                if (!hay.includes(q)) return false;
+            }
+            return true;
+        });
+    }
+
+    // ── Render ─────────────────────────────────────────────────
+    function renderResources() {
+        const filtered = getFiltered();
+        const grid = document.getElementById('resourceGrid');
+        const stats = document.getElementById('statsBar');
+
+        const total = resources.length;
+        const shown = filtered.length;
+        const critCount = filtered.filter(r => r.priority === 'critical').length;
+        const offCount = filtered.filter(r => r.offlineCapable).length;
+
+        stats.innerHTML = `
+            <span class="stat-item">📊 <span class="stat-count">${shown}</span> of ${total} resources</span>
+            <span class="stat-item">🔴 <span class="stat-count">${critCount}</span> critical</span>
+            <span class="stat-item">📡 <span class="stat-count">${offCount}</span> offline-capable</span>
+        `;
+
+        if (!filtered.length) {
+            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+                <div class="icon">🔍</div>
+                <h3>No resources found</h3>
+                <p>Try adjusting your search or filters</p>
+            </div>`;
+            return;
+        }
+
+        const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+        filtered.sort((a, b) => (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9));
+
+        grid.innerHTML = filtered.map(r => {
+            const platforms = (r.platforms || []).join(' · ');
+            const tags = (r.tags || []).slice(0, 4).map(t => `<span class="meta-tag">${t}</span>`).join('');
+            const features = (r.features || []).map(f => `<span class="feature-chip">${f}</span>`).join('');
+            const url = r.url ? `<a href="${r.url}" target="_blank" rel="noopener">${r.name}</a>` : r.name;
+
+            return `<div class="resource-card">
+                <div class="card-header">
+                    <span class="card-title">${url}</span>
+                    <span class="priority-badge priority-${r.priority}">${r.priority}</span>
+                </div>
+                <div class="card-meta">${tags}</div>
+                <div class="card-info-row">
+                    <span>📁 ${r.category}${r.subcategory ? ' › ' + r.subcategory : ''}</span>
+                </div>
+                <div class="card-info-row">
+                    <span>🖥️ ${platforms || 'N/A'}</span>
+                    <span>💰 ${r.cost || 'N/A'}</span>
+                    <span>${r.offlineCapable ? '✅ Offline' : '🌐 Online only'}</span>
+                </div>
+                <p class="card-description">${r.description || ''}</p>
+                ${r.bestFor ? `<div class="card-info-row"><span>🎯 <strong>${r.bestFor}</strong></span></div>` : ''}
+                ${features ? `<details class="card-features"><summary>Features (${(r.features||[]).length})</summary><div class="feature-list">${features}</div></details>` : ''}
+                ${r.notes ? `<div class="card-notes">💡 ${r.notes}</div>` : ''}
+                <div class="card-actions">
+                    <button class="btn btn-sm" onclick="editResource('${r.id}')">✏️ Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteResource('${r.id}')">🗑️</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ── CRUD ──────────────────────────────────────────────────
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = 'Add Resource';
+        document.getElementById('editId').value = '';
+        clearForm();
+        document.getElementById('resourceModal').classList.add('active');
+    }
+
+    function editResource(id) {
+        const r = resources.find(x => x.id === id);
+        if (!r) return;
+        document.getElementById('modalTitle').textContent = 'Edit Resource';
+        document.getElementById('editId').value = r.id;
+        document.getElementById('formName').value = r.name || '';
+        document.getElementById('formUrl').value = r.url || '';
+        document.getElementById('formCategory').value = r.category || '';
+        document.getElementById('formSubcategory').value = r.subcategory || '';
+        document.getElementById('formDescription').value = r.description || '';
+        document.getElementById('formPlatforms').value = (r.platforms || []).join(', ');
+        document.getElementById('formCost').value = r.cost || '';
+        document.getElementById('formPriority').value = r.priority || 'medium';
+        document.getElementById('formOffline').value = String(r.offlineCapable || false);
+        document.getElementById('formFeatures').value = (r.features || []).join('\n');
+        document.getElementById('formBestFor').value = r.bestFor || '';
+        document.getElementById('formTags').value = (r.tags || []).join(', ');
+        document.getElementById('formNotes').value = r.notes || '';
+        document.getElementById('resourceModal').classList.add('active');
+    }
+
+    function saveResource() {
+        const name = document.getElementById('formName').value.trim();
+        const category = document.getElementById('formCategory').value.trim();
+        const description = document.getElementById('formDescription').value.trim();
+        if (!name || !category || !description) {
+            toast('⚠️ Name, Category, and Description are required.');
+            return;
+        }
+        const editId = document.getElementById('editId').value;
+        const data = {
+            id: editId || 'res-' + Date.now(),
+            name,
+            category,
+            subcategory: document.getElementById('formSubcategory').value.trim(),
+            url: document.getElementById('formUrl').value.trim(),
+            platforms: document.getElementById('formPlatforms').value.split(',').map(s => s.trim()).filter(Boolean),
+            cost: document.getElementById('formCost').value.trim(),
+            offlineCapable: document.getElementById('formOffline').value === 'true',
+            description,
+            features: document.getElementById('formFeatures').value.split('\n').map(s => s.trim()).filter(Boolean),
+            bestFor: document.getElementById('formBestFor').value.trim(),
+            tags: document.getElementById('formTags').value.split(',').map(s => s.trim()).filter(Boolean),
+            priority: document.getElementById('formPriority').value,
+            notes: document.getElementById('formNotes').value.trim()
+        };
+        if (editId) {
+            const idx = resources.findIndex(r => r.id === editId);
+            if (idx !== -1) resources[idx] = data;
+            toast('✅ Resource updated!');
+        } else {
+            resources.push(data);
+            toast('✅ Resource added!');
+        }
+        save();
+        populateFilters();
+        renderResources();
+        closeModal();
+    }
+
+    function deleteResource(id) {
+        const r = resources.find(x => x.id === id);
+        if (!r) return;
+        deleteTargetId = id;
+        document.getElementById('deleteName').textContent = r.name;
+        document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function confirmDelete() {
+        resources = resources.filter(r => r.id !== deleteTargetId);
+        save();
+        populateFilters();
+        renderResources();
+        closeDeleteModal();
+        toast('🗑️ Resource deleted.');
+    }
+
+    function closeModal() { document.getElementById('resourceModal').classList.remove('active'); }
+    function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('active'); deleteTargetId = null; }
+
+    function clearForm() {
+        ['formName','formUrl','formCategory','formSubcategory','formDescription',
+         'formPlatforms','formCost','formFeatures','formBestFor','formTags','formNotes']
+            .forEach(id => document.getElementById(id).value = '');
+        document.getElementById('formPriority').value = 'medium';
+        document.getElementById('formOffline').value = 'false';
+    }
+
+    // ── Import / Export ───────────────────────────────────────
+    function exportJSON() {
+        const blob = new Blob([JSON.stringify({
+            metadata: {
+                title: "Western US Motorhome & Adventure Bike Navigation Resource Database",
+                version: "1.0.0",
+                exported: new Date().toISOString(),
+                totalResources: resources.length
+            },
+            resources
+        }, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `rv-resources-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast('📤 Exported ' + resources.length + ' resources.');
+    }
+
+    function importJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                const items = data.resources || data;
+                if (!Array.isArray(items)) throw new Error('Invalid format');
+                let added = 0;
+                items.forEach(item => {
+                    if (!item.name) return;
+                    item.id = item.id || 'res-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+                    const exists = resources.find(r => r.id === item.id);
+                    if (exists) {
+                        Object.assign(exists, item);
+                    } else {
+                        resources.push(item);
+                    }
+                    added++;
+                });
+                save();
+                populateFilters();
+                renderResources();
+                toast(`📥 Imported/updated ${added} resources.`);
+            } catch (err) {
+                toast('❌ Import failed: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    // ── Toast ─────────────────────────────────────────────────
+    function toast(msg) {
+        const container = document.getElementById('toastContainer');
+        const el = document.createElement('div');
+        el.className = 'toast';
+        el.textContent = msg;
+        container.appendChild(el);
+        setTimeout(() => { el.remove(); }, 3500);
+    }
+
+    // ── Close modals on overlay click ──────────────────────────
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) {
+                overlay.classList.remove('active');
+            }
+        });
+    });
+
+    // ── Go ─────────────────────────────────────────────────────
+    init();
+    </script>
+</body>
+</html>
+<!-- Research Notes:
+Research Summary
+Here's what I found across all categories:
+
+RV Height/Clearance Navigation
+1
+ Low Clearance Map provides the largest publicly available low-clearance dataset for trucks and RVs, covering the U.S., Canada, and the U.K., with every entry validated against DOT records and driver feedback.
+1
+ One subscription unlocks both the web platform and HeadRoom on iOS and Android, with voice-guided turn-by-turn navigation and Sentry Mode hazard monitoring.
+7
+ Sygic Truck GPS Navigation can plan your route leaving out all roads not suitable for your RV, and Trucker Path helps locate low-clearance bridges and truck restricted roads.
+5
+ RV Trip Wizard has a low clearance feature for travel planning.
+Overlanding & GPS Map Tools
+20
+ Gaia Overland sources information from Open Street Map, US Forest Service Motor Vehicle Use Maps, USFS road and trail data, and BLM road and trail data to show road surface type, vehicle constraints, closure info, and campsite info.
+22
+ onX Offroad lets you download area maps before heading out of service, with maps stored on your phone or tablet; no service is required to view trails and add Waypoints.
+29
+ Trails Offroad offers 2,400+ off-road routes sourced from hundreds of experienced off-road experts and outdoor enthusiasts.
+BLM & Public Land Camping
+14
+ Camping on public lands away from developed recreation facilities is called dispersed camping, and most BLM lands allow dispersed camping unless an area is posted "Closed to Camping."
+16
+ The Dispersed app maps out free camping spots on BLM, USFS, and other public lands, with filtering by location, user reviews, and coordinates to verified spots.
+USFS Motor Vehicle Use Maps
+32
+ Many Forest Service maps, including visitor maps, are available for purchase as georeferenced PDFs on Avenza, which may be used on most mobile devices.
+32
+ Motor vehicle use maps show designated roads, trails and areas for motor vehicle use, including highway-legal vehicles and off-highway vehicles.
+Campsite Finders
+40
+ RVParky is free, with no subscription and no paywall, covering campgrounds, overnight parking spots, dump stations, and rest areas all in one map.
+40
+ iOverlander is free on both the app and the web, with the web version giving full world map access with no account required.
+40
+ Freecampsites.net is a website that aggregates free and low-cost camping locations across the U.S. with user reviews, photos, and GPS coordinates.
+-->
+<!-- Usage Notes:
+How To Use
+JSON File — Copy the JSON block into a file named rv-resources.json. This is your portable, importable database.
+
+Web Application — Save the HTML block as rv-resources.html and open it in any modern browser. It's a fully self-contained single-file app.
+
+App Features:
+Feature	Details
+🔍 Search	Full-text search across names, descriptions, features, tags
+🏷️ Filters	Category, Priority, Platform, Offline capability
+➕ Add	Full form with all fields, validation on required fields
+✏️ Edit	Pre-populated form for any resource
+🗑️ Delete	Confirmation dialog before removal
+📤 Export	Downloads full database as timestamped JSON
+📥 Import	Merge/update from any exported JSON file
+🌙 Dark Mode	Toggle in header, preference persisted in localStorage
+💾 Persistence	All changes auto-saved to browser localStorage
+📊 Stats Bar	Live counts of total, critical, and offline-capable resources
+🔀 Sort	Auto-sorted by priority (critical → high → medium → low)
+Priority Guide for Your 12ft Rig:
+🔴 Critical — Low Clearance Map, Gaia GPS, onX Offroad, Avenza Maps, USFS MVUMs
+🟡 High — RV Life, Garmin RV GPS, Rand McNally Atlas, BLM Navigator, iOverlander, Campendium, FreeCampsites.net
+🔵 Medium — Sygic, CalTopo, Trails Offroad, The Dyrt, state-specific apps
+⚪ Low — Supplemental & niche tools
+-->

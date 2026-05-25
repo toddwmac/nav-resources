@@ -1,0 +1,1050 @@
+<!--Below is a **starter research database** plus a **single-file browser app** you can save locally. I can’t actually launch separate autonomous “agents” from here, but I organized the research as if by function: federal/public-land maps, offline/GIS tools, camping sources, adventure-bike routes/tracks, low-clearance/RV routing, state road-condition systems, and western-state OHV/trail portals.
+
+**Important safety note for a 12-foot-tall rig:** use RV/truck routing as a planning aid—not as the final authority. Posted bridge/underpass signs, agency closures, ranger/district offices, DOT traveler info, and on-the-ground conditions override app routing.
+
+Key verified source families used below: BLM maintains maps, georeferenced PDFs, recreation maps, and a geospatial data hub; USFS provides the Interactive Visitor Map, MVUM/legal motor-vehicle-use map resources, and Enterprise Data/Geodata access; USGS provides The National Map/topo products and PAD-US public/protected land data; Recreation.gov/RIDB provides federal recreation/camping data. 
+
+Offline/navigation tools included here were verified from official or support pages: Gaia GPS has off-road/MVUM/USFS layers, Avenza supports offline GPS use of geospatial PDF/GeoPDF/GeoTIFF maps and GPX/KML imports, CalTopo imports/exports GPX/KML/GeoJSON and supports offline layer use, and OsmAnd is an offline OpenStreetMap-based navigation app with GPX overlays/tracks. 
+
+For your 12-foot height constraint, I included RV/truck routing and low-clearance tools: Garmin RV/Camper/Overlander devices can use height/weight profiles where supported; Roadtrippers Premium offers RV-safe routing with vehicle height/weight/propane preferences; CoPilot supports truck/RV-type routing profiles and custom size restrictions; LowClearances.com sells a low-clearance POI database; AllStays lists many road hazards; Hammer and TruckMap advertise truck-safe routing around low bridges/restrictions. 
+
+For public-land camping and route planning, BLM’s camping page explains dispersed camping and variable local rules; Recreation.gov is the primary reservation portal for many federal facilities; Campendium, The Dyrt, AllStays, and Harvest Hosts are included as complementary campground/overnight databases. 
+
+State DOT systems and OHV portals were included because closures, snow, fires, construction, seasonal gates, and local restrictions change constantly across the West. Examples verified include Caltrans QuickMap, AZ511, COtrip, UDOT Traffic, WSDOT Travel, Oregon TripCheck, Montana 511, NMRoads, and WYDOT/WyoRoad. 
+
+For adventure-bike/OHV planning, BDR provides free GPS tracks and route pages; TransAmerica Trail provides official maps/GPS tracks; Colorado’s COTREX maps trails statewide; Utah, Oregon, Idaho, Nevada, Washington, Montana, New Mexico, Wyoming, Arizona, and California all have official or state-linked OHV/trail resources included below. 
+
+---
+
+
+Save this as **`western-nav-database.html`**.
+
+How to use:
+
+1. Save the JSON above as `western-nav-resources.json`.
+2. Open the HTML file in your browser.
+3. Click **Import JSON** and select `western-nav-resources.json`.
+4. Add/edit/remove resources.
+5. Use **Export JSON** to save your edited copy.
+6. The app stores edits in your browser’s `localStorage`.
+7. Dark mode is included.
+-->
+LMA/GPT55 https://arena.ai/c/019e5b5c-7670-7778-9464-ae59bacaa497 - notes in file
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Western Navigation Resource Database - LMA </title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --text: #172033;
+      --muted: #5f6b7a;
+      --border: #d9dee8;
+      --accent: #1f7a5a;
+      --accent-2: #2b6cb0;
+      --danger: #c53030;
+      --warning: #b7791f;
+      --shadow: 0 10px 28px rgba(20, 33, 61, 0.10);
+      --chip: #eef6f3;
+      --input: #ffffff;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0d1117;
+      --panel: #151b23;
+      --text: #e6edf3;
+      --muted: #9aa7b5;
+      --border: #30363d;
+      --accent: #4ade80;
+      --accent-2: #60a5fa;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --shadow: 0 10px 28px rgba(0,0,0,0.35);
+      --chip: #1d2a22;
+      --input: #0f1720;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    header {
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(31,122,90,.95), rgba(43,108,176,.95));
+      color: white;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      letter-spacing: -0.03em;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.92;
+      max-width: 1000px;
+    }
+
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .toolbar,
+    .stats,
+    .card,
+    .modal-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1.5fr repeat(3, minmax(150px, 220px)) auto;
+      gap: 12px;
+      align-items: end;
+      margin-top: -36px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--input);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 3px rgba(96,165,250,.20);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button, .file-button {
+      border: 0;
+      background: var(--accent-2);
+      color: white;
+      border-radius: 12px;
+      padding: 10px 13px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .08s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    button:hover, .file-button:hover { opacity: .92; }
+    button:active, .file-button:active { transform: translateY(1px); }
+
+    .btn-accent { background: var(--accent); color: #07130d; }
+    [data-theme="light"] .btn-accent { color: white; }
+
+    .btn-danger { background: var(--danger); }
+    .btn-muted {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .file-button input {
+      display: none;
+    }
+
+    .stats {
+      margin: 18px 0;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+    }
+
+    .stats strong { color: var(--text); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 265px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .summary {
+      flex: 1;
+      color: var(--text);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      background: var(--chip);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 0.78rem;
+      font-weight: 650;
+    }
+
+    .priority-high { border-color: rgba(74,222,128,.7); }
+    .priority-medium { border-color: rgba(251,191,36,.75); }
+    .priority-low { border-color: rgba(148,163,184,.75); }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    a {
+      color: var(--accent-2);
+      font-weight: 700;
+      text-decoration: none;
+      word-break: break-word;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    .empty {
+      text-align: center;
+      padding: 48px 18px;
+      color: var(--muted);
+      border: 2px dashed var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 50;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-card {
+      width: min(940px, 100%);
+      max-height: 92vh;
+      overflow: auto;
+      padding: 18px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .small-help {
+      color: var(--muted);
+      font-size: .85rem;
+      margin-top: 6px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: none;
+      z-index: 80;
+      max-width: min(420px, calc(100vw - 36px));
+    }
+
+    .toast.show { display: block; }
+
+    @media (max-width: 980px) {
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
+      }
+      .toolbar .buttons {
+        grid-column: 1 / -1;
+      }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      main { padding: 14px; }
+      .toolbar {
+        grid-template-columns: 1fr;
+        margin-top: -24px;
+      }
+      .toolbar .buttons { grid-column: auto; }
+      .grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <header>
+    <h1>Western Navigation Resource Database</h1>
+    <p>
+      Mapping tools, public-land maps, GeoPDF/PDF resources, tracks/routes, camping databases,
+      low-clearance/RV routing tools, and western-state DOT/OHV resources.
+    </p>
+  </header>
+
+  <main>
+    <section class="toolbar" aria-label="Filters and actions">
+      <div>
+        <label for="search">Search</label>
+        <input id="search" type="search" placeholder="Search title, tags, notes, states..." />
+      </div>
+
+      <div>
+        <label for="categoryFilter">Category</label>
+        <select id="categoryFilter">
+          <option value="">All categories</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="stateFilter">State</label>
+        <select id="stateFilter">
+          <option value="">All states</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="priorityFilter">Priority</label>
+        <select id="priorityFilter">
+          <option value="">All priorities</option>
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </div>
+
+      <div class="buttons">
+        <button id="addBtn" class="btn-accent">Add</button>
+        <button id="exportBtn">Export JSON</button>
+        <label class="file-button">
+          Import JSON
+          <input id="importFile" type="file" accept=".json,application/json" />
+        </label>
+        <button id="darkBtn" class="btn-muted">Dark mode</button>
+        <button id="resetBtn" class="btn-muted" title="Clear local saved data and reload defaults">Reset</button>
+      </div>
+    </section>
+
+    <section class="stats" aria-live="polite">
+      <div><strong id="countShown">0</strong> shown of <strong id="countTotal">0</strong> resources</div>
+      <div>Rig height profile: <strong id="rigHeight">12 ft 0 in</strong></div>
+      <div>Last verified: <strong id="lastVerified">Unknown</strong></div>
+    </section>
+
+    <section id="cards" class="grid"></section>
+    <section id="empty" class="empty" hidden>
+      No matching resources. Try changing filters, or import/add resources.
+    </section>
+  </main>
+
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add resource</h2>
+        <button id="closeModalBtn" class="btn-muted">Close</button>
+      </div>
+
+      <form id="resourceForm">
+        <input type="hidden" id="editingId" />
+
+        <div class="form-grid">
+          <div>
+            <label for="id">ID</label>
+            <input id="id" required placeholder="unique-resource-id" />
+            <div class="small-help">Use lowercase, dashes, and no spaces.</div>
+          </div>
+
+          <div>
+            <label for="title">Title</label>
+            <input id="title" required placeholder="Resource name" />
+          </div>
+
+          <div>
+            <label for="category">Category</label>
+            <input id="category" required placeholder="Federal Mapping and Public Lands" />
+          </div>
+
+          <div>
+            <label for="type">Type</label>
+            <input id="type" placeholder="Website, app, API, GeoPDF, route provider..." />
+          </div>
+
+          <div class="full">
+            <label for="url">URL</label>
+            <input id="url" type="url" required placeholder="https://example.gov/map" />
+          </div>
+
+          <div>
+            <label for="states">States</label>
+            <input id="states" placeholder="US, AZ, CA, CO" />
+          </div>
+
+          <div>
+            <label for="cost">Cost</label>
+            <input id="cost" placeholder="Free, subscription, paid, varies" />
+          </div>
+
+          <div>
+            <label for="offline">Offline useful?</label>
+            <select id="offline">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="vehicleRouting">Vehicle/RV routing?</label>
+            <select id="vehicleRouting">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="priority">Priority</label>
+            <select id="priority">
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="geoFormats">Geo formats</label>
+            <input id="geoFormats" placeholder="GPX, KML, GeoPDF, GeoJSON" />
+          </div>
+
+          <div class="full">
+            <label for="tags">Tags</label>
+            <input id="tags" placeholder="BLM, MVUM, camping, low clearance" />
+          </div>
+
+          <div class="full">
+            <label for="summary">Summary</label>
+            <textarea id="summary" placeholder="What is this resource useful for?"></textarea>
+          </div>
+
+          <div class="full">
+            <label for="notes">Notes</label>
+            <textarea id="notes" placeholder="Operational caveats, verification steps, offline workflow, etc."></textarea>
+          </div>
+        </div>
+
+        <div class="buttons" style="margin-top:16px">
+          <button type="submit" class="btn-accent">Save resource</button>
+          <button type="button" id="deleteInModalBtn" class="btn-danger">Delete</button>
+          <button type="button" id="cancelBtn" class="btn-muted">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const STORAGE_KEY = "westernNavResourceDatabaseV1";
+    const THEME_KEY = "westernNavResourceTheme";
+
+    const FALLBACK_DB = {
+      schemaVersion: "1.0.0",
+      lastVerified: "2026-05-24",
+      project: "Western US Motorhome and Adventure Bike Navigation Resource Database",
+      rigProfile: {
+        heightFeet: 12,
+        heightInches: 0,
+        notes: "Import the full JSON database to replace this starter sample."
+      },
+      resources: [
+        {
+          id: "blm-maps",
+          title: "BLM Maps",
+          category: "Federal Mapping and Public Lands",
+          type: "Map portal / georeferenced PDFs",
+          url: "https://www.blm.gov/maps",
+          states: ["US"],
+          cost: "Free",
+          offline: true,
+          geoFormats: ["GeoPDF", "PDF", "web map"],
+          vehicleRouting: false,
+          priority: "High",
+          tags: ["BLM", "public land", "georeferenced PDF"],
+          summary: "Central BLM map page with public-land maps, georeferenced PDFs, and map products.",
+          notes: "Import the full JSON file supplied with this answer for the complete database."
+        },
+        {
+          id: "usfs-mvum",
+          title: "USFS Motor Vehicle Use Maps",
+          category: "Federal Mapping and Public Lands",
+          type: "Legal travel maps / PDFs",
+          url: "https://www.fs.usda.gov/maps/forest-maps.shtml",
+          states: ["US"],
+          cost: "Free",
+          offline: true,
+          geoFormats: ["PDF", "GeoPDF", "Avenza"],
+          vehicleRouting: false,
+          priority: "High",
+          tags: ["USFS", "MVUM", "legal route", "motor vehicle"],
+          summary: "Official USFS maps showing roads, trails, and areas designated for public motor-vehicle use.",
+          notes: "Use as legal authority for motorized travel on National Forest System lands."
+        },
+        {
+          id: "rv-life-trip-wizard",
+          title: "RV LIFE Trip Wizard",
+          category: "Low Clearance and RV Routing",
+          type: "RV trip planner / routing",
+          url: "https://tripwizard.rvlife.com/",
+          states: ["US"],
+          cost: "Subscription",
+          offline: false,
+          geoFormats: ["trip plans"],
+          vehicleRouting: true,
+          priority: "High",
+          tags: ["RV routing", "height", "campgrounds", "trip planner"],
+          summary: "RV trip planning platform with RV-aware routing and campground planning features.",
+          notes: "Enter your measured 12-foot height and verify against posted signs."
+        }
+      ]
+    };
+
+    let db = loadDb();
+    let filtered = [];
+    let editingResourceId = null;
+
+    const els = {
+      cards: document.getElementById("cards"),
+      empty: document.getElementById("empty"),
+      search: document.getElementById("search"),
+      categoryFilter: document.getElementById("categoryFilter"),
+      stateFilter: document.getElementById("stateFilter"),
+      priorityFilter: document.getElementById("priorityFilter"),
+      countShown: document.getElementById("countShown"),
+      countTotal: document.getElementById("countTotal"),
+      rigHeight: document.getElementById("rigHeight"),
+      lastVerified: document.getElementById("lastVerified"),
+      addBtn: document.getElementById("addBtn"),
+      exportBtn: document.getElementById("exportBtn"),
+      importFile: document.getElementById("importFile"),
+      darkBtn: document.getElementById("darkBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      modal: document.getElementById("modal"),
+      modalTitle: document.getElementById("modalTitle"),
+      closeModalBtn: document.getElementById("closeModalBtn"),
+      cancelBtn: document.getElementById("cancelBtn"),
+      form: document.getElementById("resourceForm"),
+      deleteInModalBtn: document.getElementById("deleteInModalBtn"),
+      toast: document.getElementById("toast")
+    };
+
+    const form = {
+      editingId: document.getElementById("editingId"),
+      id: document.getElementById("id"),
+      title: document.getElementById("title"),
+      category: document.getElementById("category"),
+      type: document.getElementById("type"),
+      url: document.getElementById("url"),
+      states: document.getElementById("states"),
+      cost: document.getElementById("cost"),
+      offline: document.getElementById("offline"),
+      vehicleRouting: document.getElementById("vehicleRouting"),
+      priority: document.getElementById("priority"),
+      geoFormats: document.getElementById("geoFormats"),
+      tags: document.getElementById("tags"),
+      summary: document.getElementById("summary"),
+      notes: document.getElementById("notes")
+    };
+
+    initTheme();
+    refresh();
+
+    els.search.addEventListener("input", refresh);
+    els.categoryFilter.addEventListener("change", refresh);
+    els.stateFilter.addEventListener("change", refresh);
+    els.priorityFilter.addEventListener("change", refresh);
+
+    els.addBtn.addEventListener("click", () => openModal());
+    els.closeModalBtn.addEventListener("click", closeModal);
+    els.cancelBtn.addEventListener("click", closeModal);
+    els.modal.addEventListener("click", (event) => {
+      if (event.target === els.modal) closeModal();
+    });
+
+    els.darkBtn.addEventListener("click", () => {
+      const current = document.body.dataset.theme || "light";
+      const next = current === "dark" ? "light" : "dark";
+      document.body.dataset.theme = next;
+      localStorage.setItem(THEME_KEY, next);
+      els.darkBtn.textContent = next === "dark" ? "Light mode" : "Dark mode";
+    });
+
+    els.exportBtn.addEventListener("click", exportJson);
+
+    els.importFile.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const imported = JSON.parse(text);
+        db = normalizeDb(imported);
+        saveDb();
+        refresh();
+        showToast("Imported JSON successfully.");
+      } catch (err) {
+        showToast("Import failed: " + err.message);
+      } finally {
+        event.target.value = "";
+      }
+    });
+
+    els.resetBtn.addEventListener("click", () => {
+      if (!confirm("Clear saved data and reload the built-in starter sample?")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      db = structuredClone(FALLBACK_DB);
+      refresh();
+      showToast("Reset complete. Import your full JSON file again if needed.");
+    });
+
+    els.form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const resource = resourceFromForm();
+
+      if (!resource.id) {
+        showToast("ID is required.");
+        return;
+      }
+
+      const oldId = editingResourceId;
+      const duplicate = db.resources.find(r => r.id === resource.id && r.id !== oldId);
+      if (duplicate) {
+        showToast("That ID already exists. Choose a unique ID.");
+        return;
+      }
+
+      if (oldId) {
+        const index = db.resources.findIndex(r => r.id === oldId);
+        if (index >= 0) db.resources[index] = resource;
+      } else {
+        db.resources.push(resource);
+      }
+
+      db.lastEdited = new Date().toISOString();
+      saveDb();
+      closeModal();
+      refresh();
+      showToast("Resource saved.");
+    });
+
+    els.deleteInModalBtn.addEventListener("click", () => {
+      if (!editingResourceId) {
+        closeModal();
+        return;
+      }
+      deleteResource(editingResourceId);
+    });
+
+    function loadDb() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return structuredClone(FALLBACK_DB);
+      try {
+        return normalizeDb(JSON.parse(stored));
+      } catch {
+        return structuredClone(FALLBACK_DB);
+      }
+    }
+
+    function normalizeDb(input) {
+      if (Array.isArray(input)) {
+        return {
+          schemaVersion: "1.0.0",
+          lastVerified: new Date().toISOString().slice(0, 10),
+          project: "Imported resource array",
+          rigProfile: { heightFeet: 12, heightInches: 0 },
+          resources: input.map(normalizeResource)
+        };
+      }
+
+      const output = {
+        schemaVersion: input.schemaVersion || "1.0.0",
+        lastVerified: input.lastVerified || "Unknown",
+        lastEdited: input.lastEdited || null,
+        project: input.project || "Western Navigation Resource Database",
+        rigProfile: input.rigProfile || { heightFeet: 12, heightInches: 0 },
+        resources: Array.isArray(input.resources) ? input.resources.map(normalizeResource) : []
+      };
+
+      return output;
+    }
+
+    function normalizeResource(r) {
+      return {
+        id: String(r.id || crypto.randomUUID()).trim(),
+        title: String(r.title || "Untitled").trim(),
+        category: String(r.category || "Uncategorized").trim(),
+        type: String(r.type || "").trim(),
+        url: String(r.url || "").trim(),
+        states: toArray(r.states),
+        cost: String(r.cost || "").trim(),
+        offline: Boolean(r.offline),
+        geoFormats: toArray(r.geoFormats),
+        vehicleRouting: Boolean(r.vehicleRouting),
+        priority: ["High", "Medium", "Low"].includes(r.priority) ? r.priority : "Medium",
+        tags: toArray(r.tags),
+        summary: String(r.summary || "").trim(),
+        notes: String(r.notes || "").trim()
+      };
+    }
+
+    function toArray(value) {
+      if (Array.isArray(value)) return value.map(v => String(v).trim()).filter(Boolean);
+      if (typeof value === "string") return value.split(",").map(v => v.trim()).filter(Boolean);
+      return [];
+    }
+
+    function saveDb() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db, null, 2));
+    }
+
+    function refresh() {
+      db.resources = (db.resources || []).map(normalizeResource);
+      populateFilters();
+      filtered = applyFilters();
+      renderStats();
+      renderCards();
+    }
+
+    function populateFilters() {
+      const currentCategory = els.categoryFilter.value;
+      const currentState = els.stateFilter.value;
+
+      const categories = [...new Set(db.resources.map(r => r.category).filter(Boolean))].sort();
+      const states = [...new Set(db.resources.flatMap(r => r.states).filter(Boolean))].sort((a, b) => {
+        if (a === "US") return -1;
+        if (b === "US") return 1;
+        return a.localeCompare(b);
+      });
+
+      els.categoryFilter.innerHTML = '<option value="">All categories</option>' +
+        categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+
+      els.stateFilter.innerHTML = '<option value="">All states</option>' +
+        states.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+
+      els.categoryFilter.value = categories.includes(currentCategory) ? currentCategory : "";
+      els.stateFilter.value = states.includes(currentState) ? currentState : "";
+    }
+
+    function applyFilters() {
+      const q = els.search.value.trim().toLowerCase();
+      const category = els.categoryFilter.value;
+      const state = els.stateFilter.value;
+      const priority = els.priorityFilter.value;
+
+      return db.resources.filter(r => {
+        const haystack = [
+          r.id, r.title, r.category, r.type, r.url, r.cost, r.priority,
+          r.summary, r.notes,
+          ...(r.states || []),
+          ...(r.geoFormats || []),
+          ...(r.tags || [])
+        ].join(" ").toLowerCase();
+
+        const matchesSearch = !q || haystack.includes(q);
+        const matchesCategory = !category || r.category === category;
+        const matchesState = !state || (r.states || []).includes(state) || (state !== "US" && (r.states || []).includes("US"));
+        const matchesPriority = !priority || r.priority === priority;
+
+        return matchesSearch && matchesCategory && matchesState && matchesPriority;
+      }).sort((a, b) => {
+        const rank = { High: 1, Medium: 2, Low: 3 };
+        return (rank[a.priority] || 99) - (rank[b.priority] || 99) || a.title.localeCompare(b.title);
+      });
+    }
+
+    function renderStats() {
+      els.countShown.textContent = filtered.length;
+      els.countTotal.textContent = db.resources.length;
+      const rp = db.rigProfile || {};
+      els.rigHeight.textContent = `${rp.heightFeet ?? 12} ft ${rp.heightInches ?? 0} in`;
+      els.lastVerified.textContent = db.lastVerified || "Unknown";
+    }
+
+    function renderCards() {
+      els.cards.innerHTML = "";
+      els.empty.hidden = filtered.length > 0;
+
+      for (const r of filtered) {
+        const card = document.createElement("article");
+        card.className = "card";
+        const priorityClass = `priority-${String(r.priority || "").toLowerCase()}`;
+
+        card.innerHTML = `
+          <div>
+            <h2>${escapeHtml(r.title)}</h2>
+            <div class="meta">${escapeHtml(r.category)}${r.type ? " · " + escapeHtml(r.type) : ""}</div>
+          </div>
+
+          <div class="chips">
+            <span class="chip ${priorityClass}">${escapeHtml(r.priority || "Medium")}</span>
+            ${r.offline ? '<span class="chip">Offline</span>' : ''}
+            ${r.vehicleRouting ? '<span class="chip">RV / vehicle routing</span>' : ''}
+            ${(r.states || []).slice(0, 8).map(s => `<span class="chip">${escapeHtml(s)}</span>`).join("")}
+          </div>
+
+          <div class="summary">${escapeHtml(r.summary || "No summary yet.")}</div>
+
+          ${r.tags && r.tags.length ? `<div class="meta"><strong>Tags:</strong> ${escapeHtml(r.tags.join(", "))}</div>` : ""}
+          ${r.geoFormats && r.geoFormats.length ? `<div class="meta"><strong>Formats:</strong> ${escapeHtml(r.geoFormats.join(", "))}</div>` : ""}
+          ${r.cost ? `<div class="meta"><strong>Cost:</strong> ${escapeHtml(r.cost)}</div>` : ""}
+          ${r.notes ? `<div class="meta"><strong>Notes:</strong> ${escapeHtml(r.notes)}</div>` : ""}
+
+          <div>
+            <a href="${escapeAttribute(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.url)}</a>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-muted" data-action="edit" data-id="${escapeAttribute(r.id)}">Edit</button>
+            <button class="btn-danger" data-action="delete" data-id="${escapeAttribute(r.id)}">Delete</button>
+          </div>
+        `;
+
+        card.addEventListener("click", (event) => {
+          const btn = event.target.closest("button[data-action]");
+          if (!btn) return;
+          const id = btn.dataset.id;
+          if (btn.dataset.action === "edit") openModal(id);
+          if (btn.dataset.action === "delete") deleteResource(id);
+        });
+
+        els.cards.appendChild(card);
+      }
+    }
+
+    function openModal(id = null) {
+      editingResourceId = id;
+      els.modal.classList.add("open");
+
+      if (id) {
+        const r = db.resources.find(item => item.id === id);
+        if (!r) return;
+        els.modalTitle.textContent = "Edit resource";
+        els.deleteInModalBtn.hidden = false;
+
+        form.editingId.value = r.id;
+        form.id.value = r.id;
+        form.title.value = r.title || "";
+        form.category.value = r.category || "";
+        form.type.value = r.type || "";
+        form.url.value = r.url || "";
+        form.states.value = (r.states || []).join(", ");
+        form.cost.value = r.cost || "";
+        form.offline.value = String(Boolean(r.offline));
+        form.vehicleRouting.value = String(Boolean(r.vehicleRouting));
+        form.priority.value = r.priority || "Medium";
+        form.geoFormats.value = (r.geoFormats || []).join(", ");
+        form.tags.value = (r.tags || []).join(", ");
+        form.summary.value = r.summary || "";
+        form.notes.value = r.notes || "";
+      } else {
+        els.modalTitle.textContent = "Add resource";
+        els.deleteInModalBtn.hidden = true;
+        els.form.reset();
+        form.priority.value = "Medium";
+        form.offline.value = "false";
+        form.vehicleRouting.value = "false";
+        form.id.value = "";
+      }
+
+      setTimeout(() => form.title.focus(), 0);
+    }
+
+    function closeModal() {
+      els.modal.classList.remove("open");
+      editingResourceId = null;
+      els.form.reset();
+    }
+
+    function resourceFromForm() {
+      const id = slugify(form.id.value || form.title.value || "");
+      return normalizeResource({
+        id,
+        title: form.title.value,
+        category: form.category.value,
+        type: form.type.value,
+        url: form.url.value,
+        states: toArray(form.states.value),
+        cost: form.cost.value,
+        offline: form.offline.value === "true",
+        vehicleRouting: form.vehicleRouting.value === "true",
+        priority: form.priority.value,
+        geoFormats: toArray(form.geoFormats.value),
+        tags: toArray(form.tags.value),
+        summary: form.summary.value,
+        notes: form.notes.value
+      });
+    }
+
+    function deleteResource(id) {
+      const r = db.resources.find(item => item.id === id);
+      if (!r) return;
+      if (!confirm(`Delete "${r.title}"?`)) return;
+      db.resources = db.resources.filter(item => item.id !== id);
+      db.lastEdited = new Date().toISOString();
+      saveDb();
+      closeModal();
+      refresh();
+      showToast("Resource deleted.");
+    }
+
+    function exportJson() {
+      const exportDb = normalizeDb(db);
+      exportDb.lastEdited = new Date().toISOString();
+
+      const blob = new Blob([JSON.stringify(exportDb, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "western-nav-resources-export.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Exported JSON.");
+    }
+
+    function initTheme() {
+      const theme = localStorage.getItem(THEME_KEY) || "light";
+      document.body.dataset.theme = theme;
+      document.addEventListener("DOMContentLoaded", () => {
+        if (els.darkBtn) els.darkBtn.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+      });
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      clearTimeout(showToast.timeout);
+      showToast.timeout = setTimeout(() => els.toast.classList.remove("show"), 3200);
+    }
+
+    function slugify(value) {
+      return String(value)
+        .toLowerCase()
+        .trim()
+        .replace(/https?:\/\//, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll("`", "&#096;");
+    }
+  </script>
+</body>
+</html>
+Workflow in comments
+<!--
+### Recommended workflow for your journey
+
+- **Planning layer:** RV LIFE / Roadtrippers / Garmin / CoPilot for 12-foot clearance routing.
+- **Legal motorized-access layer:** USFS MVUMs, BLM travel-management maps, state OHV maps.
+- **Offline field layer:** Avenza for GeoPDF/MVUM; Gaia/CalTopo/OsmAnd for tracks, topo, waypoints, and redundancy.
+- **Camp layer:** Recreation.gov + BLM/USFS official pages + Campendium/The Dyrt/AllStays for user reports.
+- **Daily go/no-go layer:** state DOT 511 maps + NIFC/NASA FIRMS + local forest/BLM alerts.
+-->
