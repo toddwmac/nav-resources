@@ -374,10 +374,16 @@
         }
 
         /* Resources Grid */
+        .section-content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
         .resources-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(340px, 400px));
             gap: 20px;
+            justify-content: center;
         }
 
         .resource-card {
@@ -940,6 +946,24 @@
         </div>
     </section>
 
+    <!-- Applications Section -->
+    <section class="section">
+        <div class="section-content-wrapper">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="icon">📂</span>
+                    Applications (5)
+                </h2>
+                <button class="btn btn-secondary btn-sm" id="expandAllBtn">
+                    <span>🚀</span> Open All Apps
+                </button>
+            </div>
+            <div class="resources-grid" id="resourcesGrid">
+                <!-- Resources will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
     <!-- Info Banner -->
     <section class="section">
         <div class="about-card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%); border-left: 4px solid var(--accent);">
@@ -1039,22 +1063,6 @@
                     <h4>AI Model Showcase</h4>
                     <p>Each app demonstrates unique design patterns from different AI models. Compare code structure, UI/UX choices, and feature implementation across Claude, Copilot, and GPT.</p>
                 </div>
-            </div>
-        </section>
-
-        <!-- Resources Section -->
-        <section class="section">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <span class="icon">📂</span>
-                    Applications (5)
-                </h2>
-                <button class="btn btn-secondary btn-sm" id="expandAllBtn">
-                    <span>📖</span> Expand All
-                </button>
-            </div>
-            <div class="resources-grid" id="resourcesGrid">
-                <!-- Resources will be populated by JavaScript -->
             </div>
         </section>
     </main>
@@ -1260,7 +1268,7 @@
                         <div class="resource-description">${resource.description}</div>
                         <div class="resource-actions">
                             <a href="${resource.filename}" class="btn btn-primary btn-sm" target="_blank">
-                                <span>🔗</span> Open ${resource.type.toUpperCase()}
+                                <span>🔗</span> Open App
                             </a>
                             <button class="btn btn-secondary btn-sm" onclick="openComments('${resource.id}')">
                                 <span>💬</span> Comments
@@ -1398,11 +1406,34 @@
             return div.innerHTML;
         }
 
-        // Expand all resources (opens them in new tabs)
+        // Open all apps in new tabs with delays to avoid popup blockers
         expandAllBtn.addEventListener('click', () => {
-            if (confirm('Open all resource files in new tabs?')) {
-                resources.forEach(resource => {
-                    window.open(resource.filename, '_blank');
+            if (confirm('Open all 5 apps in new tabs?\n\nNote: If popups are blocked, please allow popups for this site.')) {
+                let openedCount = 0;
+                let blockedCount = 0;
+
+                resources.forEach((resource, index) => {
+                    setTimeout(() => {
+                        const win = window.open(resource.filename, '_blank');
+                        if (win) {
+                            openedCount++;
+                            console.log(`✓ Opened: ${resource.title}`);
+                        } else {
+                            blockedCount++;
+                            console.warn(`✗ Blocked: ${resource.title}`);
+                        }
+
+                        // Show final status
+                        if (index === resources.length - 1) {
+                            setTimeout(() => {
+                                let message = `Opened ${openedCount} of ${resources.length} apps`;
+                                if (blockedCount > 0) {
+                                    message += `\n\n${blockedCount} were blocked by popup blocker.\nPlease allow popups for this site and try again.`;
+                                }
+                                alert(message);
+                            }, 500);
+                        }
+                    }, index * 400); // 400ms delay between each
                 });
             }
         });

@@ -6,7 +6,10 @@ A showcase of AI-generated navigation resource management applications. Each app
 
 This project demonstrates how different AI models (GPT, Copilot, Opus, LMC) approach the same application requirements differently. All applications are functionally equivalent Nav Resource Managers, but each reflects the unique design patterns, code style, and UI/UX choices of its generating AI model.
 
-**New:** All apps now include change tracking and export/import functionality for merging user edits into the master database.
+**Recent Updates:**
+- **Star/Favorite Resources** - All apps now allow starring resources, which appear at the top of filtered lists
+- **Change Tracking** - Export/import changes for merging into master database
+- **UI Improvements** - Streamlined toolbar layouts, larger search fields, improved mobile responsiveness
 
 ## Quick Start
 
@@ -27,11 +30,11 @@ This project demonstrates how different AI models (GPT, Copilot, Opus, LMC) appr
 
 | Model | File | UI Style | Notable Characteristics |
 |-------|------|----------|------------------------|
-| **GPT** | `GPT-NavResourceManager.html` | Clean, corporate | Straightforward grid layout, conventional filters, change tracking |
-| **Copilot** | `Copilot-NavResourceManager.html` | Card-based | Rich color coding, category badges, inline editing, change tracking |
-| **Opus** | `Opus-NavResourceManager.html` | Modern, minimal | Clean typography, efficient state management, change tracking |
-| **LMC** | `LMC-NavResourceManager.html` | Refreshingly simple | Direct data access, fast filtering, change tracking |
-| **Mobile** | `Mobile-NavResourceManager.html` | Mobile-first | Touch-optimized, bottom navigation, change tracking |
+| **GPT** | `GPT-NavResourceManager.html` | Clean, modern | Streamlined two-row toolbar, large search field, conventional filters, starred resources, change tracking |
+| **Copilot** | `Copilot-NavResourceManager.html` | Card-based | Rich color coding, category badges, inline editing, starred resources, change tracking |
+| **Opus** | `Opus-NavResourceManager.html` | Modern, minimal | Clean typography, efficient state management, starred resources, change tracking |
+| **LMC** | `LMC-NavResourceManager.html` | Refreshingly simple | Category-organized cards, direct data access, fast filtering, starred resources, change tracking |
+| **Mobile** | `Mobile-NavResourceManager.html` | Mobile-first | Touch-optimized, bottom navigation, FAB quick-add, starred resources, change tracking |
 
 ## Data Flow
 
@@ -71,6 +74,24 @@ This project demonstrates how different AI models (GPT, Copilot, Opus, LMC) appr
 - **Edits persist** - Your local edits survive browser restarts
 - **Edits don't sync** - Changes made in one browser/app don't affect others
 - **Always reloadable** - Clear localStorage to reload fresh master data anytime
+
+## Star/Favorite Resources
+
+**All applications** now include a star/favorite feature for quick access to your most-used resources:
+
+### How It Works
+
+- **Star a Resource**: Click the star (☆/⭐) button on any resource card
+- **Starred Resources First**: Starred items always appear at the top of filtered lists, regardless of category
+- **Persistent**: Your starred resources are saved to localStorage and persist across sessions
+- **Visual Indicators**: Starred resources display with highlighted buttons (⭐) and appear first in all views
+
+### Use Cases
+
+- **Quick Access**: Keep frequently-used navigation tools at the top of your list
+- **Trip Planning**: Star resources relevant to your current trip planning phase
+- **Favorites Management**: Build a personal collection of go-to resources
+- **Organization**: Separate must-have tools from the larger database
 
 ## Change Tracking & Export
 
@@ -159,15 +180,23 @@ This project showcases AI code generation for:
 
 ```
 nav-resources/
-├── index.html                          # Launch page
+├── index.html                          # Launch page with app cards and "Open All Apps"
 ├── master-resources.json               # Unified database (95+ resources)
-├── GPT-NavResourceManager.html         # GPT-generated app
+├── GPT-NavResourceManager.html         # GPT-generated app (streamlined UI)
 ├── Copilot-NavResourceManager.html     # Copilot-generated app
 ├── Opus-NavResourceManager.html        # Opus-generated app
 ├── LMC-NavResourceManager.html         # LMC-generated app
 ├── Mobile-NavResourceManager.html      # Mobile-optimized with change tracking
 └── README.md                           # This file
 ```
+
+### Index Page Features
+
+The launch page (`index.html`) provides:
+- **App Cards**: Visual overview of all 5 resource managers with descriptions and tags
+- **Open All Apps**: Launch all apps simultaneously (with popup blocker handling)
+- **Centered Layout**: Applications section aligned with grid boundaries for clean appearance
+- **Quick Access**: Click "Open App" on any card to launch that specific manager
 
 ## Why a Server?
 
@@ -268,17 +297,21 @@ All five apps share core functionality:
 
 **Expected behavior**: Edits persist in your browser only. To share changes, use the Export Changes feature and merge into `master-resources.json`
 
-### GPT Manager shows "document is not a function" error
+### GPT Manager Issues
 
-**Cause**: JavaScript executing before DOM fully loaded, combined with variable scope issues
+**Historical Issue**: "document is not a function" error
 
-**Fix**: This was resolved by restructuring the JavaScript to:
-- Declare state variables in outer scope
-- Define all functions outside DOMContentLoaded
-- Only access DOM elements inside DOMContentLoaded listener
-- Use `document.getElementById()` consistently (not `document()`)
+**Cause**: JavaScript scope and DOM loading problems where functions were defined inside DOMContentLoaded but referenced from outer scope.
 
-If you encounter this error, ensure the app is being served by a web server (not opened directly via file://) and refresh the page.
+**Fix Applied**: Complete JavaScript restructure:
+- All state variables declared in outer scope before DOMContentLoaded
+- All functions defined outside DOMContentLoaded for proper access
+- DOM element references populated inside DOMContentLoaded listener
+- Consistent use of `document.getElementById()` (not `document()`)
+
+**Current Status**: All issues resolved. The GPT Manager now features a streamlined two-row toolbar layout with large search field, conventional filters, and full change tracking support.
+
+If you encounter any loading issues, ensure the app is being served by a web server (not opened directly via file://) and refresh the page.
 
 ## Development
 
